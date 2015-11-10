@@ -13,4 +13,9 @@ set(CSTABLE_INCLUDE ${MODULE_INCLUDE} PARENT_SCOPE)
 # DEPENDENCIES
 find_package(Threads)
 
+include(deps/libstx/src/stx/cmake/CFlags.cmake)
+add_subdirectory(deps/libstx)
+include_directories(deps/libstx/src)
+include_directories(${CMAKE_CURRENT_BINARY_DIR}/deps/libstx/src)
+
 add_subdirectory(src/cstable)
