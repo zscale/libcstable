@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 2.8.8)
 project(libcstable)
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+
 # INCLUDES
 set(MODULE_INCLUDE
     ${PROJECT_BINARY_DIR}
@@ -14,8 +18,8 @@ set(CSTABLE_INCLUDE ${MODULE_INCLUDE} PARENT_SCOPE)
 find_package(Threads)
 
 include(deps/libstx/src/stx/cmake/CFlags.cmake)
+
 add_subdirectory(deps/libstx)
-include_directories(deps/libstx/src)
-include_directories(${CMAKE_CURRENT_BINARY_DIR}/deps/libstx/src)
+include_directories(${STX_INCLUDE})
 
 add_subdirectory(src/cstable)
