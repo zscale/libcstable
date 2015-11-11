@@ -52,11 +52,18 @@ namespace cstable {
  *       %x00 %x02               // cstable file format version
  *       <uint64_t>              // flags
  *       <uint32_t>              // number of columns
- *       <uint32_t>              // number of rows
- *       <uint64_t>              // file size in bytes
- *       <20 bytes>              // header sha1 checksum
+ *       <20 bytes>              // header checksum
+ *       <uint32_t>              // metablock a
+ *       <uint32_t>              // metablock b
  *       <512 bytes>             // reserved
  *       <column_info>*          // column info for each column
+ *       %x00*                   // padding to next 512 byte boundary
+ *
+ *   <metablock> :=
+ *       <uint64_t>              // transaction id
+ *       <uint32_t>              // number of rows
+ *       <uint64_t>              // file size in bytes
+ *       <20 bytes>              // sha1 checksum
  *
  *   <column_info> :=
  *       <lenenc_int>            // column logical type
@@ -66,13 +73,15 @@ namespace cstable {
  *       <char>*                 // column name
  *       <lenenc_int>            // max repetition level
  *       <lenenc_int>            // max definition level
- *       <uint64_t>              // file offset of the first page
+ *       <uint64_t>              // file offset of the first data page
+ *       <uint64_t>              // file offset of the first repetition level page
+ *       <uint64_t>              // file offset of the first definition level page
  *
  *   <page> :=
- *       <uint32_t>              // page data size
- *       <char>*                 // page data
+ *       <uint32_t>              // page data size as multiple of 512 bytes, inluding 36 bytes metadata
  *       <uint64_t>              // next page file offset
- *       <20 bytes>              // page sha1 checksum
+ *       <uint64_t>              // number of values in this page
+ *       <char>*                 // page data
  *
  */
 class BinaryFormat {
