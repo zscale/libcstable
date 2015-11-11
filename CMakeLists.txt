@@ -22,6 +22,7 @@ include(deps/libstx/src/stx/cmake/CFlags.cmake)
 if(NOT HAVE_STX)
   add_subdirectory(deps/libstx)
   include_directories(${STX_INCLUDE})
+  set(HAVE_STX true)
 endif()
 
 add_subdirectory(src/cstable)
