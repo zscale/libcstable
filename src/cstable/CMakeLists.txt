@@ -9,6 +9,7 @@
 # cstable
 add_library(cstable STATIC
     ColumnWriter.cc
+    CSTableReader.cc
     RecordMaterializer.cc
     v1/BitPackedIntColumnReader.cc
     v1/BitPackedIntColumnWriter.cc
