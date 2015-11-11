@@ -47,37 +47,32 @@ namespace cstable {
  *       <header>
  *       <page>*
  *
- *   <page> := <data_page> | <index_page>
- *
  *   <header> :=
  *       %x17 %x23 %x17 %x23     // magic bytes
  *       %x00 %x02               // cstable file format version
- *       <uint32_t>              // page_size
- *       <uint64_t>              // file offset of the first page
- *       <uint64_t>              // file offset of the index page
  *       <uint64_t>              // flags
  *       <uint32_t>              // number of columns
+ *       <uint32_t>              // number of rows
+ *       <uint64_t>              // file size in bytes
+ *       <20 bytes>              // header sha1 checksum
+ *       <512 bytes>             // reserved
  *       <column_info>*          // column info for each column
- *       %x00*                   // zero byte padding
  *
  *   <column_info> :=
- *       <lenenc_int>            // column type
+ *       <lenenc_int>            // column logical type
+ *       <lenenc_int>            // column storage type
  *       <lenenc_int>            // column id
  *       <lenenc_int>            // length of the column name
  *       <char>*                 // column name
  *       <lenenc_int>            // max repetition level
  *       <lenenc_int>            // max definition level
+ *       <uint64_t>              // file offset of the first page
  *
- *   <index_page> :=
- *       <uint32_t>              // number of entries
- *       <index_page_entry>*     // entries
- *       <lenenc_int>            // number of free pages
- *       <lenenc_int>*           // free page indexes
- *
- *   <index_page_entry> :=
- *       <lenenc_int>            // column_id
- *       <lenenc_int>            // number of pages
- *       <lenenc_int>*           // page indexes
+ *   <page> :=
+ *       <uint32_t>              // page data size
+ *       <char>*                 // page data
+ *       <uint64_t>              // next page file offset
+ *       <20 bytes>              // page sha1 checksum
  *
  */
 class BinaryFormat {
