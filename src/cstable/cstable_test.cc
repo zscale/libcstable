@@ -80,7 +80,7 @@ TEST_CASE(CSTableTest, TestCSTableColumnWriterReader, [] () {
     boolean_writer->addDatum(rep_max, def_max, &boolean_v, sizeof(boolean_v));
     double_writer->addDatum(rep_max, def_max, &double_v, sizeof(double_v));
     leb128_writer->addDatum(rep_max, def_max, &i, sizeof(i));
-    string_writer->addDatum(rep_max, def_max, &string_v, sizeof(string_v));
+    string_writer->addDatum(rep_max, def_max, string_v.data(), string_v.size());
     uint32_writer->addDatum(rep_max, def_max, &i, sizeof(i));
     uint64_writer->addDatum(rep_max, def_max, &uint64_v, sizeof(uint64_v));
   }
@@ -143,7 +143,7 @@ TEST_CASE(CSTableTest, TestCSTableColumnWriterReader, [] () {
     EXPECT_EQ(
       string_reader->next(&rep_level, &def_level, &data, &size),
       true);
-    EXPECT_EQ(*static_cast<String*>(data), "value");
+    EXPECT_EQ(String((const char*) data, size), "value");
 
     EXPECT_EQ(
       uint32_reader->next(&rep_level, &def_level, &data, &size),
