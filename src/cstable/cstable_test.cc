@@ -11,42 +11,42 @@
 #include <stx/stdtypes.h>
 #include <stx/io/file.h>
 #include <stx/test/unittest.h>
-#include <cstable/CSTableWriter.h>
-#include <cstable/CSTableReader.h>
-#include <cstable/BitPackedIntColumnWriter.h>
-#include <cstable/BooleanColumnWriter.h>
-#include <cstable/DoubleColumnWriter.h>
-#include <cstable/LEB128ColumnWriter.h>
-#include <cstable/StringColumnWriter.h>
-#include <cstable/UInt32ColumnWriter.h>
-#include <cstable/UInt64ColumnWriter.h>
+#include <cstable/v1/CSTableWriter.h>
+#include <cstable/v1/CSTableReader.h>
+#include <cstable/v1/BitPackedIntColumnWriter.h>
+#include <cstable/v1/BooleanColumnWriter.h>
+#include <cstable/v1/DoubleColumnWriter.h>
+#include <cstable/v1/LEB128ColumnWriter.h>
+#include <cstable/v1/StringColumnWriter.h>
+#include <cstable/v1/UInt32ColumnWriter.h>
+#include <cstable/v1/UInt64ColumnWriter.h>
 
 
 using namespace stx;
 
 UNIT_TEST(CSTableTest);
 
-TEST_CASE(CSTableTest, TestCSTableContainer, [] () {
+TEST_CASE(CSTableTest, TestV1CSTableContainer, [] () {
   String filename = "/tmp/__fnord__cstabletest1.cstable";
   auto num_records = 10;
 
   FileUtil::rm(filename);
 
-  auto column1_writer = mkRef(new cstable::BitPackedIntColumnWriter(10, 10));
-  auto column2_writer = mkRef(new cstable::BitPackedIntColumnWriter(10, 10));
-  cstable::CSTableWriter tbl_writer(filename, num_records);
+  auto column1_writer = mkRef(new cstable::v1::BitPackedIntColumnWriter(10, 10));
+  auto column2_writer = mkRef(new cstable::v1::BitPackedIntColumnWriter(10, 10));
+  cstable::v1::CSTableWriter tbl_writer(filename, num_records);
 
   tbl_writer.addColumn("key1", column1_writer.get());
   tbl_writer.addColumn("key2", column2_writer.get());
   tbl_writer.commit();
 
-  cstable::CSTableReader tbl_reader(filename);
+  cstable::v1::CSTableReader tbl_reader(filename);
   EXPECT_EQ(tbl_reader.numRecords(), num_records);
   EXPECT_EQ(tbl_reader.hasColumn("key1"), true);
   EXPECT_EQ(tbl_reader.hasColumn("key2"), true);
 });
 
-TEST_CASE(CSTableTest, TestCSTableColumnWriterReader, [] () {
+TEST_CASE(CSTableTest, TestV1CSTableColumnWriterReader, [] () {
   String filename = "/tmp/__fnord__cstabletest2.cstable";
   auto num_records = 4000;
   auto rep_max = 1;
@@ -55,19 +55,19 @@ TEST_CASE(CSTableTest, TestCSTableColumnWriterReader, [] () {
   FileUtil::rm(filename);
 
   auto bitpacked_writer = mkRef(
-    new cstable::BitPackedIntColumnWriter(rep_max, def_max));
+    new cstable::v1::BitPackedIntColumnWriter(rep_max, def_max));
   auto boolean_writer = mkRef(
-    new cstable::BooleanColumnWriter(rep_max, def_max));
+    new cstable::v1::BooleanColumnWriter(rep_max, def_max));
   auto double_writer = mkRef(
-    new cstable::DoubleColumnWriter(rep_max, def_max));
+    new cstable::v1::DoubleColumnWriter(rep_max, def_max));
   auto leb128_writer = mkRef(
-    new cstable::LEB128ColumnWriter(rep_max, def_max));
+    new cstable::v1::LEB128ColumnWriter(rep_max, def_max));
   auto string_writer = mkRef(
-    new cstable::StringColumnWriter(rep_max, def_max));
+    new cstable::v1::StringColumnWriter(rep_max, def_max));
   auto uint32_writer = mkRef(
-    new cstable::UInt32ColumnWriter(rep_max, def_max));
+    new cstable::v1::UInt32ColumnWriter(rep_max, def_max));
   auto uint64_writer = mkRef(
-    new cstable::UInt64ColumnWriter(rep_max, def_max));
+    new cstable::v1::UInt64ColumnWriter(rep_max, def_max));
 
 
   for (auto i = 0; i < num_records; i++) {
@@ -85,7 +85,7 @@ TEST_CASE(CSTableTest, TestCSTableColumnWriterReader, [] () {
     uint64_writer->addDatum(rep_max, def_max, &uint64_v, sizeof(uint64_v));
   }
 
-  cstable::CSTableWriter tbl_writer(filename, num_records);
+  cstable::v1::CSTableWriter tbl_writer(filename, num_records);
   tbl_writer.addColumn("bitpacked", bitpacked_writer.get());
   tbl_writer.addColumn("boolean", boolean_writer.get());
   tbl_writer.addColumn("double", double_writer.get());
@@ -95,7 +95,7 @@ TEST_CASE(CSTableTest, TestCSTableColumnWriterReader, [] () {
   tbl_writer.addColumn("uint64", uint64_writer.get());
   tbl_writer.commit();
 
-  cstable::CSTableReader tbl_reader(filename);
+  cstable::v1::CSTableReader tbl_reader(filename);
   auto bitpacked_reader = tbl_reader.getColumnReader("bitpacked");
   auto boolean_reader = tbl_reader.getColumnReader("boolean");
   auto double_reader = tbl_reader.getColumnReader("double");

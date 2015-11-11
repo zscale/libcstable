@@ -14,9 +14,9 @@
 #include "stx/protobuf/MessageEncoder.h"
 #include "stx/protobuf/MessagePrinter.h"
 #include "cstable/CSTableReader.h"
-#include "cstable/CSTableBuilder.h"
 #include "cstable/RecordMaterializer.h"
-#include "cstable/StringColumnReader.h"
+#include "cstable/v1/StringColumnReader.h"
+#include "cstable/v1/CSTableBuilder.h"
 
 using namespace stx;
 using namespace stx::cstable;
@@ -60,12 +60,12 @@ TEST_CASE(RecordMaterializerTest, TestSimpleReMaterialization, [] () {
   l1_b.addChild(2, "fnord3");
   l1_b.addChild(2, "fnord4");
 
-  cstable::CSTableBuilder builder(&schema);
+  cstable::v1::CSTableBuilder builder(&schema);
   builder.addRecord(sobj);
   builder.write(testfile);
 
-  cstable::CSTableReader reader(testfile);
-  cstable::RecordMaterializer materializer(&schema, &reader);
+  auto reader = cstable::CSTableReader::openFile(testfile);
+  cstable::RecordMaterializer materializer(&schema, reader.get());
 
   msg::MessageObject robj;
   materializer.nextRecord(&robj);
@@ -118,12 +118,12 @@ TEST_CASE(RecordMaterializerTest, TestSimpleReMaterializationWithNull, [] () {
   l1_c.addChild(2, "fnord3");
   l1_c.addChild(2, "fnord4");
 
-  cstable::CSTableBuilder builder(&schema);
+  cstable::v1::CSTableBuilder builder(&schema);
   builder.addRecord(sobj);
   builder.write(testfile);
 
-  cstable::CSTableReader reader(testfile);
-  cstable::RecordMaterializer materializer(&schema, &reader);
+  auto reader = cstable::CSTableReader::openFile(testfile);
+  cstable::RecordMaterializer materializer(&schema, reader.get());
 
   msg::MessageObject robj;
   materializer.nextRecord(&robj);
@@ -193,12 +193,12 @@ TEST_CASE(RecordMaterializerTest, TestReMatWithNonRepeatedParent, [] () {
   l2_cb.addChild(3, "fnord5");
   l2_cb.addChild(3, "fnord6");
 
-  cstable::CSTableBuilder builder(&schema);
+  cstable::v1::CSTableBuilder builder(&schema);
   builder.addRecord(sobj);
   builder.write(testfile);
 
-  cstable::CSTableReader reader(testfile);
-  cstable::RecordMaterializer materializer(&schema, &reader);
+  auto reader = cstable::CSTableReader::openFile(testfile);
+  cstable::RecordMaterializer materializer(&schema, reader.get());
 
   msg::MessageObject robj;
   materializer.nextRecord(&robj);

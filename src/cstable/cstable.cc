@@ -15,11 +15,11 @@
 #include "stx/io/file.h"
 #include "stx/inspect.h"
 #include "stx/human.h"
-#include "cstable/LEB128ColumnWriter.h"
-#include "cstable/StringColumnWriter.h"
-#include "cstable/DoubleColumnWriter.h"
-#include "cstable/BooleanColumnWriter.h"
-#include "cstable/CSTableWriter.h"
+#include "cstable/v1/LEB128ColumnWriter.h"
+#include "cstable/v1/StringColumnWriter.h"
+#include "cstable/v1/DoubleColumnWriter.h"
+#include "cstable/v1/BooleanColumnWriter.h"
+#include "cstable/v1/CSTableWriter.h"
 
 using namespace stx;
 
@@ -45,56 +45,56 @@ void cmd_from_csv(const cli::FlagParser& flags) {
     }
   }
 
-  HashMap<String, RefPtr<cstable::ColumnWriter>> column_writers;
+  HashMap<String, RefPtr<cstable::v1::ColumnWriter>> column_writers;
   for (const auto& col : column_types) {
     switch (col.second) {
 
         case HumanDataType::UNSIGNED_INTEGER:
           column_writers.emplace(
               col.first,
-              new cstable::LEB128ColumnWriter(0, 0));
+              new cstable::v1::LEB128ColumnWriter(0, 0));
           break;
 
         case HumanDataType::UNSIGNED_INTEGER_NULLABLE:
           column_writers.emplace(
               col.first,
-              new cstable::LEB128ColumnWriter(0, 1));
+              new cstable::v1::LEB128ColumnWriter(0, 1));
           break;
 
         case HumanDataType::SIGNED_INTEGER:
           column_writers.emplace(
               col.first,
-              new cstable::DoubleColumnWriter(0, 0)); // FIXME
+              new cstable::v1::DoubleColumnWriter(0, 0)); // FIXME
           break;
 
         case HumanDataType::SIGNED_INTEGER_NULLABLE:
           column_writers.emplace(
               col.first,
-              new cstable::DoubleColumnWriter(0, 1)); // FIXME
+              new cstable::v1::DoubleColumnWriter(0, 1)); // FIXME
           break;
 
         case HumanDataType::FLOAT:
           column_writers.emplace(
               col.first,
-              new cstable::DoubleColumnWriter(0, 0));
+              new cstable::v1::DoubleColumnWriter(0, 0));
           break;
 
         case HumanDataType::FLOAT_NULLABLE:
           column_writers.emplace(
               col.first,
-              new cstable::DoubleColumnWriter(0, 1));
+              new cstable::v1::DoubleColumnWriter(0, 1));
           break;
 
         case HumanDataType::BOOLEAN:
           column_writers.emplace(
               col.first,
-              new cstable::BooleanColumnWriter(0, 0));
+              new cstable::v1::BooleanColumnWriter(0, 0));
           break;
 
         case HumanDataType::BOOLEAN_NULLABLE:
           column_writers.emplace(
               col.first,
-              new cstable::BooleanColumnWriter(0, 1));
+              new cstable::v1::BooleanColumnWriter(0, 1));
           break;
 
         case HumanDataType::DATETIME:
@@ -106,7 +106,7 @@ void cmd_from_csv(const cli::FlagParser& flags) {
         case HumanDataType::TEXT:
           column_writers.emplace(
               col.first,
-              new cstable::StringColumnWriter(0, 1));
+              new cstable::v1::StringColumnWriter(0, 1));
           break;
 
         case HumanDataType::NULL_OR_EMPTY:
@@ -187,7 +187,7 @@ void cmd_from_csv(const cli::FlagParser& flags) {
   }
 
   {
-    cstable::CSTableWriter writer(flags.getString("output_file"), num_records);
+    cstable::v1::CSTableWriter writer(flags.getString("output_file"), num_records);
     for (const auto& col : column_writers) {
       if (col.second.get()) {
         writer.addColumn(col.first, col.second.get());
