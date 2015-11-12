@@ -17,9 +17,11 @@ RefPtr<CSTableWriter> CSTableWriter::createFile(
     const String& filename,
     const Vector<ColumnConfig>& columns,
     Option<RefPtr<LockRef>> lockref /* = None<RefPtr<LockRef>>() */) {
-  return new CSTableWriter(
+  auto writer = mkRef(new CSTableWriter(
       File::openFile(filename, File::O_WRITE | File::O_CREATE),
-      columns);
+      columns));
+
+  writer->writeHeader();
 }
 
 RefPtr<CSTableWriter> CSTableWriter::reopenFile(
@@ -39,10 +41,7 @@ CSTableWriter::CSTableWriter(
 
 void CSTableWriter::commit() {
   file_.fsync();
-
   writeMetaBlock(current_txid_++);
-
-  // writeMetaBlock();
   file_.fsync();
 }
 

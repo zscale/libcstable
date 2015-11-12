@@ -98,10 +98,21 @@ public:
   void commit();
 
   /**
-   * Retrieve the writer for a specific column
+   * Retrieve the writer for a specific column by name.
+   *
+   * While the returned column writer is refcounted, so lifetime extends until
+   * the returned RefPtr is destroyed, it doesn't make any sense to append data
+   * to a column writer after commit() has been called on the CSTableWriter (as
+   * you will not be able to commit() the data to disk again using the same
+   * CSTableWriter instance)
    */
-  RefPtr<ColumnWriter> getColumn(const String& column_name) const;
-  RefPtr<ColumnWriter> getColumn(uint32_t column_id) const;
+  RefPtr<ColumnWriter> getColumnByName(const String& column_name) const;
+
+  /**
+   * The same as getColumnnByName, except that the column is retrieved by id
+   * and not by name
+   */
+  RefPtr<ColumnWriter> getColumnById(uint32_t column_id) const;
 
 protected:
 
