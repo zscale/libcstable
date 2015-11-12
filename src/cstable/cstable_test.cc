@@ -20,7 +20,7 @@
 #include <cstable/v1/StringColumnWriter.h>
 #include <cstable/v1/UInt32ColumnWriter.h>
 #include <cstable/v1/UInt64ColumnWriter.h>
-#include <cstable/v2/CSTableWriter.h>
+#include <cstable/CSTableWriter.h>
 
 
 using namespace stx;
