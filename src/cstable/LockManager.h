@@ -14,7 +14,6 @@
 
 namespace stx {
 namespace cstable {
-namespace v2 {
 
 class LockRef : public RefCounted {
 
@@ -24,7 +23,6 @@ class LockManager {
 
 };
 
-} // namespace v2
 } // namespace cstable
 } // namespace stx
 

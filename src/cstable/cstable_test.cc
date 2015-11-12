@@ -162,9 +162,9 @@ TEST_CASE(CSTableTest, TestV2CSTableContainer, [] () {
   String filename = "/tmp/__fnord__cstabletest2.cstable";
   FileUtil::rm(filename);
 
-  Vector<cstable::v2::ColumnConfig> columns;
+  Vector<cstable::ColumnConfig> columns;
 
-  auto tbl_writer = cstable::v2::CSTableWriter::createFile(filename, columns);
+  auto tbl_writer = cstable::CSTableWriter::createFile(filename, columns);
   tbl_writer->commit();
 
   //cstable::v1::CSTableReader tbl_reader(filename);

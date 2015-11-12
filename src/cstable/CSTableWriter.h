@@ -16,7 +16,6 @@
 
 namespace stx {
 namespace cstable {
-namespace v2 {
 
 struct ColumnConfig {
 };
@@ -121,7 +120,6 @@ protected:
   uint64_t current_txid_;
 };
 
-} // namespace v2
 } // namespace cstable
 } // namespace stx
 
