@@ -18,6 +18,9 @@ namespace cstable {
 /**
  * // http://tools.ietf.org/html/rfc5234
  *
+ * Assumptions:
+ *   - aligned 512 write bytes to disk are atomic
+ *
  * v1:
  *
  *   <cstable> :=
@@ -25,8 +28,8 @@ namespace cstable {
  *       <body>
  *
  *   <header> :=
- *       %x17 %x23 %x17 %x23     // magic bytes
- *       %x00 %x01               // cstable file format version
+ *       %x23 %x17 %x23 %x17     // magic bytes
+ *       %x01 %x00               // cstable file format version
  *       <uint64_t>              // flags
  *       <uint64_t>              // number of rows in the table
  *       <uint32_t>              // number of columns
@@ -48,19 +51,19 @@ namespace cstable {
  *       ( <index_page> / data_page )*
  *
  *   <header> :=
- *       %x17 %x23 %x17 %x23     // magic bytes
- *       %x00 %x02               // cstable file format version
+ *       %x23 %x17 %x23 %x17     // magic bytes
+ *       %x02 %x00               // cstable file format version
  *       <uint64_t>              // flags
- *       <uint32_t>              // number of columns
  *       <metablock>             // metablock a
  *       <metablock>             // metablock b
- *       <512 bytes>             // reserved
+ *       <128 bytes>             // reserved
+ *       <uint32_t>              // number of columns
  *       <column_info>*          // column info for each column
  *       %x00*                   // padding to next 512 byte boundary
  *
  *   <metablock> :=
  *       <uint64_t>              // transaction id
- *       <uint32_t>              // number of rows
+ *       <uint64_t>              // number of rows
  *       <uint64_t>              // head index page offset as multiple of 512 bytes
  *       <uint64_t>              // file size in bytes
  *       <20 bytes>              // sha1 checksum
@@ -100,6 +103,7 @@ public:
   static const uint32_t kMagicBytes = 0x17231723;
 };
 
+static const char kMagicBytes[4] = {0x23, 0x17, 0x23, 0x17};
 
 enum class ColumnType : uint8_t {
   BOOLEAN = 1,
