@@ -45,16 +45,15 @@ namespace cstable {
  *
  *   <cstable> :=
  *       <header>
- *       <page>*
+ *       ( <index_page> / data_page )*
  *
  *   <header> :=
  *       %x17 %x23 %x17 %x23     // magic bytes
  *       %x00 %x02               // cstable file format version
  *       <uint64_t>              // flags
  *       <uint32_t>              // number of columns
- *       <20 bytes>              // header checksum
- *       <uint32_t>              // metablock a
- *       <uint32_t>              // metablock b
+ *       <metablock>             // metablock a
+ *       <metablock>             // metablock b
  *       <512 bytes>             // reserved
  *       <column_info>*          // column info for each column
  *       %x00*                   // padding to next 512 byte boundary
@@ -62,6 +61,7 @@ namespace cstable {
  *   <metablock> :=
  *       <uint64_t>              // transaction id
  *       <uint32_t>              // number of rows
+ *       <uint64_t>              // head index page offset as multiple of 512 bytes
  *       <uint64_t>              // file size in bytes
  *       <20 bytes>              // sha1 checksum
  *
@@ -73,15 +73,25 @@ namespace cstable {
  *       <char>*                 // column name
  *       <lenenc_int>            // max repetition level
  *       <lenenc_int>            // max definition level
- *       <uint64_t>              // file offset of the first data page
- *       <uint64_t>              // file offset of the first repetition level page
- *       <uint64_t>              // file offset of the first definition level page
  *
- *   <page> :=
- *       <uint32_t>              // page data size as multiple of 512 bytes, inluding 36 bytes metadata
- *       <uint64_t>              // next page file offset
- *       <uint64_t>              // number of values in this page
- *       <char>*                 // page data
+ *   <index_page> :=
+ *       <uint32_t>              // page data size as multiple of 512 bytes, inluding 8 bytes metadata
+ *       <uint32_t>              // next index page file offset as multiple of 512 bytes
+ *       <char*>                 // index page data (index_entries back2back)
+ *
+ *   <index_entry> :=
+ *      <uint8_t>                // entry type (0x1=data, 0x2=repetition level, 0x3=definition level)
+ *      <lenenc_int>             // field id
+ *      <lenenc_int>             // number of reference pages
+ *      <index_page_ref>*        // page references
+ *
+ *   <index_page_ref> :=
+ *      <lenenc_int>             // data page offset as multiple of 512
+ *      <lenenc_int>             // data page size as multiple of 512
+ *      [ <char>* ]              // optional metadata (depending on column storage type)
+ *
+ *  <data_page>       :=
+ *      <char>*                  // page data
  *
  */
 class BinaryFormat {
