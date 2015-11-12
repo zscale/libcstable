@@ -12,6 +12,7 @@
 #include <stx/exception.h>
 #include <stx/io/file.h>
 #include <cstable/ColumnWriter.h>
+#include <cstable/LockManager.h>
 
 namespace stx {
 namespace cstable {
@@ -67,12 +68,28 @@ public:
   /**
    * Create a new cstable. This method implicitly requires a write lock on the
    * new table and starts a transaction
+   *
+   * @param filename path to the file to be created
+   * @param columns column infos for all columns in this table
+   * @param lockref optional lockref pointer for safe concurrent write access
    */
   static RefPtr<CSTableWriter> createFile(
       const String& filename,
-      const Vector<ColumnConfig>& columns);
+      const Vector<ColumnConfig>& columns,
+      Option<RefPtr<LockRef>> lockref = None<RefPtr<LockRef>>());
 
-  static RefPtr<CSTableWriter> reopenFile(const String& filename);
+  /**
+   * Reopen an existing cstable. This method implicitly requires a write lock
+   * on the new table and starts a transaction. All writes to this table will
+   * be appended to the existing data
+   *
+   * @param filename path to the file to be created
+   * @param columns column infos for all columns in this table
+   * @param lockref optional lockref pointer for safe concurrent write access
+   */
+  static RefPtr<CSTableWriter> reopenFile(
+      const String& filename,
+      Option<RefPtr<LockRef>> lockref = None<RefPtr<LockRef>>());
 
   /**
    * Commit the current implicit transaction. Note that after commiting you

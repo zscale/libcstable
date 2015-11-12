@@ -16,13 +16,16 @@ namespace v2 {
 
 RefPtr<CSTableWriter> CSTableWriter::createFile(
     const String& filename,
-    const Vector<ColumnConfig>& columns) {
+    const Vector<ColumnConfig>& columns,
+    Option<RefPtr<LockRef>> lockref /* = None<RefPtr<LockRef>>() */) {
   return new CSTableWriter(
       File::openFile(filename, File::O_WRITE | File::O_CREATE),
       columns);
 }
 
-RefPtr<CSTableWriter> CSTableWriter::reopenFile(const String& filename) {
+RefPtr<CSTableWriter> CSTableWriter::reopenFile(
+    const String& filename,
+    Option<RefPtr<LockRef>> lockref /* = None<RefPtr<LockRef>>() */) {
   RAISE(kNotYetImplementedError);
 }
 
