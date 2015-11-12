@@ -19,6 +19,8 @@ find_package(Threads)
 
 include(deps/libstx/src/stx/cmake/CFlags.cmake)
 
+SET(STX_BUILD_UNIT_TESTS OFF CACHE BOOL "build stx unit tests")
+
 if(NOT HAVE_STX)
   add_subdirectory(deps/libstx)
   include_directories(${STX_INCLUDE})
