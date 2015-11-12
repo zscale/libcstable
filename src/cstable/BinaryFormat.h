@@ -117,6 +117,10 @@ enum class ColumnType : uint8_t {
   STRING_PLAIN = 100,
 };
 
+inline uint64_t padToNextSector(uint64_t val) {
+  return (((val) + (kSectorSize - 1)) / kSectorSize) * kSectorSize;
+}
+
 }
 }
 

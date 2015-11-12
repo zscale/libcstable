@@ -47,16 +47,14 @@ CSTableWriter::CSTableWriter(
   RCHECK(hdr.size() == meta_block_offset_, "invalid meta block offset");
   os->appendString(String(meta_block_size_ * 2, '\0')); // empty meta blocks
   os->appendString(String(128, '\0')); // 128 bytes reserved
-  file_.pwrite(0, hdr.data(), hdr.size());
 
   // pad header to next 512 byte boundary
-  auto header_size = hdr.size();
-  auto header_size_padded =
-    ((header_size + (kSectorSize - 1)) / kSectorSize) * kSectorSize;
+  auto header_padding = padToNextSector(hdr.size()) - hdr.size();
+  os->appendString(String(header_padding, '\0'));
 
-  os->appendString(String(header_size_padded - header_size, '\0'));
-
-  page_mgr_ = mkRef(new PageManager(header_size_padded));
+  // flush header to disk & init pagemanager
+  file_.pwrite(0, hdr.data(), hdr.size());
+  page_mgr_ = mkRef(new PageManager(hdr.size()));
 }
 
 void CSTableWriter::commit() {

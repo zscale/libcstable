@@ -167,10 +167,7 @@ TEST_CASE(CSTableTest, TestV2CSTableContainer, [] () {
   auto tbl_writer = cstable::CSTableWriter::createFile(filename, columns);
   tbl_writer->commit();
 
-  //cstable::v1::CSTableReader tbl_reader(filename);
-  //EXPECT_EQ(tbl_reader.numRecords(), num_records);
-  //EXPECT_EQ(tbl_reader.hasColumn("key1"), true);
-  //EXPECT_EQ(tbl_reader.hasColumn("key2"), true);
+  EXPECT_EQ(FileUtil::size(filename), 512);
 });
 
 
