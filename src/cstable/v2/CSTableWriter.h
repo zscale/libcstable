@@ -48,9 +48,12 @@ public:
 
 protected:
 
-  CSTableWriter(File&& file);
+  CSTableWriter(
+      File&& file,
+      const Vector<ColumnConfig>& columns);
 
   File file_;
+  Vector<ColumnConfig> columns_;
 };
 
 } // namespace v2

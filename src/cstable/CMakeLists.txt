@@ -28,7 +28,8 @@ add_library(cstable STATIC
     v1/UInt32ColumnReader.cc
     v1/UInt32ColumnWriter.cc
     v1/UInt64ColumnReader.cc
-    v1/UInt64ColumnWriter.cc)
+    v1/UInt64ColumnWriter.cc
+    v2/CSTableWriter.cc)
 
 add_executable(test-cstable-recordmaterializer RecordMaterializer_test.cc)
 target_link_libraries(test-cstable-recordmaterializer cstable stx-protobuf stx-json stx-base)
