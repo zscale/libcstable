@@ -37,35 +37,40 @@ CSTableWriter::CSTableWriter(
     meta_block_size_(52),
     current_txid_(0),
     num_rows_(0) {
-  writeHeader();
-}
+  Buffer hdr;
+  hdr.reserve(8192);
 
-void CSTableWriter::commit() {
-  file_.fsync();
-  writeMetaBlock(++current_txid_);
-  file_.fsync();
-}
-
-void CSTableWriter::writeHeader() {
-  Buffer buf;
-  buf.reserve(8192);
-
-  auto os = BufferOutputStream::fromBuffer(&buf);
+  auto os = BufferOutputStream::fromBuffer(&hdr);
   os->write(kMagicBytes, sizeof(kMagicBytes));
   os->appendUInt16(2); // version
   os->appendUInt64(0); // flags
-  RCHECK(buf.size() == meta_block_offset_, "invalid meta block offset");
+  RCHECK(hdr.size() == meta_block_offset_, "invalid meta block offset");
   os->appendString(String(meta_block_size_ * 2, '\0')); // empty meta blocks
   os->appendString(String(128, '\0')); // 128 bytes reserved
-  file_.pwrite(0, buf.data(), buf.size());
+  file_.pwrite(0, hdr.data(), hdr.size());
+
+  // pad header to next 512 boundary
+  auto header_size = hdr.size();
+  auto header_size_padded =
+    ((header_size + (kSectorSize - 1)) / kSectorSize) * kSectorSize;
+
+  os->appendString(String(header_size_padded - header_size, '\0'));
+
+  page_mgr_ = mkRef(new PageManager(header_size_padded));
 }
 
-void CSTableWriter::writeMetaBlock(uint64_t transaction_id) {
+void CSTableWriter::commit() {
+  auto txid = current_txid_ + 1;
+
+  // write new index and fsync all changes
+  file_.fsync();
+
+  // build new meta block
   Buffer buf;
   buf.reserve(meta_block_size_);
 
   auto os = BufferOutputStream::fromBuffer(&buf);
-  os->appendUInt64(transaction_id); // transaction id
+  os->appendUInt64(txid); // transaction id
   os->appendUInt64(0); // number of rows
   os->appendUInt64(0); // head index page offset as multiple of 512 bytes
   os->appendUInt64(0); // file size in bytes
@@ -75,9 +80,13 @@ void CSTableWriter::writeMetaBlock(uint64_t transaction_id) {
 
   RCHECK(buf.size() == meta_block_size_, "invalid meta block size");
 
-  auto mb_index = transaction_id % 2;
+  // write to metablock slot
+  auto mb_index = txid % 2;
   auto mb_offset = meta_block_offset_ + meta_block_size_ * mb_index;
   file_.pwrite(mb_offset, buf.data(), buf.size());
+
+  // fsync one last time
+  file_.fsync();
 }
 
 } // namespace cstable

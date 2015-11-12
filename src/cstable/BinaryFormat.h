@@ -105,6 +105,8 @@ public:
 
 static const char kMagicBytes[4] = {0x23, 0x17, 0x23, 0x17};
 
+static const size_t kSectorSize = 512;
+
 enum class ColumnType : uint8_t {
   BOOLEAN = 1,
   UINT32_BITPACKED = 10,

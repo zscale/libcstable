@@ -13,6 +13,7 @@
 #include <stx/io/file.h>
 #include <cstable/ColumnWriter.h>
 #include <cstable/LockManager.h>
+#include <cstable/PageManager.h>
 
 namespace stx {
 namespace cstable {
@@ -124,16 +125,13 @@ protected:
       File&& file,
       const Vector<ColumnConfig>& columns);
 
-  void writeHeader();
-
-  void writeMetaBlock(uint64_t transaction_id);
-
   File file_;
   Vector<ColumnConfig> columns_;
   size_t meta_block_offset_;
   size_t meta_block_size_;
   uint64_t current_txid_;
   uint64_t num_rows_;
+  RefPtr<PageManager> page_mgr_;
 };
 
 } // namespace cstable
