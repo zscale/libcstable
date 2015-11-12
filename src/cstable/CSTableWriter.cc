@@ -17,11 +17,9 @@ RefPtr<CSTableWriter> CSTableWriter::createFile(
     const String& filename,
     const Vector<ColumnConfig>& columns,
     Option<RefPtr<LockRef>> lockref /* = None<RefPtr<LockRef>>() */) {
-  auto writer = mkRef(new CSTableWriter(
+  return new CSTableWriter(
       File::openFile(filename, File::O_WRITE | File::O_CREATE),
-      columns));
-
-  writer->writeHeader();
+      columns);
 }
 
 RefPtr<CSTableWriter> CSTableWriter::reopenFile(
@@ -37,11 +35,14 @@ CSTableWriter::CSTableWriter(
     columns_(columns),
     meta_block_offset_(14),
     meta_block_size_(52),
-    current_txid_(0) {}
+    current_txid_(0),
+    num_rows_(0) {
+  writeHeader();
+}
 
 void CSTableWriter::commit() {
   file_.fsync();
-  writeMetaBlock(current_txid_++);
+  writeMetaBlock(++current_txid_);
   file_.fsync();
 }
 
@@ -56,6 +57,7 @@ void CSTableWriter::writeHeader() {
   RCHECK(buf.size() == meta_block_offset_, "invalid meta block offset");
   os->appendString(String(meta_block_size_ * 2, '\0')); // empty meta blocks
   os->appendString(String(128, '\0')); // 128 bytes reserved
+  file_.pwrite(0, buf.data(), buf.size());
 }
 
 void CSTableWriter::writeMetaBlock(uint64_t transaction_id) {

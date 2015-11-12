@@ -133,6 +133,7 @@ protected:
   size_t meta_block_offset_;
   size_t meta_block_size_;
   uint64_t current_txid_;
+  uint64_t num_rows_;
 };
 
 } // namespace cstable
