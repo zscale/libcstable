@@ -20,6 +20,7 @@
 #include <cstable/v1/StringColumnWriter.h>
 #include <cstable/v1/UInt32ColumnWriter.h>
 #include <cstable/v1/UInt64ColumnWriter.h>
+#include <cstable/v2/CSTableWriter.h>
 
 
 using namespace stx;
@@ -156,4 +157,20 @@ TEST_CASE(CSTableTest, TestV1CSTableColumnWriterReader, [] () {
     EXPECT_EQ(*static_cast<uint64_t*>(data), static_cast<uint64_t>(i));
   }
 });
+
+TEST_CASE(CSTableTest, TestV2CSTableContainer, [] () {
+  String filename = "/tmp/__fnord__cstabletest2.cstable";
+  FileUtil::rm(filename);
+
+  Vector<cstable::v2::ColumnConfig> columns;
+
+  auto tbl_writer = cstable::v2::CSTableWriter::createFile(filename, columns);
+  tbl_writer->commit();
+
+  //cstable::v1::CSTableReader tbl_reader(filename);
+  //EXPECT_EQ(tbl_reader.numRecords(), num_records);
+  //EXPECT_EQ(tbl_reader.hasColumn("key1"), true);
+  //EXPECT_EQ(tbl_reader.hasColumn("key2"), true);
+});
+
 
