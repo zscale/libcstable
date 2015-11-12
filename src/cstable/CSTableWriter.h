@@ -100,11 +100,15 @@ public:
   /**
    * Retrieve the writer for a specific column by name.
    *
-   * While the returned column writer is refcounted, so lifetime extends until
-   * the returned RefPtr is destroyed, it doesn't make any sense to append data
-   * to a column writer after commit() has been called on the CSTableWriter (as
-   * you will not be able to commit() the data to disk again using the same
-   * CSTableWriter instance)
+   * Inserting data into a column writer may immediately buffer/write the
+   * data to disk (and may block on IO) but the changes will never become
+   * visible to readers until commit() is called on the CSTableWriter
+   *
+   * Not that while the lifetime of the returned ColumnWriter is technically
+   * not limited, it doesn't make any sense to insert data into a column writer
+   * after commit() has been called on the CSTableWriter (as you will not be
+   * able to commit() the data to disk again using the same CSTableWriter
+   * instance)
    */
   RefPtr<ColumnWriter> getColumnByName(const String& column_name) const;
 
