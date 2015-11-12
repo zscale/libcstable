@@ -49,7 +49,7 @@ CSTableWriter::CSTableWriter(
   os->appendString(String(128, '\0')); // 128 bytes reserved
   file_.pwrite(0, hdr.data(), hdr.size());
 
-  // pad header to next 512 boundary
+  // pad header to next 512 byte boundary
   auto header_size = hdr.size();
   auto header_size_padded =
     ((header_size + (kSectorSize - 1)) / kSectorSize) * kSectorSize;
@@ -71,9 +71,9 @@ void CSTableWriter::commit() {
 
   auto os = BufferOutputStream::fromBuffer(&buf);
   os->appendUInt64(txid); // transaction id
-  os->appendUInt64(0); // number of rows
+  os->appendUInt64(num_rows_); // number of rows
   os->appendUInt64(0); // head index page offset as multiple of 512 bytes
-  os->appendUInt64(0); // file size in bytes
+  os->appendUInt64(page_mgr_->getOffset()); // file size in bytes
 
   auto hash = SHA1::compute(buf.data(), buf.size());
   os->write((char*) hash.data(), hash.size()); // sha1 hash

@@ -8,14 +8,28 @@
  * <http://www.gnu.org/licenses/>.
  */
 #include <cstable/PageManager.h>
+#include <cstable/BinaryFormat.h>
 
 namespace stx {
 namespace cstable {
 
 PageManager::PageManager(uint64_t offset) : offset_(offset) {}
 
-//PageRef PageManager::allocPage(uint64_t size);
-//uint64_t PageManager::getOffset() const;
+PageRef PageManager::allocPage(uint64_t size) {
+  auto size_padded = ((size + (kSectorSize - 1)) / kSectorSize) * kSectorSize;
+
+  PageRef page;
+  page.offset = offset_;
+  page.size = size_padded;
+
+  offset_ += size_padded;
+
+  return page;
+}
+
+uint64_t PageManager::getOffset() const {
+  return offset_;
+}
 
 } // namespace cstable
 } // namespace stx
