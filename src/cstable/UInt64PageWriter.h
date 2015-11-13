@@ -22,8 +22,7 @@ class UInt64PageWriter : public UnsignedIntPageWriter {
 public:
 
   UInt64PageWriter(
-      RefPtr<PageManager> page_mgr,
-      uint32_t max_value = 0xffffffff);
+      RefPtr<PageManager> page_mgr);
 
   void writeValue(uint64_t value) override;
 

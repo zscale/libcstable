@@ -167,7 +167,7 @@ TEST_CASE(CSTableTest, TestV2CSTableContainer, [] () {
     .column_id = 1,
     .column_name = "mycol",
     .storage_type = cstable::ColumnType::UINT32_BITPACKED,
-    .logical_type = msg::FieldType::STRING,
+    .logical_type = msg::FieldType::UINT32,
     .rlevel_max = 0,
     .dlevel_max = 0
   });
@@ -178,4 +178,29 @@ TEST_CASE(CSTableTest, TestV2CSTableContainer, [] () {
   EXPECT_EQ(FileUtil::size(filename), 512);
 });
 
+TEST_CASE(CSTableTest, TestV2UInt64Plain, [] () {
+  String filename = "/tmp/__fnord__cstabletest2.cstable";
+  FileUtil::rm(filename);
+
+  Vector<cstable::ColumnConfig> columns;
+  columns.emplace_back(cstable::ColumnConfig {
+    .column_id = 1,
+    .column_name = "mycol",
+    .storage_type = cstable::ColumnType::UINT64_PLAIN,
+    .logical_type = msg::FieldType::UINT64,
+    .rlevel_max = 0,
+    .dlevel_max = 0
+  });
+
+  auto tbl_writer = cstable::CSTableWriter::createFile(filename, columns);
+  auto mycol = tbl_writer->getColumnByName("mycol");
+
+  for (size_t i = 1; i < 10000; ++i) {
+    mycol->writeUnsignedInt(0, 0, 23 * i);
+    mycol->writeUnsignedInt(0, 0, 42 * i);
+    mycol->writeUnsignedInt(0, 0, 17 * i);
+  }
+
+  tbl_writer->commit();
+});
 

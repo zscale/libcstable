@@ -52,7 +52,7 @@ public:
       RefPtr<Buffer> rlevel_meta_buf,
       RefPtr<Buffer> dlevel_meta_buf);
 
-  virtual void writeNull(uint64_t rlvl, uint64_t dlvl);
+  void writeNull(uint64_t rlvl, uint64_t dlvl);
 
   virtual void writeUnsignedInt(
       uint64_t rlvl,
@@ -69,7 +69,7 @@ public:
       uint64_t dlvl,
       double value) = 0;
 
-  virtual void writeString(
+  void writeString(
       uint64_t rlvl,
       uint64_t dlvl,
       const String& value);

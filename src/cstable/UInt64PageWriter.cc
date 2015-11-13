@@ -12,6 +12,13 @@
 namespace stx {
 namespace cstable {
 
+UInt64PageWriter::UInt64PageWriter(
+    RefPtr<PageManager> page_mgr) {}
+
+void UInt64PageWriter::writeValue(uint64_t value) {
+
+}
+
 } // namespace cstable
 } // namespace stx
 

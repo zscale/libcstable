@@ -34,8 +34,10 @@ DefaultColumnWriter::DefaultColumnWriter(
     RefPtr<Buffer> dlevel_meta_buf) :
     ColumnWriter(config.rlevel_max, config.dlevel_max),
     config_(config),
-    rlevel_writer_(new UInt64PageWriter(page_mgr, config_.rlevel_max)),
-    dlevel_writer_(new UInt64PageWriter(page_mgr, config_.dlevel_max)) {}
+    //rlevel_writer_(new UInt64PageWriter(page_mgr, config_.rlevel_max)),
+    //dlevel_writer_(new UInt64PageWriter(page_mgr, config_.dlevel_max)) {}
+    rlevel_writer_(new UInt64PageWriter(page_mgr)),
+    dlevel_writer_(new UInt64PageWriter(page_mgr)) {}
 
 void DefaultColumnWriter::addNull(uint64_t rep_level, uint64_t def_level) {
   rlevel_writer_->writeValue(rep_level);

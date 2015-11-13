@@ -42,11 +42,6 @@ public:
   void writeString(
       uint64_t rlvl,
       uint64_t dlvl,
-      const String& value) override;
-
-  void writeString(
-      uint64_t rlvl,
-      uint64_t dlvl,
       const char* data,
       size_t size) override;
 
