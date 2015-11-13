@@ -29,6 +29,8 @@ public:
       uint64_t d_max,
       uint32_t max_value = 0xffffffff);
 
+  void addNull(uint64_t rep_level, uint64_t def_level) override;
+
   void addDatum(
       uint64_t rep_level,
       uint64_t def_level,

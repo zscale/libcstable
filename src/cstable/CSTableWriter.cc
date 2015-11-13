@@ -8,6 +8,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 #include <cstable/CSTableWriter.h>
+#include <cstable/BitPackedIntColumnWriter.h>
 #include <stx/SHA1.h>
 
 namespace stx {
@@ -41,7 +42,25 @@ CSTableWriter::CSTableWriter(
     current_txid_(0),
     num_rows_(0) {
   // create columns
-  for (const auto& col : columns_) {
+  for (size_t i = 0; i < columns_.size(); ++i) {
+    RefPtr<ColumnWriter> writer;
+
+    switch (columns_[i].storage_type) {
+
+      case ColumnType::UINT32_BITPACKED:
+        writer = new BitPackedIntColumnWriter(
+            page_mgr_,
+            column_metadata_[i],
+            column_rlevel_metadata_[i],
+            column_dlevel_metadata_[i],
+            columns_[i].rlevel_max,
+            columns_[i].dlevel_max);
+        break;
+
+    }
+
+    column_writers_by_id_.emplace(columns_[i].column_id, writer);
+    column_writers_by_name_.emplace(columns_[i].column_name, writer);
   }
 
   // build header

@@ -128,6 +128,8 @@ protected:
   Vector<RefPtr<Buffer>> column_metadata_;
   Vector<RefPtr<Buffer>> column_rlevel_metadata_;
   Vector<RefPtr<Buffer>> column_dlevel_metadata_;
+  HashMap<uint32_t, RefPtr<ColumnWriter>> column_writers_by_id_;
+  HashMap<String, RefPtr<ColumnWriter>> column_writers_by_name_;
   size_t meta_block_offset_;
   size_t meta_block_size_;
   uint64_t current_txid_;

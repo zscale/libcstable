@@ -30,7 +30,6 @@ void ColumnConfig::decode(InputStream* is) {
   dlevel_max = is->readVarUInt();
 }
 
-
 } // namespace cstable
 } // namespace stx
 
