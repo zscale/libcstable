@@ -118,6 +118,26 @@ void CSTableWriter::commit() {
   file_.fsync();
 }
 
+RefPtr<DefaultColumnWriter> CSTableWriter::getColumnByName(
+    const String& column_name) const {
+  auto col = column_writers_by_name_.find(column_name);
+  if (col == column_writers_by_name_.end()) {
+    RAISEF(kNotFoundError, "column not found: $0", column_name);
+  }
+
+  return col->second;
+}
+
+RefPtr<DefaultColumnWriter> CSTableWriter::getColumnById(
+    uint32_t column_id) const {
+  auto col = column_writers_by_id_.find(column_id);
+  if (col == column_writers_by_id_.end()) {
+    RAISEF(kNotFoundError, "column not found: $0", column_id);
+  }
+
+  return col->second;
+}
+
 } // namespace cstable
 } // namespace stx
 
