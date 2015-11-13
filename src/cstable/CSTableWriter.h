@@ -109,13 +109,13 @@ public:
    * able to commit() the data to disk again using the same CSTableWriter
    * instance)
    */
-  RefPtr<ColumnWriter> getColumnByName(const String& column_name) const;
+  RefPtr<DefaultColumnWriter> getColumnByName(const String& column_name) const;
 
   /**
    * The same as getColumnnByName, except that the column is retrieved by id
    * and not by name
    */
-  RefPtr<ColumnWriter> getColumnById(uint32_t column_id) const;
+  RefPtr<DefaultColumnWriter> getColumnById(uint32_t column_id) const;
 
 protected:
 
@@ -128,8 +128,8 @@ protected:
   Vector<RefPtr<Buffer>> column_metadata_;
   Vector<RefPtr<Buffer>> column_rlevel_metadata_;
   Vector<RefPtr<Buffer>> column_dlevel_metadata_;
-  HashMap<uint32_t, RefPtr<ColumnWriter>> column_writers_by_id_;
-  HashMap<String, RefPtr<ColumnWriter>> column_writers_by_name_;
+  HashMap<uint32_t, RefPtr<DefaultColumnWriter>> column_writers_by_id_;
+  HashMap<String, RefPtr<DefaultColumnWriter>> column_writers_by_name_;
   size_t meta_block_offset_;
   size_t meta_block_size_;
   uint64_t current_txid_;

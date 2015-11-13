@@ -8,6 +8,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 #include <cstable/CSTableWriter.h>
+#include <cstable/UnsignedIntColumnWriter.h>
 #include <stx/SHA1.h>
 
 namespace stx {
@@ -42,13 +43,21 @@ CSTableWriter::CSTableWriter(
     num_rows_(0) {
   // create columns
   for (size_t i = 0; i < columns_.size(); ++i) {
-    auto writer = mkRef<ColumnWriter>(
-        new DefaultColumnWriter(
+    RefPtr<DefaultColumnWriter> writer;
+
+    switch (columns_[i].logical_type) {
+
+      case msg::FieldType::UINT64:
+      case msg::FieldType::UINT32:
+        writer = new UnsignedIntColumnWriter(
             columns_[i],
             page_mgr_,
             column_metadata_[i],
             column_rlevel_metadata_[i],
-            column_dlevel_metadata_[i]));
+            column_dlevel_metadata_[i]);
+        break;
+
+    }
 
     column_writers_by_id_.emplace(columns_[i].column_id, writer);
     column_writers_by_name_.emplace(columns_[i].column_name, writer);

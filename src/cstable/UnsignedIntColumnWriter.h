@@ -24,7 +24,31 @@ public:
       RefPtr<Buffer> rlevel_meta_buf,
       RefPtr<Buffer> dlevel_meta_buf);
 
-  void writeValue(uint64_t rep_level, uint64_t def_level, uint32_t value);
+  void writeUnsignedInt(
+      uint64_t rlvl,
+      uint64_t dlvl,
+      uint64_t value) override;
+
+  void writeSignedInt(
+      uint64_t rlvl,
+      uint64_t dlvl,
+      int64_t value) override;
+
+  void writeDouble(
+      uint64_t rlvl,
+      uint64_t dlvl,
+      double value) override;
+
+  void writeString(
+      uint64_t rlvl,
+      uint64_t dlvl,
+      const String& value) override;
+
+  void writeString(
+      uint64_t rlvl,
+      uint64_t dlvl,
+      const char* data,
+      size_t size) override;
 
 protected:
   ScopedPtr<UnsignedIntPageWriter> data_writer_;
