@@ -8,6 +8,8 @@
 
 # cstable
 add_library(cstable STATIC
+    BitPackedIntColumnWriter.cc
+    BitPackedIntPageWriter.cc
     ColumnWriter.cc
     CSTableReader.cc
     CSTableWriter.cc

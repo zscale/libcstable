@@ -12,6 +12,7 @@
 #include <stx/util/binarymessagewriter.h>
 #include <stx/util/BitPackEncoder.h>
 #include <cstable/BinaryFormat.h>
+#include <cstable/BitPackedIntPageWriter.h>
 #include <cstable/v1/ColumnWriter.h>
 
 namespace stx {
@@ -50,6 +51,9 @@ public:
 
 protected:
   uint32_t max_value_;
+  BitPackedIntPageWriter data_writer_;
+  BitPackedIntPageWriter rlevel_writer_;
+  BitPackedIntPageWriter dlevel_writer_;
 };
 
 } // namespace cstable

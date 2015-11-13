@@ -7,28 +7,10 @@
  * copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-#pragma once
-#include <stx/stdtypes.h>
-#include <stx/util/binarymessagewriter.h>
-#include <stx/util/BitPackEncoder.h>
-#include <cstable/BinaryFormat.h>
-#include <cstable/PageManager.h>
+#include <cstable/BitPackedIntPageWriter.h>
 
 namespace stx {
 namespace cstable {
-
-class BitPackedIntPageWriter {
-public:
-
-  BitPackedIntPageWriter(
-      RefPtr<PageManager> page_mgr,
-      uint32_t max_value = 0xffffffff);
-
-  void addDatum(uint32_t value);
-
-protected:
-  uint32_t max_value_;
-};
 
 } // namespace cstable
 } // namespace stx
