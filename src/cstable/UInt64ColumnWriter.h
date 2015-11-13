@@ -9,48 +9,26 @@
  */
 #pragma once
 #include <stx/stdtypes.h>
-#include <stx/exception.h>
-#include <stx/autoref.h>
-#include <stx/protobuf/MessageObject.h>
+#include <stx/util/binarymessagewriter.h>
+#include <stx/util/BitPackEncoder.h>
 #include <cstable/BinaryFormat.h>
-#include <cstable/ColumnConfig.h>
-#include <cstable/PageManager.h>
-#include <cstable/BitPackedIntPageWriter.h>
+#include <cstable/UInt64PageWriter.h>
+#include <cstable/v1/ColumnWriter.h>
 
 namespace stx {
 namespace cstable {
 
-class ColumnWriter : public RefCounted {
-public:
-  ColumnWriter(size_t r_max, size_t d_max);
-
-  virtual void addNull(uint64_t rep_level, uint64_t def_level) = 0;
-  virtual void addDatum(
-      uint64_t rep_level,
-      uint64_t def_level,
-      const void* data,
-      size_t size) = 0;
-
-  virtual ColumnType type() const = 0;
-  virtual msg::FieldType fieldType() const = 0;
-
-  size_t maxRepetitionLevel() const;
-  size_t maxDefinitionLevel() const;
-
-protected:
-  size_t r_max_;
-  size_t d_max_;
-};
-
-class DefaultColumnWriter : public ColumnWriter {
+class UInt64ColumnWriter : public ColumnWriter {
 public:
 
-  DefaultColumnWriter(
-      ColumnConfig config,
+  UInt64ColumnWriter(
       RefPtr<PageManager> page_mgr,
       RefPtr<Buffer> meta_buf,
       RefPtr<Buffer> rlevel_meta_buf,
-      RefPtr<Buffer> dlevel_meta_buf);
+      RefPtr<Buffer> dlevel_meta_buf,
+      uint64_t r_max,
+      uint64_t d_max,
+      uint32_t max_value = 0xffffffff);
 
   void addNull(uint64_t rep_level, uint64_t def_level) override;
 
@@ -59,6 +37,9 @@ public:
       uint64_t def_level,
       const void* data,
       size_t size) override;
+
+  void addDatum(uint64_t rep_level, uint64_t def_level, uint32_t value);
+  void commit();
 
   ColumnType type() const override {
     return ColumnType::UINT32_BITPACKED;
@@ -69,10 +50,12 @@ public:
   }
 
 protected:
-  ColumnConfig config_;
-  BitPackedIntPageWriter rlevel_writer_;
-  BitPackedIntPageWriter dlevel_writer_;
+  uint32_t max_value_;
+  UInt64PageWriter data_writer_;
+  UInt64PageWriter rlevel_writer_;
+  UInt64PageWriter dlevel_writer_;
 };
+
 } // namespace cstable
 } // namespace stx
 

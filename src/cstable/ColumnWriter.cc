@@ -26,6 +26,32 @@ size_t ColumnWriter::maxDefinitionLevel() const {
   return d_max_;
 }
 
+DefaultColumnWriter::DefaultColumnWriter(
+    ColumnConfig config,
+    RefPtr<PageManager> page_mgr,
+    RefPtr<Buffer> meta_buf,
+    RefPtr<Buffer> rlevel_meta_buf,
+    RefPtr<Buffer> dlevel_meta_buf) :
+    ColumnWriter(config_.rlevel_max, config_.dlevel_max),
+    config_(config),
+    rlevel_writer_(page_mgr, config_.rlevel_max),
+    dlevel_writer_(page_mgr, config_.dlevel_max) {}
+
+void DefaultColumnWriter::addNull(uint64_t rep_level, uint64_t def_level) {
+  rlevel_writer_.addDatum(rep_level);
+  dlevel_writer_.addDatum(def_level);
+}
+
+void DefaultColumnWriter::addDatum(
+    uint64_t rep_level,
+    uint64_t def_level,
+    const void* data,
+    size_t size) {
+  rlevel_writer_.addDatum(rep_level);
+  dlevel_writer_.addDatum(def_level);
+  //data_writer_.addDatum(data, size);
+}
+
 } // namespace cstable
 } // namespace stx
 

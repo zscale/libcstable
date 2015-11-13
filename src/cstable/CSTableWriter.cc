@@ -43,21 +43,13 @@ CSTableWriter::CSTableWriter(
     num_rows_(0) {
   // create columns
   for (size_t i = 0; i < columns_.size(); ++i) {
-    RefPtr<ColumnWriter> writer;
-
-    switch (columns_[i].storage_type) {
-
-      case ColumnType::UINT32_BITPACKED:
-        writer = new BitPackedIntColumnWriter(
+    auto writer = mkRef<ColumnWriter>(
+        new DefaultColumnWriter(
+            columns_[i],
             page_mgr_,
             column_metadata_[i],
             column_rlevel_metadata_[i],
-            column_dlevel_metadata_[i],
-            columns_[i].rlevel_max,
-            columns_[i].dlevel_max);
-        break;
-
-    }
+            column_dlevel_metadata_[i]));
 
     column_writers_by_id_.emplace(columns_[i].column_id, writer);
     column_writers_by_name_.emplace(columns_[i].column_name, writer);
