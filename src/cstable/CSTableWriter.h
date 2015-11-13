@@ -14,12 +14,10 @@
 #include <cstable/ColumnWriter.h>
 #include <cstable/LockManager.h>
 #include <cstable/PageManager.h>
+#include <cstable/ColumnConfig.h>
 
 namespace stx {
 namespace cstable {
-
-struct ColumnConfig {
-};
 
 /**
  * A cstable writer allows you to create or append to a cstable file. A cstable
@@ -127,6 +125,9 @@ protected:
 
   File file_;
   Vector<ColumnConfig> columns_;
+  Vector<RefPtr<Buffer>> column_metadata_;
+  Vector<RefPtr<Buffer>> column_rlevel_metadata_;
+  Vector<RefPtr<Buffer>> column_dlevel_metadata_;
   size_t meta_block_offset_;
   size_t meta_block_size_;
   uint64_t current_txid_;

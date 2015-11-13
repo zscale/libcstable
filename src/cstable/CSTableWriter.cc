@@ -33,10 +33,18 @@ CSTableWriter::CSTableWriter(
     const Vector<ColumnConfig>& columns) :
     file_(std::move(file)),
     columns_(columns),
+    column_metadata_(columns.size()),
+    column_rlevel_metadata_(columns.size()),
+    column_dlevel_metadata_(columns.size()),
     meta_block_offset_(14),
     meta_block_size_(52),
     current_txid_(0),
     num_rows_(0) {
+  // create columns
+  for (const auto& col : columns_) {
+  }
+
+  // build header
   Buffer hdr;
   hdr.reserve(8192);
 

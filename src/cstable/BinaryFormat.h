@@ -85,13 +85,8 @@ namespace cstable {
  *   <index_entry> :=
  *      <uint8_t>                // entry type (0x1=data, 0x2=repetition level, 0x3=definition level)
  *      <lenenc_int>             // field id
- *      <lenenc_int>             // number of reference pages
- *      <index_page_ref>*        // page references
- *
- *   <index_page_ref> :=
- *      <lenenc_int>             // data page offset as multiple of 512
- *      <lenenc_int>             // data page size as multiple of 512
- *      [ <char>* ]              // optional metadata (depending on column storage type)
+ *      <lenenc_int>             // column index data size
+ *      <char>*                  // column index data
  *
  *  <data_page>       :=
  *      <char>*                  // page data

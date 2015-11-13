@@ -163,6 +163,14 @@ TEST_CASE(CSTableTest, TestV2CSTableContainer, [] () {
   FileUtil::rm(filename);
 
   Vector<cstable::ColumnConfig> columns;
+  columns.emplace_back(cstable::ColumnConfig {
+    .column_id = 1,
+    .column_name = "mycol",
+    .storage_type = cstable::ColumnType::UINT32_BITPACKED,
+    .logical_type = msg::FieldType::STRING,
+    .rlevel_max = 0,
+    .dlevel_max = 0
+  });
 
   auto tbl_writer = cstable::CSTableWriter::createFile(filename, columns);
   tbl_writer->commit();
