@@ -55,6 +55,10 @@ CSTableWriter::CSTableWriter(
   RCHECK(hdr.size() == meta_block_offset_, "invalid meta block offset");
   os->appendString(String(meta_block_size_ * 2, '\0')); // empty meta blocks
   os->appendString(String(128, '\0')); // 128 bytes reserved
+  os->appendUInt32(columns_.size());
+  for (const auto& col : columns_) {
+    col.encode(os.get());
+  }
 
   // pad header to next 512 byte boundary
   auto header_padding = padToNextSector(hdr.size()) - hdr.size();

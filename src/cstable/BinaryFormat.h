@@ -72,8 +72,7 @@ namespace cstable {
  *       <lenenc_int>            // column logical type
  *       <lenenc_int>            // column storage type
  *       <lenenc_int>            // column id
- *       <lenenc_int>            // length of the column name
- *       <char>*                 // column name
+ *       <lenenc_string>         // column name
  *       <lenenc_int>            // max repetition level
  *       <lenenc_int>            // max definition level
  *

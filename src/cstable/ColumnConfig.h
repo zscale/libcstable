@@ -11,6 +11,8 @@
 #include <stx/stdtypes.h>
 #include <stx/exception.h>
 #include <stx/io/file.h>
+#include <stx/io/inputstream.h>
+#include <stx/io/outputstream.h>
 #include <stx/protobuf/MessageObject.h>
 #include <cstable/BinaryFormat.h>
 
@@ -24,6 +26,10 @@ struct ColumnConfig {
   msg::FieldType logical_type;
   size_t rlevel_max;
   size_t dlevel_max;
+
+  void encode(OutputStream* os) const;
+  void decode(InputStream* is);
+
 };
 
 } // namespace cstable
