@@ -9,34 +9,25 @@
  */
 #pragma once
 #include <stx/stdtypes.h>
-#include <stx/autoref.h>
+#include <cstable/ColumnWriter.h>
 
 namespace stx {
 namespace cstable {
 
-class PageWriter {
+class UnsignedIntColumnWriter : public DefaultColumnWriter {
 public:
-};
 
-class UnsignedIntPageWriter : public PageWriter {
-public:
-  virtual void writeValue(uint64_t value) = 0;
-};
+  UnsignedIntColumnWriter(
+      ColumnConfig config,
+      RefPtr<PageManager> page_mgr,
+      RefPtr<Buffer> meta_buf,
+      RefPtr<Buffer> rlevel_meta_buf,
+      RefPtr<Buffer> dlevel_meta_buf);
 
-class SignedIntPageWriter : public PageWriter {
-public:
-  virtual void writeValue(int64_t value) = 0;
-};
+  void writeValue(uint64_t rep_level, uint64_t def_level, uint32_t value);
 
-class DoublePageWriter : public PageWriter {
-public:
-  virtual void writeValue(double value) = 0;
-};
-
-class StringPageWriter : public PageWriter {
-public:
-  void writeValue(const String& value);
-  virtual void writeValue(const char* data, size_t size) = 0;
+protected:
+  ScopedPtr<UnsignedIntPageWriter> data_writer_;
 };
 
 } // namespace cstable

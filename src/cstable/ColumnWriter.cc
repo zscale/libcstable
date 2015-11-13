@@ -32,14 +32,14 @@ DefaultColumnWriter::DefaultColumnWriter(
     RefPtr<Buffer> meta_buf,
     RefPtr<Buffer> rlevel_meta_buf,
     RefPtr<Buffer> dlevel_meta_buf) :
-    ColumnWriter(config_.rlevel_max, config_.dlevel_max),
+    ColumnWriter(config.rlevel_max, config.dlevel_max),
     config_(config),
-    rlevel_writer_(page_mgr, config_.rlevel_max),
-    dlevel_writer_(page_mgr, config_.dlevel_max) {}
+    rlevel_writer_(new UInt64PageWriter(page_mgr, config_.rlevel_max)),
+    dlevel_writer_(new UInt64PageWriter(page_mgr, config_.dlevel_max)) {}
 
 void DefaultColumnWriter::addNull(uint64_t rep_level, uint64_t def_level) {
-  rlevel_writer_.addDatum(rep_level);
-  dlevel_writer_.addDatum(def_level);
+  rlevel_writer_->writeValue(rep_level);
+  dlevel_writer_->writeValue(def_level);
 }
 
 void DefaultColumnWriter::addDatum(
@@ -47,9 +47,7 @@ void DefaultColumnWriter::addDatum(
     uint64_t def_level,
     const void* data,
     size_t size) {
-  rlevel_writer_.addDatum(rep_level);
-  dlevel_writer_.addDatum(def_level);
-  //data_writer_.addDatum(data, size);
+  RAISE(kNotYetImplementedError);
 }
 
 } // namespace cstable

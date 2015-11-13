@@ -9,34 +9,24 @@
  */
 #pragma once
 #include <stx/stdtypes.h>
-#include <stx/autoref.h>
+#include <stx/util/binarymessagewriter.h>
+#include <stx/util/BitPackEncoder.h>
+#include <cstable/BinaryFormat.h>
+#include <cstable/PageManager.h>
+#include <cstable/PageWriter.h>
 
 namespace stx {
 namespace cstable {
 
-class PageWriter {
+class UInt64PageWriter : public UnsignedIntPageWriter {
 public:
-};
 
-class UnsignedIntPageWriter : public PageWriter {
-public:
-  virtual void writeValue(uint64_t value) = 0;
-};
+  UInt64PageWriter(
+      RefPtr<PageManager> page_mgr,
+      uint32_t max_value = 0xffffffff);
 
-class SignedIntPageWriter : public PageWriter {
-public:
-  virtual void writeValue(int64_t value) = 0;
-};
+  void writeValue(uint64_t value) override;
 
-class DoublePageWriter : public PageWriter {
-public:
-  virtual void writeValue(double value) = 0;
-};
-
-class StringPageWriter : public PageWriter {
-public:
-  void writeValue(const String& value);
-  virtual void writeValue(const char* data, size_t size) = 0;
 };
 
 } // namespace cstable

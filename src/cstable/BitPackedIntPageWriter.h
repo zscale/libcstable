@@ -13,18 +13,20 @@
 #include <stx/util/BitPackEncoder.h>
 #include <cstable/BinaryFormat.h>
 #include <cstable/PageManager.h>
+#include <cstable/PageWriter.h>
 
 namespace stx {
 namespace cstable {
 
-class BitPackedIntPageWriter {
+class BitPackedIntPageWriter : public UnsignedIntPageWriter {
 public:
 
   BitPackedIntPageWriter(
       RefPtr<PageManager> page_mgr,
       uint32_t max_value = 0xffffffff);
 
-  void addDatum(uint32_t value);
+  void writeValue(uint64_t value) override;
+  //void addValue(const void* data, size_t size) override;
 
 protected:
   uint32_t max_value_;

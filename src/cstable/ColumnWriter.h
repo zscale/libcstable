@@ -15,7 +15,7 @@
 #include <cstable/BinaryFormat.h>
 #include <cstable/ColumnConfig.h>
 #include <cstable/PageManager.h>
-#include <cstable/BitPackedIntPageWriter.h>
+#include <cstable/UInt64PageWriter.h>
 
 namespace stx {
 namespace cstable {
@@ -70,8 +70,8 @@ public:
 
 protected:
   ColumnConfig config_;
-  BitPackedIntPageWriter rlevel_writer_;
-  BitPackedIntPageWriter dlevel_writer_;
+  ScopedPtr<UnsignedIntPageWriter> rlevel_writer_;
+  ScopedPtr<UnsignedIntPageWriter> dlevel_writer_;
 };
 } // namespace cstable
 } // namespace stx

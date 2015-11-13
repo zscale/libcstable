@@ -8,7 +8,6 @@
  * <http://www.gnu.org/licenses/>.
  */
 #include <cstable/CSTableWriter.h>
-#include <cstable/BitPackedIntColumnWriter.h>
 #include <stx/SHA1.h>
 
 namespace stx {
