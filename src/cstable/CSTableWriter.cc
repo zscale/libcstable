@@ -92,8 +92,7 @@ CSTableWriter::CSTableWriter(
 
 void CSTableWriter::commit() {
   // write new index
-  auto idx_head = page_mgr_->allocPage(512);
-  page_idx_->write(idx_head);
+  auto idx_head = page_idx_->write(free_idx_ptr_);
 
   // build new meta block
   MetaBlock mb;
@@ -105,6 +104,8 @@ void CSTableWriter::commit() {
 
   // commit tx to disk
   page_mgr_->writeTransaction(mb);
+  free_idx_ptr_ = cur_idx_ptr_;
+  cur_idx_ptr_ = Some(idx_head);
 }
 
 RefPtr<DefaultColumnWriter> CSTableWriter::getColumnByName(

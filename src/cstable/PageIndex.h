@@ -35,7 +35,7 @@ public:
 
   void addPageWriter(PageIndexKey key, PageWriter* page_writer);
 
-  void write(PageRef head_page);
+  PageRef write(Option<PageRef> head);
 
 protected:
   BinaryFormatVersion version_;

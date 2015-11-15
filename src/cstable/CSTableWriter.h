@@ -148,6 +148,8 @@ protected:
   HashMap<String, RefPtr<DefaultColumnWriter>> column_writers_by_name_;
   uint64_t current_txid_;
   uint64_t num_rows_;
+  Option<PageRef> cur_idx_ptr_;
+  Option<PageRef> free_idx_ptr_;
 };
 
 } // namespace cstable
