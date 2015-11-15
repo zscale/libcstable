@@ -14,6 +14,7 @@
 #include <cstable/ColumnWriter.h>
 #include <cstable/LockManager.h>
 #include <cstable/PageManager.h>
+#include <cstable/PageIndex.h>
 #include <cstable/ColumnConfig.h>
 
 namespace stx {
@@ -64,8 +65,8 @@ class CSTableWriter : public RefCounted {
 public:
 
   /**
-   * Create a new cstable. This method implicitly requires a write lock on the
-   * new table and starts a transaction
+   * Create a new cstable with the newest binary format version. This method
+   * implicitly requires a write lock on the new table and starts a transaction
    *
    * @param filename path to the file to be created
    * @param columns column infos for all columns in this table
@@ -73,6 +74,20 @@ public:
    */
   static RefPtr<CSTableWriter> createFile(
       const String& filename,
+      const Vector<ColumnConfig>& columns,
+      Option<RefPtr<LockRef>> lockref = None<RefPtr<LockRef>>());
+
+  /**
+   * Create a new cstable with a specific binary format version. This method
+   * implicitly requires a write lock on the new table and starts a transaction
+   *
+   * @param filename path to the file to be created
+   * @param columns column infos for all columns in this table
+   * @param lockref optional lockref pointer for safe concurrent write access
+   */
+  static RefPtr<CSTableWriter> createFile(
+      const String& filename,
+      BinaryFormatVersion version,
       const Vector<ColumnConfig>& columns,
       Option<RefPtr<LockRef>> lockref = None<RefPtr<LockRef>>());
 
@@ -120,9 +135,11 @@ public:
 protected:
 
   CSTableWriter(
+      BinaryFormatVersion version_,
       File&& file,
       const Vector<ColumnConfig>& columns);
 
+  BinaryFormatVersion version_;
   Vector<ColumnConfig> columns_;
   Vector<RefPtr<Buffer>> column_metadata_;
   Vector<RefPtr<Buffer>> column_rlevel_metadata_;
@@ -132,6 +149,7 @@ protected:
   uint64_t current_txid_;
   uint64_t num_rows_;
   RefPtr<PageManager> page_mgr_;
+  RefPtr<PageIndex> page_idx_;
 };
 
 } // namespace cstable

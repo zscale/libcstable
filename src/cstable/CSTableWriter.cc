@@ -18,7 +18,20 @@ RefPtr<CSTableWriter> CSTableWriter::createFile(
     const String& filename,
     const Vector<ColumnConfig>& columns,
     Option<RefPtr<LockRef>> lockref /* = None<RefPtr<LockRef>>() */) {
+  createFile(
+      filename,
+      BinaryFormatVersion::v0_2_0,
+      columns,
+      lockref);
+}
+
+RefPtr<CSTableWriter> CSTableWriter::createFile(
+    const String& filename,
+    BinaryFormatVersion version,
+    const Vector<ColumnConfig>& columns,
+    Option<RefPtr<LockRef>> lockref /* = None<RefPtr<LockRef>>() */) {
   return new CSTableWriter(
+      version,
       File::openFile(filename, File::O_WRITE | File::O_CREATE),
       columns);
 }
@@ -30,14 +43,17 @@ RefPtr<CSTableWriter> CSTableWriter::reopenFile(
 }
 
 CSTableWriter::CSTableWriter(
+    BinaryFormatVersion version,
     File&& file,
     const Vector<ColumnConfig>& columns) :
+    version_(version),
     columns_(columns),
     column_metadata_(columns.size()),
     column_rlevel_metadata_(columns.size()),
     column_dlevel_metadata_(columns.size()),
     current_txid_(0),
-    num_rows_(0) {
+    num_rows_(0),
+    page_idx_(new PageIndex(version)) {
   // build header
   Buffer hdr;
   hdr.reserve(8192);
