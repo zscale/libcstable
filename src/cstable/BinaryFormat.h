@@ -86,7 +86,7 @@ namespace cstable {
  *       <char*>                 // index page data (index_entries back2back)
  *
  *   <index_entry> :=
- *      <uint8_t>                // entry type (0x1=data, 0x2=repetition level, 0x3=definition level)
+ *      <lenenc_int>             // entry type (0x1=data, 0x2=repetition level, 0x3=definition level)
  *      <lenenc_int>             // field id
  *      <lenenc_int>             // column index data size
  *      <char>*                  // column index data
@@ -134,7 +134,7 @@ struct FileHeader {
   Vector<ColumnConfig> columns;
 };
 
-enum class PageIndexEntryType {
+enum class PageIndexEntryType : uint8_t {
   DATA = 1,
   RLEVEL = 2,
   DLEVEL = 3

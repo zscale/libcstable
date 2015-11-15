@@ -26,21 +26,18 @@ public:
       RefPtr<PageManager> page_mgr,
       RefPtr<PageIndex> page_idx);
 
-  void writeValue(uint64_t value) override;
+  void appendValue(uint64_t value) override;
+
+  void writeIndex(OutputStream* os) const override;
 
 protected:
-
-  void allocPage();
-  void flushPage();
-
   PageIndexKey key_;
   RefPtr<PageManager> page_mgr_;
   bool has_page_;
   cstable::PageRef page_;
   Buffer page_buf_;
-  Buffer meta_buf_;
   BufferOutputStream page_os_;
-  BufferOutputStream meta_os_;
+  Vector<Pair<cstable::PageRef, uint64_t>> pages_;
 };
 
 } // namespace cstable

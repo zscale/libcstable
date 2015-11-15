@@ -42,14 +42,14 @@ void UnsignedIntColumnWriter::writeUnsignedInt(
     uint64_t dlvl,
     uint64_t value) {
   if (rlevel_writer_.get()) {
-    rlevel_writer_->writeValue(rlvl);
+    rlevel_writer_->appendValue(rlvl);
   }
 
   if (dlevel_writer_.get()) {
-    dlevel_writer_->writeValue(dlvl);
+    dlevel_writer_->appendValue(dlvl);
   }
 
-  data_writer_->writeValue(value);
+  data_writer_->appendValue(value);
 }
 
 void UnsignedIntColumnWriter::writeSignedInt(

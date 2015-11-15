@@ -25,7 +25,7 @@ public:
       RefPtr<PageManager> page_mgr,
       uint32_t max_value = 0xffffffff);
 
-  void writeValue(uint64_t value) override;
+  void appendValue(uint64_t value) override;
   //void addValue(const void* data, size_t size) override;
 
 protected:

@@ -20,37 +20,41 @@ UInt64PageWriter::UInt64PageWriter(
     key_(key),
     page_mgr_(page_mgr),
     has_page_(false),
-    page_os_(&page_buf_),
-    meta_os_(&meta_buf_) {
+    page_os_(&page_buf_) {
   page_idx->addPageWriter(key_, this);
 }
 
-void UInt64PageWriter::writeValue(uint64_t value) {
+void UInt64PageWriter::appendValue(uint64_t value) {
   if (!has_page_ || page_buf_.size() + sizeof(uint64_t) > page_.size) {
-    allocPage();
+    if (has_page_) {
+      page_mgr_->writePage(page_, page_buf_);
+      pages_.emplace_back(page_, page_buf_.size());
+    }
+
+    page_ = page_mgr_->allocPage(kPageSize);
+    if (page_buf_.size() < page_.size) {
+      page_buf_.reserve(page_.size - page_buf_.size());
+    }
+
+    has_page_ = true;
   }
 
   page_os_.appendUInt64(value);
 }
 
-void UInt64PageWriter::allocPage() {
+void UInt64PageWriter::writeIndex(OutputStream* os) const {
+  auto pages = pages_;
   if (has_page_) {
-    flushPage();
+    page_mgr_->writePage(page_, page_buf_);
+    pages.emplace_back(page_, page_buf_.size());
   }
 
-  page_ = page_mgr_->allocPage(kPageSize);
-  if (page_buf_.size() < page_.size) {
-    page_buf_.reserve(page_.size - page_buf_.size());
+  os->appendVarUInt(pages.size());
+  for (const auto& p : pages) {
+    os->appendVarUInt(p.first.offset);
+    os->appendVarUInt(p.first.size);
+    os->appendVarUInt(p.second);
   }
-
-  has_page_ = true;
-}
-
-void UInt64PageWriter::flushPage() {
-  meta_os_.appendVarUInt(page_.offset);
-  meta_os_.appendVarUInt(page_.size);
-  meta_os_.appendVarUInt(page_buf_.size());
-  page_mgr_->writePage(page_, page_buf_);
 }
 
 

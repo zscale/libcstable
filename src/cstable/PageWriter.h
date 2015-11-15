@@ -10,33 +10,35 @@
 #pragma once
 #include <stx/stdtypes.h>
 #include <stx/autoref.h>
+#include <stx/io/outputstream.h>
 
 namespace stx {
 namespace cstable {
 
 class PageWriter {
 public:
+  virtual void writeIndex(OutputStream* os) const = 0;
 };
 
 class UnsignedIntPageWriter : public PageWriter {
 public:
-  virtual void writeValue(uint64_t value) = 0;
+  virtual void appendValue(uint64_t value) = 0;
 };
 
 class SignedIntPageWriter : public PageWriter {
 public:
-  virtual void writeValue(int64_t value) = 0;
+  virtual void appendValue(int64_t value) = 0;
 };
 
 class DoublePageWriter : public PageWriter {
 public:
-  virtual void writeValue(double value) = 0;
+  virtual void appendValue(double value) = 0;
 };
 
 class StringPageWriter : public PageWriter {
 public:
-  void writeValue(const String& value);
-  virtual void writeValue(const char* data, size_t size) = 0;
+  void appendValue(const String& value);
+  virtual void appendValue(const char* data, size_t size) = 0;
 };
 
 } // namespace cstable
