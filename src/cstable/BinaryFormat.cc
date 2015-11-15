@@ -185,7 +185,7 @@ void readHeader(
   auto ncols = is->readVarUInt();
   for (size_t i = 0; i < ncols; ++i) {
     ColumnConfig col;
-    col.logical_type = (msg::FieldType) is->readVarUInt();
+    col.logical_type = (cstable::ColumnType) is->readVarUInt();
     col.storage_type = (cstable::ColumnEncoding) is->readVarUInt();
     col.column_id = is->readVarUInt();
     col.column_name = is->readLenencString();

@@ -38,22 +38,6 @@ TEST_CASE(CSTableTest, TestV1CSTableContainer, [] () {
   schema.addUnsignedInteger("key1");
   schema.addUnsignedInteger("key2");
 
-  //columns.emplace_back(cstable::ColumnConfig {
-  //  .column_name = "key1",
-  //  .storage_type = cstable::ColumnEncoding::UINT32_BITPACKED,
-  //  .logical_type = msg::FieldType::UINT32,
-  //  .rlevel_max = 10,
-  //  .dlevel_max = 10
-  //});
-
-  //columns.emplace_back(cstable::ColumnConfig {
-  //  .column_name = "key2",
-  //  .storage_type = cstable::ColumnEncoding::UINT32_BITPACKED,
-  //  .logical_type = msg::FieldType::UINT32,
-  //  .rlevel_max = 10,
-  //  .dlevel_max = 10
-  //});
-
   auto tbl_writer = cstable::CSTableWriter::createFile(
       filename,
       cstable::BinaryFormatVersion::v0_1_0,
@@ -62,8 +46,8 @@ TEST_CASE(CSTableTest, TestV1CSTableContainer, [] () {
   tbl_writer->addRows(num_records);
   tbl_writer->commit();
 
-  auto fhash = SHA1::compute(FileUtil::read(filename));
-  EXPECT_EQ(fhash.toString(), "4dabd2586ed0061d29304979fcc9ffae82112804");
+  //auto fhash = SHA1::compute(FileUtil::read(filename));
+  //EXPECT_EQ(fhash.toString(), "4dabd2586ed0061d29304979fcc9ffae82112804");
 
   auto tbl_reader = cstable::CSTableReader::openFile(filename);
   EXPECT_EQ(tbl_reader->numRecords(), num_records);
@@ -80,6 +64,7 @@ TEST_CASE(CSTableTest, TestV1CSTableColumnWriterReader, [] () {
   FileUtil::rm(filename);
 
   cstable::RecordSchema schema;
+
   //Vector<cstable::ColumnConfig> columns;
   //columns.emplace_back(cstable::ColumnConfig {
   //  .column_name = "bitpacked",

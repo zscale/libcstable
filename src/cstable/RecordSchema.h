@@ -1,5 +1,5 @@
 /**
- * This file is part of the "libstx" project
+ * This file is part of the "libcstable" project
  *   Copyright (c) 2015 Paul Asmuth
  *
  * libstx is free software: you can redistribute it and/or modify it under
@@ -30,17 +30,32 @@ public:
     ScopedPtr<RecordSchema> subschema;
   };
 
+  RecordSchema();
+  RecordSchema(const RecordSchema& other);
+
   void addUnsignedInteger(
       const String& name,
-      bool optional = true);
+      bool optional = true,
+      ColumnEncoding encoding = ColumnEncoding::UINT64_LEB128,
+      uint64_t max_value = 0);
+
+  void addUnsignedIntegerArray(
+      const String& name,
+      bool optional = true,
+      ColumnEncoding encoding = ColumnEncoding::UINT64_LEB128,
+      uint64_t max_value = 0);
 
   void addString(
       const String& name,
-      bool optional = true);
+      bool optional = true,
+      ColumnEncoding encoding = ColumnEncoding::STRING_PLAIN,
+      uint64_t max_length = 0);
 
   void addStringArray(
       const String& name,
-      bool optional = true);
+      bool optional = true,
+      ColumnEncoding encoding = ColumnEncoding::STRING_PLAIN,
+      uint64_t max_length = 0);
 
   void addSubrecord(
       const String& name,

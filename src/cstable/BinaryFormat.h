@@ -110,7 +110,7 @@ inline uint64_t padToNextSector(uint64_t val) {
 enum class ColumnType : uint8_t {
   SUBRECORD = 0,
   BOOLEAN = 1,
-  UNSINGED_INT = 2,
+  UNSIGNED_INT = 2,
   SIGNED_INT = 3,
   STRING = 4,
   DOUBLE = 5,
@@ -130,13 +130,11 @@ enum class ColumnEncoding : uint8_t {
 String columnTypeToString(ColumnType type);
 ColumnType columnTypeFromString(String str);
 
-
-
 struct ColumnConfig {
   uint32_t column_id;
   String column_name;
-  cstable::ColumnEncoding storage_type;
-  msg::FieldType logical_type;
+  ColumnEncoding storage_type;
+  ColumnType logical_type;
   size_t rlevel_max;
   size_t dlevel_max;
   uint64_t body_offset; // deprecated after v0.1.x

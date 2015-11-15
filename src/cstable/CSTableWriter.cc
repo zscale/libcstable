@@ -33,6 +33,37 @@ RefPtr<CSTableWriter> CSTableWriter::createFile(
       lockref);
 }
 
+static void createColumns(
+    const String& prefix,
+    uint32_t r_max,
+    uint32_t d_max,
+    const RecordSchema::Column* field,
+    Vector<ColumnConfig>* columns) {
+  auto colname = prefix + field->name;
+
+  if (field->repeated) {
+    ++r_max;
+  }
+
+  if (field->repeated || field->optional) {
+    ++d_max;
+  }
+
+  if (field->type == ColumnType::SUBRECORD) {
+    for (const auto& f : field->subschema->columns()) {
+      createColumns(colname + ".", r_max, d_max, f, columns);
+    }
+  } else {
+    columns->emplace_back(cstable::ColumnConfig {
+      .column_name = colname,
+      .storage_type = field->encoding,
+      .logical_type = field->type,
+      .rlevel_max = r_max,
+      .dlevel_max = d_max
+    });
+  }
+}
+
 RefPtr<CSTableWriter> CSTableWriter::createFile(
     const String& filename,
     BinaryFormatVersion version,
@@ -42,7 +73,9 @@ RefPtr<CSTableWriter> CSTableWriter::createFile(
   auto file_os = FileOutputStream::fromFileDescriptor(file.fd());
 
   FileHeader header;
-  //header.columns = columns;
+  for (const auto& f : schema.columns()) {
+    createColumns("", 0, 0, f, &header.columns);
+  }
 
   // write header
   size_t header_size ;
@@ -106,8 +139,7 @@ static RefPtr<ColumnWriter> openColumnV2(
     RefPtr<PageManager> page_mgr,
     RefPtr<PageIndex> page_idx) {
   switch (c.logical_type) {
-    case msg::FieldType::UINT64:
-    case msg::FieldType::UINT32:
+    case ColumnType::UNSIGNED_INT:
       return new UnsignedIntColumnWriter(c, page_mgr, page_idx);
   }
 }

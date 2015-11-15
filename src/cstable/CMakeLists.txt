@@ -20,6 +20,7 @@ add_library(cstable STATIC
     PageManager.cc
     PageIndex.cc
     ColumnConfig.cc
+    RecordSchema.cc
     v1/BitPackedIntColumnReader.cc
     v1/BitPackedIntColumnWriter.cc
     v1/BooleanColumnReader.cc
