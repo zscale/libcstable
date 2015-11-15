@@ -100,6 +100,14 @@ public:
       RecordSchema subschema,
       bool optional = true);
 
+  void addColumn(
+      const String& name,
+      ColumnType type,
+      ColumnEncoding encoding,
+      bool repeated,
+      bool optional,
+      uint64_t type_size = 0);
+
   const Vector<Column*>& columns() const;
 
   //String toString() const;

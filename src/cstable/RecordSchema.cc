@@ -170,9 +170,102 @@ void RecordSchema::addSubrecordArray(
   columns_by_name_.emplace(name, std::move(col));
 }
 
+void RecordSchema::addColumn(
+    const String& name,
+    ColumnType type,
+    ColumnEncoding encoding,
+    bool repeated,
+    bool optional,
+    uint64_t type_size /* = 0 */) {
+  auto col = mkScoped(new Column {
+    .name = name,
+    .type = type,
+    .encoding = encoding,
+    .repeated = repeated,
+    .optional = optional,
+    .type_size = type_size
+  });
+
+  columns_.emplace_back(col.get());
+  columns_by_name_.emplace(name, std::move(col));
+}
+
 const Vector<RecordSchema::Column*>& RecordSchema::columns() const {
   return columns_;
 }
+
+RecordSchema RecordSchema::fromProtobuf(const msg::MessageSchema& schema) {
+  RecordSchema rs;
+
+  for (const auto& f : schema.fields()) {
+    switch (f.type) {
+
+      case msg::FieldType::OBJECT:
+        if (f.repeated) {
+          rs.addSubrecordArray(
+              f.name,
+              RecordSchema::fromProtobuf(*f.schema),
+              f.optional);
+        } else {
+          rs.addSubrecord(
+              f.name,
+              RecordSchema::fromProtobuf(*f.schema),
+              f.optional);
+        }
+        break;
+
+      case msg::FieldType::BOOLEAN:
+        rs.addColumn(
+            f.name,
+            ColumnType::BOOLEAN,
+            ColumnEncoding::BOOLEAN_BITPACKED,
+            f.repeated,
+            f.optional);
+        break;
+
+      case msg::FieldType::STRING:
+        rs.addColumn(
+            f.name,
+            ColumnType::STRING,
+            ColumnEncoding::STRING_PLAIN,
+            f.repeated,
+            f.optional);
+        break;
+
+      case msg::FieldType::UINT64:
+      case msg::FieldType::UINT32:
+        rs.addColumn(
+            f.name,
+            ColumnType::UNSIGNED_INT,
+            ColumnEncoding::UINT64_LEB128,
+            f.repeated,
+            f.optional);
+        break;
+
+      case msg::FieldType::DOUBLE:
+        rs.addColumn(
+            f.name,
+            ColumnType::FLOAT,
+            ColumnEncoding::FLOAT_IEEE754,
+            f.repeated,
+            f.optional);
+        break;
+
+      case msg::FieldType::DATETIME:
+        rs.addColumn(
+            f.name,
+            ColumnType::DATETIME,
+            ColumnEncoding::UINT64_LEB128,
+            f.repeated,
+            f.optional);
+        break;
+
+    }
+  }
+
+  return rs;
+}
+
 
 } // namespace msg
 } // namespace stx
