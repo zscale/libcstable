@@ -57,12 +57,6 @@ protected:
       const String& column,
       const msg::MessageSchemaField& field);
 
-  void createColumns(
-      const String& prefix,
-      uint32_t r_max,
-      uint32_t d_max,
-      const msg::MessageSchemaField& field);
-
   const msg::MessageSchema* schema_;
   CSTableWriter* writer_;
   HashMap<String, RefPtr<ColumnWriter>> columns_;

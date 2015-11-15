@@ -15,97 +15,102 @@
 namespace stx {
 namespace cstable {
 
+static void createColumns(
+    const String& prefix,
+    uint32_t r_max,
+    uint32_t d_max,
+    const msg::MessageSchemaField& field,
+    Vector<ColumnConfig>* columns) {
+  auto colname = prefix + field.name;
+  auto typesize = field.type_size;
+
+  if (field.repeated) {
+    ++r_max;
+  }
+
+  if (field.repeated || field.optional) {
+    ++d_max;
+  }
+
+  switch (field.type) {
+    case msg::FieldType::OBJECT:
+      for (const auto& f : field.schema->fields()) {
+        createColumns(colname + ".", r_max, d_max, f, columns);
+      }
+      break;
+
+    //case msg::FieldType::UINT32:
+    //  if (field.encoding == msg::EncodingHint::BITPACK) {
+    //    columns_.emplace(
+    //        colname,
+    //        new cstable::v1::BitPackedIntColumnWriter(r_max, d_max, typesize));
+    //  } else if (field.encoding == msg::EncodingHint::BITPACK) {
+    //    columns_.emplace(
+    //        colname,
+    //        new cstable::v1::LEB128ColumnWriter(r_max, d_max));
+    //  } else {
+    //    columns_.emplace(
+    //        colname,
+    //        new cstable::v1::UInt32ColumnWriter(r_max, d_max));
+    //  }
+    //  break;
+
+    //case msg::FieldType::UINT64:
+    //  if (field.encoding == msg::EncodingHint::BITPACK) {
+    //    columns_.emplace(
+    //        colname,
+    //        new cstable::v1::BitPackedIntColumnWriter(r_max, d_max, typesize));
+    //  } else if (field.encoding == msg::EncodingHint::BITPACK) {
+    //    columns_.emplace(
+    //        colname,
+    //        new cstable::v1::LEB128ColumnWriter(r_max, d_max));
+    //  } else {
+    //    columns_.emplace(
+    //        colname,
+    //        new cstable::v1::UInt64ColumnWriter(r_max, d_max));
+    //  }
+    //  break;
+
+    //case msg::FieldType::DATETIME:
+    //  columns_.emplace(
+    //      colname,
+    //      new cstable::v1::LEB128ColumnWriter(r_max, d_max));
+    //  break;
+
+    //case msg::FieldType::DOUBLE:
+    //  columns_.emplace(
+    //      colname,
+    //      new cstable::v1::DoubleColumnWriter(r_max, d_max));
+    //  break;
+
+    //case msg::FieldType::STRING:
+    //  columns_.emplace(
+    //      colname,
+    //      new cstable::v1::StringColumnWriter(r_max, d_max, typesize));
+    //  break;
+
+    //case msg::FieldType::BOOLEAN:
+    //  columns_.emplace(
+    //      colname,
+    //      new cstable::v1::BooleanColumnWriter(r_max, d_max));
+    //  break;
+  }
+}
+
+Vector<ColumnConfig> RecordShredder::columnsFromSchema(
+    const msg::MessageSchema* schema) {
+  Vector<ColumnConfig> columns_;
+
+  for (const auto& f : schema->fields()) {
+    createColumns("", 0, 0, f, &columns_);
+  }
+}
+
 RecordShredder::RecordShredder(
     const msg::MessageSchema* schema,
     CSTableWriter* writer) :
     schema_(schema),
-    writer_(writer) {
-  //for (const auto& f : schema_->fields()) {
-  //  createColumns("", 0, 0, f);
-  //}
-}
-
-//void RecordShredder::createColumns(
-//    const String& prefix,
-//    uint32_t r_max,
-//    uint32_t d_max,
-//    const msg::MessageSchemaField& field) {
-//  auto colname = prefix + field.name;
-//  auto typesize = field.type_size;
-//
-//  if (field.repeated) {
-//    ++r_max;
-//  }
-//
-//  if (field.repeated || field.optional) {
-//    ++d_max;
-//  }
-//
-//  switch (field.type) {
-//    case msg::FieldType::OBJECT:
-//      for (const auto& f : field.schema->fields()) {
-//        createColumns(colname + ".", r_max, d_max, f);
-//      }
-//      break;
-//
-//    case msg::FieldType::UINT32:
-//      if (field.encoding == msg::EncodingHint::BITPACK) {
-//        columns_.emplace(
-//            colname,
-//            new cstable::v1::BitPackedIntColumnWriter(r_max, d_max, typesize));
-//      } else if (field.encoding == msg::EncodingHint::BITPACK) {
-//        columns_.emplace(
-//            colname,
-//            new cstable::v1::LEB128ColumnWriter(r_max, d_max));
-//      } else {
-//        columns_.emplace(
-//            colname,
-//            new cstable::v1::UInt32ColumnWriter(r_max, d_max));
-//      }
-//      break;
-//
-//    case msg::FieldType::UINT64:
-//      if (field.encoding == msg::EncodingHint::BITPACK) {
-//        columns_.emplace(
-//            colname,
-//            new cstable::v1::BitPackedIntColumnWriter(r_max, d_max, typesize));
-//      } else if (field.encoding == msg::EncodingHint::BITPACK) {
-//        columns_.emplace(
-//            colname,
-//            new cstable::v1::LEB128ColumnWriter(r_max, d_max));
-//      } else {
-//        columns_.emplace(
-//            colname,
-//            new cstable::v1::UInt64ColumnWriter(r_max, d_max));
-//      }
-//      break;
-//
-//    case msg::FieldType::DATETIME:
-//      columns_.emplace(
-//          colname,
-//          new cstable::v1::LEB128ColumnWriter(r_max, d_max));
-//      break;
-//
-//    case msg::FieldType::DOUBLE:
-//      columns_.emplace(
-//          colname,
-//          new cstable::v1::DoubleColumnWriter(r_max, d_max));
-//      break;
-//
-//    case msg::FieldType::STRING:
-//      columns_.emplace(
-//          colname,
-//          new cstable::v1::StringColumnWriter(r_max, d_max, typesize));
-//      break;
-//
-//    case msg::FieldType::BOOLEAN:
-//      columns_.emplace(
-//          colname,
-//          new cstable::v1::BooleanColumnWriter(r_max, d_max));
-//      break;
-//
-//  }
-//}
+    writer_(writer) {}
 
 void RecordShredder::addRecord(const msg::MessageObject& msg) {
   for (const auto& f : schema_->fields()) {

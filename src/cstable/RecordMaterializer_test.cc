@@ -62,6 +62,7 @@ TEST_CASE(RecordMaterializerTest, TestSimpleReMaterialization, [] () {
 
   auto writer = cstable::CSTableWriter::createFile(
       testfile,
+      cstable::BinaryFormatVersion::v0_1_0,
       RecordShredder::columnsFromSchema(&schema));
 
   cstable::RecordShredder shredder(&schema, writer.get());
@@ -124,6 +125,7 @@ TEST_CASE(RecordMaterializerTest, TestSimpleReMaterializationWithNull, [] () {
 
   auto writer = cstable::CSTableWriter::createFile(
       testfile,
+      cstable::BinaryFormatVersion::v0_1_0,
       RecordShredder::columnsFromSchema(&schema));
 
   cstable::RecordShredder shredder(&schema, writer.get());
@@ -203,6 +205,7 @@ TEST_CASE(RecordMaterializerTest, TestReMatWithNonRepeatedParent, [] () {
 
   auto writer = cstable::CSTableWriter::createFile(
       testfile,
+      cstable::BinaryFormatVersion::v0_1_0,
       RecordShredder::columnsFromSchema(&schema));
 
   cstable::RecordShredder shredder(&schema, writer.get());

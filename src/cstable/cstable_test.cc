@@ -247,36 +247,36 @@ TEST_CASE(CSTableTest, TestV1CSTableColumnWriterReader, [] () {
 //  EXPECT_EQ(FileUtil::size(filename), 512);
 //});
 
-TEST_CASE(CSTableTest, TestV2UInt64Plain, [] () {
-  String filename = "/tmp/__fnord__cstabletest3.cstable";
-  FileUtil::rm(filename);
-
-  Vector<cstable::ColumnConfig> columns;
-  columns.emplace_back(cstable::ColumnConfig {
-    .column_id = 1,
-    .column_name = "mycol",
-    .storage_type = cstable::ColumnType::UINT64_PLAIN,
-    .logical_type = msg::FieldType::UINT64,
-    .rlevel_max = 0,
-    .dlevel_max = 0
-  });
-
-  {
-    auto tbl_writer = cstable::CSTableWriter::createFile(filename, columns);
-    auto mycol = tbl_writer->getColumnByName("mycol");
-
-    for (size_t i = 1; i < 10000; ++i) {
-      mycol->writeUnsignedInt(0, 0, 23 * i);
-      mycol->writeUnsignedInt(0, 0, 42 * i);
-      mycol->writeUnsignedInt(0, 0, 17 * i);
-    }
-
-    tbl_writer->commit();
-  }
-
-  {
-    auto tbl_reader = cstable::CSTableReader::openFile(filename);
-    auto mycol = tbl_reader->getColumnByName("mycol");
-  }
-});
+//TEST_CASE(CSTableTest, TestV2UInt64Plain, [] () {
+//  String filename = "/tmp/__fnord__cstabletest3.cstable";
+//  FileUtil::rm(filename);
+//
+//  Vector<cstable::ColumnConfig> columns;
+//  columns.emplace_back(cstable::ColumnConfig {
+//    .column_id = 1,
+//    .column_name = "mycol",
+//    .storage_type = cstable::ColumnType::UINT64_PLAIN,
+//    .logical_type = msg::FieldType::UINT64,
+//    .rlevel_max = 0,
+//    .dlevel_max = 0
+//  });
+//
+//  {
+//    auto tbl_writer = cstable::CSTableWriter::createFile(filename, columns);
+//    auto mycol = tbl_writer->getColumnByName("mycol");
+//
+//    for (size_t i = 1; i < 10000; ++i) {
+//      mycol->writeUnsignedInt(0, 0, 23 * i);
+//      mycol->writeUnsignedInt(0, 0, 42 * i);
+//      mycol->writeUnsignedInt(0, 0, 17 * i);
+//    }
+//
+//    tbl_writer->commit();
+//  }
+//
+//  {
+//    auto tbl_reader = cstable::CSTableReader::openFile(filename);
+//    auto mycol = tbl_reader->getColumnByName("mycol");
+//  }
+//});
 
