@@ -33,11 +33,11 @@ static void createColumns(
   }
 
   switch (field.type) {
-    case msg::FieldType::OBJECT:
-      for (const auto& f : field.schema->fields()) {
-        createColumns(colname + ".", r_max, d_max, f, columns);
-      }
-      break;
+    //case msg::FieldType::OBJECT:
+    //  for (const auto& f : field.schema->fields()) {
+    //    createColumns(colname + ".", r_max, d_max, f, columns);
+    //  }
+    //  break;
 
     //case msg::FieldType::UINT32:
     //  if (field.encoding == msg::EncodingHint::BITPACK) {
@@ -99,11 +99,13 @@ static void createColumns(
 
 Vector<ColumnConfig> RecordShredder::columnsFromSchema(
     const msg::MessageSchema* schema) {
-  Vector<ColumnConfig> columns_;
+  Vector<ColumnConfig> columns;
 
   for (const auto& f : schema->fields()) {
-    createColumns("", 0, 0, f, &columns_);
+    createColumns("", 0, 0, f, &columns);
   }
+
+  return columns;
 }
 
 RecordShredder::RecordShredder(
@@ -192,8 +194,8 @@ void RecordShredder::writeNull(
       break;
 
     default:
-      auto col = columns_.find(column);
-      col->second->addNull(r, d);
+      auto col = writer_->getColumnByName(column);
+      col->addNull(r, d);
       break;
 
   }
@@ -205,43 +207,43 @@ void RecordShredder::writeField(
     const msg::MessageObject& msg,
     const String& column,
     const msg::MessageSchemaField& field) {
-  auto col = columns_.find(column);
+  auto col = writer_->getColumnByName(column);
 
   switch (field.type) {
 
     case msg::FieldType::STRING: {
       auto& str = msg.asString();
-      col->second->addDatum(r, d, str.data(), str.size());
+      col->addDatum(r, d, str.data(), str.size());
       break;
     }
 
     case msg::FieldType::UINT32: {
       uint32_t val = msg.asUInt32();
-      col->second->addDatum(r, d, &val, sizeof(val));
+      col->addDatum(r, d, &val, sizeof(val));
       break;
     }
 
     case msg::FieldType::DATETIME: {
       uint64_t val = msg.asUInt64();
-      col->second->addDatum(r, d, &val, sizeof(val));
+      col->addDatum(r, d, &val, sizeof(val));
       break;
     }
 
     case msg::FieldType::UINT64: {
       uint64_t val = msg.asUInt64();
-      col->second->addDatum(r, d, &val, sizeof(val));
+      col->addDatum(r, d, &val, sizeof(val));
       break;
     }
 
     case msg::FieldType::DOUBLE: {
       uint64_t val = IEEE754::toBytes(msg.asDouble());
-      col->second->addDatum(r, d, &val, sizeof(val));
+      col->addDatum(r, d, &val, sizeof(val));
       break;
     }
 
     case msg::FieldType::BOOLEAN: {
       uint8_t val = msg.asBool() ? 1 : 0;
-      col->second->addDatum(r, d, &val, sizeof(val));
+      col->addDatum(r, d, &val, sizeof(val));
       break;
     }
 
@@ -251,129 +253,129 @@ void RecordShredder::writeField(
   }
 }
 
-void RecordShredder::addRecordsFromCSV(CSVInputStream* csv) {
-  Vector<String> columns;
-  csv->readNextRow(&columns);
-
-  Set<String> missing_columns;
-  for (const auto& col : columns_) {
-    missing_columns.emplace(col.first);
-  }
-
-  Vector<RefPtr<ColumnWriter>> column_writers;
-  Vector<msg::FieldType> field_types;
-  for (const auto& col : columns) {
-    if (columns_.count(col) == 0) {
-      RAISEF(kRuntimeError, "column '$0' not found in schema", col);
-    }
-
-    missing_columns.erase(col);
-    column_writers.emplace_back(columns_[col]);
-    field_types.emplace_back(schema_->fieldType(schema_->fieldId(col)));
-  }
-
-  Vector<RefPtr<ColumnWriter>> missing_column_writers;
-  for (const auto& col : missing_columns) {
-    auto writer = columns_[col];
-    if (writer->maxDefinitionLevel() == 0) {
-      RAISEF(kRuntimeError, "missing required column: $0", col);
-    }
-
-    missing_column_writers.emplace_back(writer);
-  }
-
-  Vector<String> row;
-  while (csv->readNextRow(&row)) {
-    for (size_t i = 0; i < row.size() && i < columns.size(); ++i) {
-      const auto& col = column_writers[i];
-      const auto& val = row[i];
-
-      if (Human::isNullOrEmpty(val)) {
-        if (col->maxDefinitionLevel() == 0) {
-          RAISEF(
-              kRuntimeError,
-              "missing value for required column: $0",
-              columns[i]);
-        }
-
-        col->addNull(0, 0);
-        continue;
-      }
-
-      switch (field_types[i]) {
-
-        case msg::FieldType::STRING: {
-          col->addDatum(0, col->maxDefinitionLevel(), val.data(), val.size());
-          break;
-        }
-
-        case msg::FieldType::UINT32: {
-          uint32_t v;
-          try {
-            v = std::stoull(val);
-          } catch (const StandardException& e) {
-            RAISEF(kTypeError, "can't convert '$0' to UINT32", val);
-          }
-
-          col->addDatum(0, col->maxDefinitionLevel(), &v, sizeof(v));
-          break;
-        }
-
-        case msg::FieldType::DATETIME: {
-          auto t = Human::parseTime(val);
-          if (t.isEmpty()) {
-            RAISEF(kTypeError, "can't convert '$0' to DATETIME", val);
-          }
-
-          uint64_t v = t.get().unixMicros();
-          col->addDatum(0, col->maxDefinitionLevel(), &v, sizeof(v));
-          break;
-        }
-
-        case msg::FieldType::UINT64: {
-          uint64_t v;
-          try {
-            v = std::stoull(val);
-          } catch (const StandardException& e) {
-            RAISEF(kTypeError, "can't convert '$0' to UINT64", val);
-          }
-
-          col->addDatum(0, col->maxDefinitionLevel(), &v, sizeof(v));
-          break;
-        }
-
-        case msg::FieldType::DOUBLE: {
-          double v;
-          try {
-            v = std::stod(val);
-          } catch (const StandardException& e) {
-            RAISEF(kTypeError, "can't convert '$0' to DOUBLE", val);
-          }
-
-          col->addDatum(0, col->maxDefinitionLevel(), &v, sizeof(v));
-          break;
-        }
-
-        case msg::FieldType::BOOLEAN: {
-          auto b = Human::parseBoolean(val);
-          uint8_t v = !b.isEmpty() && b.get() ? 1 : 0;
-          col->addDatum(0, col->maxDefinitionLevel(), &v, sizeof(v));
-          break;
-        }
-
-        case msg::FieldType::OBJECT:
-          RAISE(kIllegalStateError, "can't read OBJECTs from CSV");
-
-      }
-    }
-
-    for (auto& col : missing_column_writers) {
-      col->addNull(0, 0);
-    }
-
-    writer_->addRow();
-  }
-}
+//void RecordShredder::addRecordsFromCSV(CSVInputStream* csv) {
+//  Vector<String> columns;
+//  csv->readNextRow(&columns);
+//
+//  Set<String> missing_columns;
+//  for (const auto& col : columns_) {
+//    missing_columns.emplace(col.first);
+//  }
+//
+//  Vector<RefPtr<ColumnWriter>> column_writers;
+//  Vector<msg::FieldType> field_types;
+//  for (const auto& col : columns) {
+//    if (columns_.count(col) == 0) {
+//      RAISEF(kRuntimeError, "column '$0' not found in schema", col);
+//    }
+//
+//    missing_columns.erase(col);
+//    column_writers.emplace_back(columns_[col]);
+//    field_types.emplace_back(schema_->fieldType(schema_->fieldId(col)));
+//  }
+//
+//  Vector<RefPtr<ColumnWriter>> missing_column_writers;
+//  for (const auto& col : missing_columns) {
+//    auto writer = columns_[col];
+//    if (writer->maxDefinitionLevel() == 0) {
+//      RAISEF(kRuntimeError, "missing required column: $0", col);
+//    }
+//
+//    missing_column_writers.emplace_back(writer);
+//  }
+//
+//  Vector<String> row;
+//  while (csv->readNextRow(&row)) {
+//    for (size_t i = 0; i < row.size() && i < columns.size(); ++i) {
+//      const auto& col = column_writers[i];
+//      const auto& val = row[i];
+//
+//      if (Human::isNullOrEmpty(val)) {
+//        if (col->maxDefinitionLevel() == 0) {
+//          RAISEF(
+//              kRuntimeError,
+//              "missing value for required column: $0",
+//              columns[i]);
+//        }
+//
+//        col->addNull(0, 0);
+//        continue;
+//      }
+//
+//      switch (field_types[i]) {
+//
+//        case msg::FieldType::STRING: {
+//          col->addDatum(0, col->maxDefinitionLevel(), val.data(), val.size());
+//          break;
+//        }
+//
+//        case msg::FieldType::UINT32: {
+//          uint32_t v;
+//          try {
+//            v = std::stoull(val);
+//          } catch (const StandardException& e) {
+//            RAISEF(kTypeError, "can't convert '$0' to UINT32", val);
+//          }
+//
+//          col->addDatum(0, col->maxDefinitionLevel(), &v, sizeof(v));
+//          break;
+//        }
+//
+//        case msg::FieldType::DATETIME: {
+//          auto t = Human::parseTime(val);
+//          if (t.isEmpty()) {
+//            RAISEF(kTypeError, "can't convert '$0' to DATETIME", val);
+//          }
+//
+//          uint64_t v = t.get().unixMicros();
+//          col->addDatum(0, col->maxDefinitionLevel(), &v, sizeof(v));
+//          break;
+//        }
+//
+//        case msg::FieldType::UINT64: {
+//          uint64_t v;
+//          try {
+//            v = std::stoull(val);
+//          } catch (const StandardException& e) {
+//            RAISEF(kTypeError, "can't convert '$0' to UINT64", val);
+//          }
+//
+//          col->addDatum(0, col->maxDefinitionLevel(), &v, sizeof(v));
+//          break;
+//        }
+//
+//        case msg::FieldType::DOUBLE: {
+//          double v;
+//          try {
+//            v = std::stod(val);
+//          } catch (const StandardException& e) {
+//            RAISEF(kTypeError, "can't convert '$0' to DOUBLE", val);
+//          }
+//
+//          col->addDatum(0, col->maxDefinitionLevel(), &v, sizeof(v));
+//          break;
+//        }
+//
+//        case msg::FieldType::BOOLEAN: {
+//          auto b = Human::parseBoolean(val);
+//          uint8_t v = !b.isEmpty() && b.get() ? 1 : 0;
+//          col->addDatum(0, col->maxDefinitionLevel(), &v, sizeof(v));
+//          break;
+//        }
+//
+//        case msg::FieldType::OBJECT:
+//          RAISE(kIllegalStateError, "can't read OBJECTs from CSV");
+//
+//      }
+//    }
+//
+//    for (auto& col : missing_column_writers) {
+//      col->addNull(0, 0);
+//    }
+//
+//    writer_->addRow();
+//  }
+//}
 
 } // namespace cstable
 } // namespace stx

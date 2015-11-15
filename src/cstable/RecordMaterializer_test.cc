@@ -60,13 +60,16 @@ TEST_CASE(RecordMaterializerTest, TestSimpleReMaterialization, [] () {
   l1_b.addChild(2, "fnord3");
   l1_b.addChild(2, "fnord4");
 
+  FileUtil::rm(testfile);
   auto writer = cstable::CSTableWriter::createFile(
       testfile,
       cstable::BinaryFormatVersion::v0_1_0,
       RecordShredder::columnsFromSchema(&schema));
 
+  iputs("start shredding...", 1);
   cstable::RecordShredder shredder(&schema, writer.get());
   shredder.addRecord(sobj);
+  iputs("commit...", 1);
   writer->commit();
 
   auto reader = cstable::CSTableReader::openFile(testfile);
@@ -123,6 +126,7 @@ TEST_CASE(RecordMaterializerTest, TestSimpleReMaterializationWithNull, [] () {
   l1_c.addChild(2, "fnord3");
   l1_c.addChild(2, "fnord4");
 
+  FileUtil::rm(testfile);
   auto writer = cstable::CSTableWriter::createFile(
       testfile,
       cstable::BinaryFormatVersion::v0_1_0,
@@ -147,7 +151,6 @@ TEST_CASE(RecordMaterializerTest, TestSimpleReMaterializationWithNull, [] () {
   EXPECT_EQ(robj.asObject()[2].asObject()[0].asString(), "fnord3");
   EXPECT_EQ(robj.asObject()[2].asObject()[1].asString(), "fnord4");
 });
-
 
 TEST_CASE(RecordMaterializerTest, TestReMatWithNonRepeatedParent, [] () {
   String testfile = "/tmp/__fnord_testcstablematerialization.cst";
@@ -203,6 +206,7 @@ TEST_CASE(RecordMaterializerTest, TestReMatWithNonRepeatedParent, [] () {
   l2_cb.addChild(3, "fnord5");
   l2_cb.addChild(3, "fnord6");
 
+  FileUtil::rm(testfile);
   auto writer = cstable::CSTableWriter::createFile(
       testfile,
       cstable::BinaryFormatVersion::v0_1_0,

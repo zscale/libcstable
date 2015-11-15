@@ -17,6 +17,7 @@
 #include <cstable/v1/DoubleColumnWriter.h>
 #include <cstable/v1/StringColumnWriter.h>
 #include <stx/SHA1.h>
+#include <stx/io/fileutil.h>
 
 namespace stx {
 namespace cstable {

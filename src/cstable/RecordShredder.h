@@ -59,7 +59,6 @@ protected:
 
   const msg::MessageSchema* schema_;
   CSTableWriter* writer_;
-  HashMap<String, RefPtr<ColumnWriter>> columns_;
 };
 
 } // namespace cstable
