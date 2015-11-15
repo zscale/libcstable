@@ -136,17 +136,18 @@ protected:
 
   CSTableWriter(
       BinaryFormatVersion version_,
-      File&& file,
+      RefPtr<PageManager> page_mgr,
+      RefPtr<PageIndex> page_idx,
       const Vector<ColumnConfig>& columns);
 
   BinaryFormatVersion version_;
+  RefPtr<PageManager> page_mgr_;
+  RefPtr<PageIndex> page_idx_;
   Vector<ColumnConfig> columns_;
   HashMap<uint32_t, RefPtr<DefaultColumnWriter>> column_writers_by_id_;
   HashMap<String, RefPtr<DefaultColumnWriter>> column_writers_by_name_;
   uint64_t current_txid_;
   uint64_t num_rows_;
-  RefPtr<PageManager> page_mgr_;
-  RefPtr<PageIndex> page_idx_;
 };
 
 } // namespace cstable

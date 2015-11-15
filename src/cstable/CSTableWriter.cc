@@ -30,27 +30,8 @@ RefPtr<CSTableWriter> CSTableWriter::createFile(
     BinaryFormatVersion version,
     const Vector<ColumnConfig>& columns,
     Option<RefPtr<LockRef>> lockref /* = None<RefPtr<LockRef>>() */) {
-  return new CSTableWriter(
-      version,
-      File::openFile(filename, File::O_WRITE | File::O_CREATE),
-      columns);
-}
+  auto file = File::openFile(filename, File::O_WRITE | File::O_CREATE);
 
-RefPtr<CSTableWriter> CSTableWriter::reopenFile(
-    const String& filename,
-    Option<RefPtr<LockRef>> lockref /* = None<RefPtr<LockRef>>() */) {
-  RAISE(kNotYetImplementedError);
-}
-
-CSTableWriter::CSTableWriter(
-    BinaryFormatVersion version,
-    File&& file,
-    const Vector<ColumnConfig>& columns) :
-    version_(version),
-    columns_(columns),
-    current_txid_(0),
-    num_rows_(0),
-    page_idx_(new PageIndex(version)) {
   // build header
   Buffer hdr;
   hdr.reserve(8192);
@@ -73,12 +54,36 @@ CSTableWriter::CSTableWriter(
 
   // flush header to disk & init pagemanager
   file.pwrite(0, hdr.data(), hdr.size());
-  page_mgr_ = mkRef(
-      new PageManager(
-          BinaryFormatVersion::v0_2_0,
-          std::move(file),
-          hdr.size()));
 
+  auto page_mgr = mkRef(
+      new PageManager(version, std::move(file), hdr.size()));
+
+  auto page_idx = mkRef(new PageIndex(version));
+
+  return new CSTableWriter(
+      version,
+      page_mgr,
+      page_idx,
+      columns);
+}
+
+RefPtr<CSTableWriter> CSTableWriter::reopenFile(
+    const String& filename,
+    Option<RefPtr<LockRef>> lockref /* = None<RefPtr<LockRef>>() */) {
+  RAISE(kNotYetImplementedError);
+}
+
+CSTableWriter::CSTableWriter(
+    BinaryFormatVersion version,
+    RefPtr<PageManager> page_mgr,
+    RefPtr<PageIndex> page_idx,
+    const Vector<ColumnConfig>& columns) :
+    version_(version),
+    page_mgr_(page_mgr),
+    page_idx_(page_idx),
+    columns_(columns),
+    current_txid_(0),
+    num_rows_(0) {
   // create columns
   for (size_t i = 0; i < columns_.size(); ++i) {
     RefPtr<DefaultColumnWriter> writer;
