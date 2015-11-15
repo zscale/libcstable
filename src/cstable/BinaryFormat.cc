@@ -58,6 +58,7 @@ size_t writeHeader(const FileHeader& hdr, OutputStream* os) {
   auto header_padding = padToNextSector(buf.size()) - buf.size();
   buf.appendString(String(header_padding, '\0'));
 
+  os->write((const char*) buf.data(), buf.size());
   return buf.size();
 }
 

@@ -14,6 +14,11 @@ namespace cstable {
 
 PageIndex::PageIndex(BinaryFormatVersion version) : version_(version) {}
 
+void PageIndex::addPageWriter(PageIndexKey key, PageWriter* page_writer) {
+  page_writers_.emplace_back(key, page_writer);
+}
+
+
 } // namespace cstable
 } // namespace stx
 
