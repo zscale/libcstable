@@ -15,11 +15,7 @@
 namespace stx {
 namespace cstable {
 
-RecordShredder::RecordShredder(
-    const RecordSchema* schema,
-    CSTableWriter* writer) :
-    record_schema_(schema),
-    writer_(writer) {}
+RecordShredder::RecordShredder(CSTableWriter* writer) : writer_(writer) {}
 
 void writeProtoNull(
     uint32_t r,
@@ -168,7 +164,7 @@ void RecordShredder::addRecordFromProtobuf(const msg::DynamicMessage& msg) {
 void RecordShredder::addRecordFromProtobuf(
     const msg::MessageObject& msg,
     const msg::MessageSchema& schema) {
-  for (const auto& f : record_schema_->columns()) {
+  for (const auto& f : writer_->schema()->columns()) {
     addProtoRecordField(0, 0, 0, msg, schema, "", f, writer_);
   }
 

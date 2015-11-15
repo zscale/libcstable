@@ -74,7 +74,7 @@ TEST_CASE(RecordMaterializerTest, TestSimpleReMaterialization, [] () {
       cstable::BinaryFormatVersion::v0_1_0,
       rs_schema);
 
-  cstable::RecordShredder shredder(&rs_schema, writer.get());
+  cstable::RecordShredder shredder(writer.get());
   shredder.addRecordFromProtobuf(sobj);
   writer->commit();
 
@@ -131,15 +131,13 @@ TEST_CASE(RecordMaterializerTest, TestSimpleReMaterializationWithNull, [] () {
   l1_c.addChild(2, "fnord3");
   l1_c.addChild(2, "fnord4");
 
-  auto rs_schema = RecordSchema::fromProtobuf(schema);
-
   FileUtil::rm(testfile);
   auto writer = cstable::CSTableWriter::createFile(
       testfile,
       cstable::BinaryFormatVersion::v0_1_0,
-      rs_schema);
+      RecordSchema::fromProtobuf(schema));
 
-  cstable::RecordShredder shredder(&rs_schema, writer.get());
+  cstable::RecordShredder shredder(writer.get());
   shredder.addRecordFromProtobuf(sobj, schema);
   writer->commit();
 

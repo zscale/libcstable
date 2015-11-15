@@ -25,9 +25,7 @@ namespace cstable {
 class RecordShredder {
 public:
 
-  RecordShredder(
-      const RecordSchema* schema,
-      CSTableWriter* writer);
+  RecordShredder(CSTableWriter* writer);
 
   void addRecordFromJSON(const String& json);
   void addRecordFromJSON(
@@ -43,8 +41,6 @@ public:
   void addRecordsFromCSV(CSVInputStream* csv);
 
 protected:
-  const RecordSchema* record_schema_;
-  RefPtr<msg::MessageSchema> proto_schema_;
   CSTableWriter* writer_;
 };
 

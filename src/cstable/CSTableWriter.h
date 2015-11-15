@@ -136,19 +136,22 @@ public:
   void addRow();
   void addRows(size_t num_records);
 
+  const RecordSchema* schema();
+
 protected:
 
   CSTableWriter(
-      BinaryFormatVersion version_,
+      BinaryFormatVersion version,
+      RefPtr<RecordSchema> schema,
       RefPtr<PageManager> page_mgr,
       RefPtr<PageIndex> page_idx,
-      const RecordSchema& schema,
       Vector<ColumnConfig> columns);
 
   void commitV1();
   void commitV2();
 
   BinaryFormatVersion version_;
+  RefPtr<RecordSchema> schema_;
   RefPtr<PageManager> page_mgr_;
   RefPtr<PageIndex> page_idx_;
   Vector<ColumnConfig> columns_;

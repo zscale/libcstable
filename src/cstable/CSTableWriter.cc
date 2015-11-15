@@ -73,7 +73,8 @@ RefPtr<CSTableWriter> CSTableWriter::createFile(
   auto file_os = FileOutputStream::fromFileDescriptor(file.fd());
 
   FileHeader header;
-  for (const auto& f : schema.columns()) {
+  header.schema = mkRef(new RecordSchema(schema));
+  for (const auto& f : header.schema->columns()) {
     createColumns("", 0, 0, f, &header.columns);
   }
 
@@ -95,9 +96,9 @@ RefPtr<CSTableWriter> CSTableWriter::createFile(
 
   return new CSTableWriter(
       version,
+      header.schema,
       page_mgr,
       new PageIndex(version, page_mgr),
-      schema,
       header.columns);
 }
 
@@ -146,11 +147,12 @@ static RefPtr<ColumnWriter> openColumnV2(
 
 CSTableWriter::CSTableWriter(
     BinaryFormatVersion version,
+    RefPtr<RecordSchema> schema,
     RefPtr<PageManager> page_mgr,
     RefPtr<PageIndex> page_idx,
-    const RecordSchema& schema,
     Vector<ColumnConfig> columns) :
     version_(version),
+    schema_(std::move(schema)),
     page_mgr_(page_mgr),
     page_idx_(page_idx),
     columns_(columns),
@@ -278,6 +280,10 @@ RefPtr<ColumnWriter> CSTableWriter::getColumnById(
   }
 
   return col->second;
+}
+
+const RecordSchema* CSTableWriter::schema() {
+  return schema_.get();
 }
 
 } // namespace cstable

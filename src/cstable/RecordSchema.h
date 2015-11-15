@@ -13,12 +13,31 @@
 #include <stx/autoref.h>
 #include <stx/json/json.h>
 #include <stx/protobuf/MessageSchema.h>
-#include <cstable/BinaryFormat.h>
 
 namespace stx {
 namespace cstable {
 
-class RecordSchema {
+enum class ColumnType : uint8_t {
+  SUBRECORD = 0,
+  BOOLEAN = 1,
+  UNSIGNED_INT = 2,
+  SIGNED_INT = 3,
+  STRING = 4,
+  FLOAT = 5,
+  DATETIME = 6
+};
+
+enum class ColumnEncoding : uint8_t {
+  BOOLEAN_BITPACKED = 1,
+  UINT32_BITPACKED = 10,
+  UINT32_PLAIN = 11,
+  UINT64_PLAIN = 12,
+  UINT64_LEB128 = 13,
+  FLOAT_IEEE754 = 14,
+  STRING_PLAIN = 100
+};
+
+class RecordSchema : public RefCounted {
 public:
 
   struct Column {
@@ -109,12 +128,6 @@ public:
       uint64_t type_size = 0);
 
   const Vector<Column*>& columns() const;
-
-  //String toString() const;
-  //Buffer encode() const;
-  //void encode(util::BinaryMessageWriter* buf) const;
-  //void decode(util::BinaryMessageReader* buf);
-  //static RefPtr<msg::RecordSchema> decode(const String& buf);
 
   //void toJSON(json::JSONOutputStream* json) const;
   //void fromJSON(
