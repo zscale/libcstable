@@ -17,16 +17,13 @@
 #include <cstable/CSTableWriter.h>
 #include <cstable/RecordSchema.h>
 #include <stx/protobuf/MessageSchema.h>
-#include <stx/protobuf/MessageObject.h>
+#include <stx/protobuf/DynamicMessage.h>
 
 namespace stx {
 namespace cstable {
 
 class RecordShredder {
 public:
-
-  static Vector<ColumnConfig> columnsFromSchema(
-      const msg::MessageSchema* schema);
 
   RecordShredder(
       const RecordSchema* schema,
@@ -37,11 +34,12 @@ public:
       const json::JSONObject::const_iterator& begin,
       const json::JSONObject::const_iterator& end);
 
-  //void addRecord(const msg::MessageObject& msg);
+  void addRecord(const msg::DynamicMessage& msg);
   void addRecordsFromCSV(CSVInputStream* csv);
 
 protected:
-  const RecordSchema* schema_;
+  const RecordSchema* record_schema_;
+  RefPtr<msg::MessageSchema> proto_schema_;
   CSTableWriter* writer_;
 };
 

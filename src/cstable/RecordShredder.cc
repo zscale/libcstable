@@ -15,245 +15,158 @@
 namespace stx {
 namespace cstable {
 
-static void createColumns(
-    const String& prefix,
-    uint32_t r_max,
-    uint32_t d_max,
-    const msg::MessageSchemaField& field,
-    Vector<ColumnConfig>* columns) {
-  auto colname = prefix + field.name;
-  auto typesize = field.type_size;
-
-  if (field.repeated) {
-    ++r_max;
-  }
-
-  if (field.repeated || field.optional) {
-    ++d_max;
-  }
-
-  switch (field.type) {
-    //case msg::FieldType::OBJECT:
-    //  for (const auto& f : field.schema->fields()) {
-    //    createColumns(colname + ".", r_max, d_max, f, columns);
-    //  }
-    //  break;
-
-    //case msg::FieldType::UINT32:
-    //  if (field.encoding == msg::EncodingHint::BITPACK) {
-    //    columns_.emplace(
-    //        colname,
-    //        new cstable::v1::BitPackedIntColumnWriter(r_max, d_max, typesize));
-    //  } else if (field.encoding == msg::EncodingHint::BITPACK) {
-    //    columns_.emplace(
-    //        colname,
-    //        new cstable::v1::LEB128ColumnWriter(r_max, d_max));
-    //  } else {
-    //    columns_.emplace(
-    //        colname,
-    //        new cstable::v1::UInt32ColumnWriter(r_max, d_max));
-    //  }
-    //  break;
-
-    //case msg::FieldType::UINT64:
-    //  if (field.encoding == msg::EncodingHint::BITPACK) {
-    //    columns_.emplace(
-    //        colname,
-    //        new cstable::v1::BitPackedIntColumnWriter(r_max, d_max, typesize));
-    //  } else if (field.encoding == msg::EncodingHint::BITPACK) {
-    //    columns_.emplace(
-    //        colname,
-    //        new cstable::v1::LEB128ColumnWriter(r_max, d_max));
-    //  } else {
-    //    columns_.emplace(
-    //        colname,
-    //        new cstable::v1::UInt64ColumnWriter(r_max, d_max));
-    //  }
-    //  break;
-
-    //case msg::FieldType::DATETIME:
-    //  columns_.emplace(
-    //      colname,
-    //      new cstable::v1::LEB128ColumnWriter(r_max, d_max));
-    //  break;
-
-    //case msg::FieldType::DOUBLE:
-    //  columns_.emplace(
-    //      colname,
-    //      new cstable::v1::DoubleColumnWriter(r_max, d_max));
-    //  break;
-
-    //case msg::FieldType::STRING:
-    //  columns_.emplace(
-    //      colname,
-    //      new cstable::v1::StringColumnWriter(r_max, d_max, typesize));
-    //  break;
-
-    //case msg::FieldType::BOOLEAN:
-    //  columns_.emplace(
-    //      colname,
-    //      new cstable::v1::BooleanColumnWriter(r_max, d_max));
-    //  break;
-  }
-}
-
-Vector<ColumnConfig> RecordShredder::columnsFromSchema(
-    const msg::MessageSchema* schema) {
-  Vector<ColumnConfig> columns;
-
-  for (const auto& f : schema->fields()) {
-    createColumns("", 0, 0, f, &columns);
-  }
-
-  return columns;
-}
-
 RecordShredder::RecordShredder(
     const RecordSchema* schema,
     CSTableWriter* writer) :
-    schema_(schema),
+    record_schema_(schema),
     writer_(writer) {}
 
+void writeProtoNull(
+    uint32_t r,
+    uint32_t d,
+    const String& column,
+    const msg::MessageSchemaField& field,
+    CSTableWriter* writer) {
+  switch (field.type) {
 
-//void RecordShredder::addRecordField(
-//    uint32_t r,
-//    uint32_t rmax,
-//    uint32_t d,
-//    const msg::MessageObject& msg,
-//    const String& column,
-//    const msg::MessageSchemaField& field) {
-//  auto next_r = r;
-//  auto next_d = d;
-//
-//  if (field.repeated) {
-//    ++rmax;
-//  }
-//
-//  if (field.optional || field.repeated) {
-//    ++next_d;
-//  }
-//
-//  size_t n = 0;
-//  for (const auto& o : msg.asObject()) {
-//    if (o.id != field.id) {
-//      continue;
-//    }
-//
-//    ++n;
-//
-//    switch (field.type) {
-//      case msg::FieldType::OBJECT:
-//        for (const auto& f : field.schema->fields()) {
-//          addRecordField(
-//              next_r,
-//              rmax,
-//              next_d,
-//              o,
-//              column + field.name + ".",
-//              f);
-//        }
-//        break;
-//
-//      default:
-//        writeField(next_r, next_d, o, column + field.name, field);
-//        break;
-//    }
-//
-//    next_r = rmax;
-//  }
-//
-//  if (n == 0) {
-//    if (!(field.optional || field.repeated)) {
-//      RAISEF(kIllegalArgumentError, "missing field: $0", column + field.name);
-//    }
-//
-//    writeNull(r, d, column + field.name, field);
-//    return;
-//  }
-//}
-//
-//void RecordShredder::addRecord(const msg::MessageObject& msg) {
-//  for (const auto& f : schema_->columns()) {
-//    addRecordField(0, 0, 0, msg, "", f);
-//  }
-//
-//  writer_->addRow();
-//}
+    case msg::FieldType::OBJECT:
+      for (const auto& f : field.schema->fields()) {
+        writeProtoNull(r, d, column + "." + f.name, f, writer);
+      }
 
-//void RecordShredder::writeNull(
-//    uint32_t r,
-//    uint32_t d,
-//    const String& column,
-//    const msg::MessageSchemaField& field) {
-//  switch (field.type) {
-//
-//    case msg::FieldType::OBJECT:
-//      for (const auto& f : field.schema->fields()) {
-//        writeNull(r, d, column + "." + f.name, f);
-//      }
-//
-//      break;
-//
-//    default:
-//      auto col = writer_->getColumnByName(column);
-//      col->addNull(r, d);
-//      break;
-//
-//  }
-//}
-//
-//void RecordShredder::writeField(
-//    uint32_t r,
-//    uint32_t d,
-//    const msg::MessageObject& msg,
-//    const String& column,
-//    const msg::MessageSchemaField& field) {
-//  auto col = writer_->getColumnByName(column);
-//
-//  switch (field.type) {
-//
-//    case msg::FieldType::STRING: {
-//      auto& str = msg.asString();
-//      col->addDatum(r, d, str.data(), str.size());
-//      break;
-//    }
-//
-//    case msg::FieldType::UINT32: {
-//      uint32_t val = msg.asUInt32();
-//      col->addDatum(r, d, &val, sizeof(val));
-//      break;
-//    }
-//
-//    case msg::FieldType::DATETIME: {
-//      uint64_t val = msg.asUInt64();
-//      col->addDatum(r, d, &val, sizeof(val));
-//      break;
-//    }
-//
-//    case msg::FieldType::UINT64: {
-//      uint64_t val = msg.asUInt64();
-//      col->addDatum(r, d, &val, sizeof(val));
-//      break;
-//    }
-//
-//    case msg::FieldType::DOUBLE: {
-//      uint64_t val = IEEE754::toBytes(msg.asDouble());
-//      col->addDatum(r, d, &val, sizeof(val));
-//      break;
-//    }
-//
-//    case msg::FieldType::BOOLEAN: {
-//      uint8_t val = msg.asBool() ? 1 : 0;
-//      col->addDatum(r, d, &val, sizeof(val));
-//      break;
-//    }
-//
-//    case msg::FieldType::OBJECT:
-//      RAISE(kIllegalStateError);
-//
-//  }
-//}
-//
+      break;
+
+    default:
+      auto col = writer->getColumnByName(column);
+      col->addNull(r, d);
+      break;
+
+  }
+}
+
+void writeProtoField(
+    uint32_t r,
+    uint32_t d,
+    const msg::MessageObject& msg,
+    const String& column,
+    const msg::MessageSchemaField& field,
+    CSTableWriter* writer) {
+  auto col = writer->getColumnByName(column);
+
+  switch (field.type) {
+
+    case msg::FieldType::STRING: {
+      auto& str = msg.asString();
+      col->addDatum(r, d, str.data(), str.size());
+      break;
+    }
+
+    case msg::FieldType::UINT32: {
+      uint32_t val = msg.asUInt32();
+      col->addDatum(r, d, &val, sizeof(val));
+      break;
+    }
+
+    case msg::FieldType::DATETIME: {
+      uint64_t val = msg.asUInt64();
+      col->addDatum(r, d, &val, sizeof(val));
+      break;
+    }
+
+    case msg::FieldType::UINT64: {
+      uint64_t val = msg.asUInt64();
+      col->addDatum(r, d, &val, sizeof(val));
+      break;
+    }
+
+    case msg::FieldType::DOUBLE: {
+      uint64_t val = IEEE754::toBytes(msg.asDouble());
+      col->addDatum(r, d, &val, sizeof(val));
+      break;
+    }
+
+    case msg::FieldType::BOOLEAN: {
+      uint8_t val = msg.asBool() ? 1 : 0;
+      col->addDatum(r, d, &val, sizeof(val));
+      break;
+    }
+
+    case msg::FieldType::OBJECT:
+      RAISE(kIllegalStateError);
+
+  }
+}
+
+static void addProtoRecordField(
+    uint32_t r,
+    uint32_t rmax,
+    uint32_t d,
+    const msg::MessageObject& msg,
+    RefPtr<msg::MessageSchema> msg_schema,
+    const String& column,
+    const msg::MessageSchemaField& field,
+    CSTableWriter* writer) {
+  auto next_r = r;
+  auto next_d = d;
+
+  if (field.repeated) {
+    ++rmax;
+  }
+
+  if (field.optional || field.repeated) {
+    ++next_d;
+  }
+
+  size_t n = 0;
+  auto o_field_id = msg_schema->fieldId(field.name);
+  for (const auto& o : msg.asObject()) {
+    if (o.id != o_field_id) { // FIXME
+      continue;
+    }
+
+    ++n;
+
+    switch (field.type) {
+      case msg::FieldType::OBJECT:
+        for (const auto& f : field.schema->fields()) {
+          addProtoRecordField(
+              next_r,
+              rmax,
+              next_d,
+              o,
+              msg_schema->fieldSchema(o_field_id),
+              column + field.name + ".",
+              f,
+              writer);
+        }
+        break;
+
+      default:
+        writeProtoField(next_r, next_d, o, column + field.name, field, writer);
+        break;
+    }
+
+    next_r = rmax;
+  }
+
+  if (n == 0) {
+    if (!(field.optional || field.repeated)) {
+      RAISEF(kIllegalArgumentError, "missing field: $0", column + field.name);
+    }
+
+    writeProtoNull(r, d, column + field.name, field, writer);
+    return;
+  }
+}
+
+void RecordShredder::addRecord(const msg::DynamicMessage& msg) {
+  for (const auto& f : proto_schema_->fields()) {
+    addProtoRecordField(0, 0, 0, msg.data(), msg.schema(), "", f, writer_);
+  }
+
+  writer_->addRow();
+}
+
 ////void RecordShredder::addRecordsFromCSV(CSVInputStream* csv) {
 ////  Vector<String> columns;
 ////  csv->readNextRow(&columns);
