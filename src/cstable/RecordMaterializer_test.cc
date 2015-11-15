@@ -60,9 +60,11 @@ TEST_CASE(RecordMaterializerTest, TestSimpleReMaterialization, [] () {
   l1_b.addChild(2, "fnord3");
   l1_b.addChild(2, "fnord4");
 
-  auto columns = RecordShredder::columnsFromSchema(&schema);
-  auto writer = cstable::CSTableWriter::createFile(testfile);
-  cstable::v1::RecordShredder shredder(&schema, writer.get());
+  auto writer = cstable::CSTableWriter::createFile(
+      testfile,
+      RecordShredder::columnsFromSchema(&schema));
+
+  cstable::RecordShredder shredder(&schema, writer.get());
   shredder.addRecord(sobj);
   writer->commit();
 
@@ -120,9 +122,13 @@ TEST_CASE(RecordMaterializerTest, TestSimpleReMaterializationWithNull, [] () {
   l1_c.addChild(2, "fnord3");
   l1_c.addChild(2, "fnord4");
 
-  cstable::v1::CSTableBuilder builder(&schema);
-  builder.addRecord(sobj);
-  builder.write(testfile);
+  auto writer = cstable::CSTableWriter::createFile(
+      testfile,
+      RecordShredder::columnsFromSchema(&schema));
+
+  cstable::RecordShredder shredder(&schema, writer.get());
+  shredder.addRecord(sobj);
+  writer->commit();
 
   auto reader = cstable::CSTableReader::openFile(testfile);
   cstable::RecordMaterializer materializer(&schema, reader.get());
@@ -195,9 +201,13 @@ TEST_CASE(RecordMaterializerTest, TestReMatWithNonRepeatedParent, [] () {
   l2_cb.addChild(3, "fnord5");
   l2_cb.addChild(3, "fnord6");
 
-  cstable::v1::CSTableBuilder builder(&schema);
-  builder.addRecord(sobj);
-  builder.write(testfile);
+  auto writer = cstable::CSTableWriter::createFile(
+      testfile,
+      RecordShredder::columnsFromSchema(&schema));
+
+  cstable::RecordShredder shredder(&schema, writer.get());
+  shredder.addRecord(sobj);
+  writer->commit();
 
   auto reader = cstable::CSTableReader::openFile(testfile);
   cstable::RecordMaterializer materializer(&schema, reader.get());
