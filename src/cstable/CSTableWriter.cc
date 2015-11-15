@@ -32,7 +32,6 @@ RefPtr<CSTableWriter> CSTableWriter::reopenFile(
 CSTableWriter::CSTableWriter(
     File&& file,
     const Vector<ColumnConfig>& columns) :
-    file_(std::move(file)),
     columns_(columns),
     column_metadata_(columns.size()),
     column_rlevel_metadata_(columns.size()),
@@ -41,6 +40,30 @@ CSTableWriter::CSTableWriter(
     meta_block_size_(52),
     current_txid_(0),
     num_rows_(0) {
+  // build header
+  Buffer hdr;
+  hdr.reserve(8192);
+
+  auto os = BufferOutputStream::fromBuffer(&hdr);
+  os->write(kMagicBytes, sizeof(kMagicBytes));
+  os->appendUInt16(2); // version
+  os->appendUInt64(0); // flags
+  RCHECK(hdr.size() == meta_block_offset_, "invalid meta block offset");
+  os->appendString(String(meta_block_size_ * 2, '\0')); // empty meta blocks
+  os->appendString(String(128, '\0')); // 128 bytes reserved
+  os->appendUInt32(columns.size());
+  for (const auto& col : columns) {
+    col.encode(os.get());
+  }
+
+  // pad header to next 512 byte boundary
+  auto header_padding = padToNextSector(hdr.size()) - hdr.size();
+  os->appendString(String(header_padding, '\0'));
+
+  // flush header to disk & init pagemanager
+  file.pwrite(0, hdr.data(), hdr.size());
+  page_mgr_ = mkRef(new PageManager(std::move(file), hdr.size()));
+
   // create columns
   for (size_t i = 0; i < columns_.size(); ++i) {
     RefPtr<DefaultColumnWriter> writer;
@@ -62,37 +85,14 @@ CSTableWriter::CSTableWriter(
     column_writers_by_id_.emplace(columns_[i].column_id, writer);
     column_writers_by_name_.emplace(columns_[i].column_name, writer);
   }
-
-  // build header
-  Buffer hdr;
-  hdr.reserve(8192);
-
-  auto os = BufferOutputStream::fromBuffer(&hdr);
-  os->write(kMagicBytes, sizeof(kMagicBytes));
-  os->appendUInt16(2); // version
-  os->appendUInt64(0); // flags
-  RCHECK(hdr.size() == meta_block_offset_, "invalid meta block offset");
-  os->appendString(String(meta_block_size_ * 2, '\0')); // empty meta blocks
-  os->appendString(String(128, '\0')); // 128 bytes reserved
-  os->appendUInt32(columns_.size());
-  for (const auto& col : columns_) {
-    col.encode(os.get());
-  }
-
-  // pad header to next 512 byte boundary
-  auto header_padding = padToNextSector(hdr.size()) - hdr.size();
-  os->appendString(String(header_padding, '\0'));
-
-  // flush header to disk & init pagemanager
-  file_.pwrite(0, hdr.data(), hdr.size());
-  page_mgr_ = mkRef(new PageManager(hdr.size()));
 }
 
 void CSTableWriter::commit() {
   auto txid = current_txid_ + 1;
+  auto file = page_mgr_->file();
 
   // write new index and fsync all changes
-  file_.fsync();
+  file->fsync();
 
   // build new meta block
   Buffer buf;
@@ -112,10 +112,10 @@ void CSTableWriter::commit() {
   // write to metablock slot
   auto mb_index = txid % 2;
   auto mb_offset = meta_block_offset_ + meta_block_size_ * mb_index;
-  file_.pwrite(mb_offset, buf.data(), buf.size());
+  file->pwrite(mb_offset, buf.data(), buf.size());
 
   // fsync one last time
-  file_.fsync();
+  file->fsync();
 }
 
 RefPtr<DefaultColumnWriter> CSTableWriter::getColumnByName(

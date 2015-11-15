@@ -1,0 +1,4 @@
+- don't write rlevels/dlevels if max r/d is 0
+- cstable::LogicalType, cstable::StorageType
+- more schema info to be able to shred/reconstruct json?
+- store max values for e.g. bitpackcolumn

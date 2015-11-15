@@ -123,7 +123,6 @@ protected:
       File&& file,
       const Vector<ColumnConfig>& columns);
 
-  File file_;
   Vector<ColumnConfig> columns_;
   Vector<RefPtr<Buffer>> column_metadata_;
   Vector<RefPtr<Buffer>> column_rlevel_metadata_;

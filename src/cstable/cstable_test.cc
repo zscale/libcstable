@@ -70,7 +70,6 @@ TEST_CASE(CSTableTest, TestV1CSTableColumnWriterReader, [] () {
   auto uint64_writer = mkRef(
     new cstable::v1::UInt64ColumnWriter(rep_max, def_max));
 
-
   for (auto i = 0; i < num_records; i++) {
     uint8_t boolean_v = i % 2;
     double double_v = i * 1.1;
@@ -105,7 +104,6 @@ TEST_CASE(CSTableTest, TestV1CSTableColumnWriterReader, [] () {
   auto uint32_reader = tbl_reader.getColumnReader("uint32");
   auto uint64_reader = tbl_reader.getColumnReader("uint64");
 
-
   EXPECT_EQ(bitpacked_reader->type() == msg::FieldType::UINT32, true);
   EXPECT_EQ(boolean_reader->type() == msg::FieldType::BOOLEAN, true);
   EXPECT_EQ(double_reader->type() == msg::FieldType::DOUBLE, true);
@@ -113,7 +111,6 @@ TEST_CASE(CSTableTest, TestV1CSTableColumnWriterReader, [] () {
   EXPECT_EQ(string_reader->type() == msg::FieldType::STRING, true);
   EXPECT_EQ(uint32_reader->type() == msg::FieldType::UINT32, true);
   EXPECT_EQ(uint64_reader->type() == msg::FieldType::UINT64, true);
-
 
   for (auto i = 0; i < num_records; i++) {
     uint64_t rep_level;
@@ -158,25 +155,25 @@ TEST_CASE(CSTableTest, TestV1CSTableColumnWriterReader, [] () {
   }
 });
 
-TEST_CASE(CSTableTest, TestV2CSTableContainer, [] () {
-  String filename = "/tmp/__fnord__cstabletest2.cstable";
-  FileUtil::rm(filename);
-
-  Vector<cstable::ColumnConfig> columns;
-  columns.emplace_back(cstable::ColumnConfig {
-    .column_id = 1,
-    .column_name = "mycol",
-    .storage_type = cstable::ColumnType::UINT32_BITPACKED,
-    .logical_type = msg::FieldType::UINT32,
-    .rlevel_max = 0,
-    .dlevel_max = 0
-  });
-
-  auto tbl_writer = cstable::CSTableWriter::createFile(filename, columns);
-  tbl_writer->commit();
-
-  EXPECT_EQ(FileUtil::size(filename), 512);
-});
+//TEST_CASE(CSTableTest, TestV2CSTableContainer, [] () {
+//  String filename = "/tmp/__fnord__cstabletest2.cstable";
+//  FileUtil::rm(filename);
+//
+//  Vector<cstable::ColumnConfig> columns;
+//  columns.emplace_back(cstable::ColumnConfig {
+//    .column_id = 1,
+//    .column_name = "mycol",
+//    .storage_type = cstable::ColumnType::UINT32_BITPACKED,
+//    .logical_type = msg::FieldType::UINT32,
+//    .rlevel_max = 0,
+//    .dlevel_max = 0
+//  });
+//
+//  auto tbl_writer = cstable::CSTableWriter::createFile(filename, columns);
+//  tbl_writer->commit();
+//
+//  EXPECT_EQ(FileUtil::size(filename), 512);
+//});
 
 TEST_CASE(CSTableTest, TestV2UInt64Plain, [] () {
   String filename = "/tmp/__fnord__cstabletest2.cstable";

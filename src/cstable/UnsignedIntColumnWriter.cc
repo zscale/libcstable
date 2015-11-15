@@ -33,10 +33,51 @@ UnsignedIntColumnWriter::UnsignedIntColumnWriter(
     default:
       RAISEF(
           kIllegalArgumentError,
-          "invalid storage type for unsigned integer column $0",
+          "invalid storage type for unsigned integer column '$0'",
           config_.column_name);
 
   }
+}
+
+void UnsignedIntColumnWriter::writeUnsignedInt(
+    uint64_t rlvl,
+    uint64_t dlvl,
+    uint64_t value) {
+  rlevel_writer_->writeValue(rlvl);
+  dlevel_writer_->writeValue(dlvl);
+  data_writer_->writeValue(value);
+}
+
+void UnsignedIntColumnWriter::writeSignedInt(
+    uint64_t rlvl,
+    uint64_t dlvl,
+    int64_t value) {
+  if (value < 0) {
+    value = 0;
+  }
+
+  writeUnsignedInt(rlvl, dlvl, (uint64_t) value);
+}
+
+
+void UnsignedIntColumnWriter::writeDouble(
+    uint64_t rlvl,
+    uint64_t dlvl,
+    double value) {
+  if (value < 0) {
+    value = 0;
+  }
+
+  writeUnsignedInt(rlvl, dlvl, value);
+}
+
+void UnsignedIntColumnWriter::writeString(
+    uint64_t rlvl,
+    uint64_t dlvl,
+    const char* data,
+    size_t size) {
+  uint64_t value = std::stoull(String(data, size));
+  writeUnsignedInt(rlvl, dlvl, value);
 }
 
 } // namespace cstable
