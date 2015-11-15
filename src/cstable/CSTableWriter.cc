@@ -9,6 +9,13 @@
  */
 #include <cstable/CSTableWriter.h>
 #include <cstable/UnsignedIntColumnWriter.h>
+#include <cstable/v1/BooleanColumnWriter.h>
+#include <cstable/v1/BitPackedIntColumnWriter.h>
+#include <cstable/v1/UInt32ColumnWriter.h>
+#include <cstable/v1/UInt64ColumnWriter.h>
+#include <cstable/v1/LEB128ColumnWriter.h>
+#include <cstable/v1/DoubleColumnWriter.h>
+#include <cstable/v1/StringColumnWriter.h>
 #include <stx/SHA1.h>
 
 namespace stx {
@@ -65,6 +72,44 @@ RefPtr<CSTableWriter> CSTableWriter::reopenFile(
   RAISE(kNotYetImplementedError);
 }
 
+static RefPtr<ColumnWriter> openColumnV1(const ColumnConfig& c) {
+  auto rmax = c.rlevel_max;
+  auto dmax = c.dlevel_max;
+
+  switch (c.storage_type) {
+    case ColumnType::BOOLEAN:
+      return new v1::BooleanColumnWriter(rmax, dmax);
+    case ColumnType::UINT32_BITPACKED:
+      return new v1::BitPackedIntColumnWriter(rmax, dmax);
+    case ColumnType::UINT32_PLAIN:
+      return new v1::UInt32ColumnWriter(rmax, dmax);
+    case ColumnType::UINT64_PLAIN:
+      return new v1::UInt64ColumnWriter(rmax, dmax);
+    case ColumnType::UINT64_LEB128:
+      return new v1::LEB128ColumnWriter(rmax, dmax);
+    case ColumnType::DOUBLE:
+      return new v1::DoubleColumnWriter(rmax, dmax);
+    case ColumnType::STRING_PLAIN:
+      return new v1::StringColumnWriter(rmax, dmax);
+    default:
+      RAISEF(
+          kRuntimeError,
+          "unsupported column type: $0",
+          (uint32_t) c.storage_type);
+  }
+}
+
+static RefPtr<ColumnWriter> openColumnV2(
+    const ColumnConfig& c,
+    RefPtr<PageManager> page_mgr,
+    RefPtr<PageIndex> page_idx) {
+  switch (c.logical_type) {
+    case msg::FieldType::UINT64:
+    case msg::FieldType::UINT32:
+      return new UnsignedIntColumnWriter(c, page_mgr, page_idx);
+  }
+}
+
 CSTableWriter::CSTableWriter(
     BinaryFormatVersion version,
     RefPtr<PageManager> page_mgr,
@@ -78,12 +123,13 @@ CSTableWriter::CSTableWriter(
     num_rows_(0) {
   // create columns
   for (size_t i = 0; i < columns_.size(); ++i) {
-    RefPtr<DefaultColumnWriter> writer;
-
-    switch (columns_[i].logical_type) {
-      case msg::FieldType::UINT64:
-      case msg::FieldType::UINT32:
-        writer = new UnsignedIntColumnWriter(columns_[i], page_mgr_, page_idx_);
+    RefPtr<ColumnWriter> writer;
+    switch (version_) {
+      case BinaryFormatVersion::v0_1_0:
+        writer = openColumnV1(columns_[i]);
+        break;
+      case BinaryFormatVersion::v0_2_0:
+        writer = openColumnV2(columns_[i], page_mgr_, page_idx_);
         break;
     }
 
@@ -122,7 +168,7 @@ void CSTableWriter::commitV2() {
   cur_idx_ptr_ = Some(idx_head);
 }
 
-RefPtr<DefaultColumnWriter> CSTableWriter::getColumnByName(
+RefPtr<ColumnWriter> CSTableWriter::getColumnByName(
     const String& column_name) const {
   auto col = column_writers_by_name_.find(column_name);
   if (col == column_writers_by_name_.end()) {
@@ -132,7 +178,7 @@ RefPtr<DefaultColumnWriter> CSTableWriter::getColumnByName(
   return col->second;
 }
 
-RefPtr<DefaultColumnWriter> CSTableWriter::getColumnById(
+RefPtr<ColumnWriter> CSTableWriter::getColumnById(
     uint32_t column_id) const {
   auto col = column_writers_by_id_.find(column_id);
   if (col == column_writers_by_id_.end()) {

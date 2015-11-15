@@ -124,13 +124,13 @@ public:
    * able to commit() the data to disk again using the same CSTableWriter
    * instance)
    */
-  RefPtr<DefaultColumnWriter> getColumnByName(const String& column_name) const;
+  RefPtr<ColumnWriter> getColumnByName(const String& column_name) const;
 
   /**
    * The same as getColumnnByName, except that the column is retrieved by id
    * and not by name
    */
-  RefPtr<DefaultColumnWriter> getColumnById(uint32_t column_id) const;
+  RefPtr<ColumnWriter> getColumnById(uint32_t column_id) const;
 
 protected:
 
@@ -148,8 +148,8 @@ protected:
   RefPtr<PageIndex> page_idx_;
   Vector<ColumnConfig> columns_;
   RefPtr<ColumnWriter> column_writers_;
-  HashMap<uint32_t, RefPtr<DefaultColumnWriter>> column_writers_by_id_;
-  HashMap<String, RefPtr<DefaultColumnWriter>> column_writers_by_name_;
+  HashMap<uint32_t, RefPtr<ColumnWriter>> column_writers_by_id_;
+  HashMap<String, RefPtr<ColumnWriter>> column_writers_by_name_;
   uint64_t current_txid_;
   uint64_t num_rows_;
   Option<PageRef> cur_idx_ptr_;
