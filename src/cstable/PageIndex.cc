@@ -9,6 +9,7 @@
  */
 #include <cstable/PageIndex.h>
 #include <cstable/PageWriter.h>
+#include <stx/util/binarymessagewriter.h>
 
 namespace stx {
 namespace cstable {
@@ -24,22 +25,75 @@ void PageIndex::addPageWriter(PageIndexKey key, PageWriter* page_writer) {
 }
 
 PageRef PageIndex::write(Option<PageRef> head) {
+  static const size_t kIndexPageSize = 512 * 1024;
+  static const size_t kIndexPageOverhead = 16;
+
+  // build index
   Buffer buf;
-  auto os = BufferOutputStream::fromBuffer(&buf);
+  {
+    auto os = BufferOutputStream::fromBuffer(&buf);
+    for (auto& p : page_writers_) {
+      const auto& key = p.first;
+      auto& writer = p.second;
 
-  for (auto& p : page_writers_) {
-    const auto& key = p.first;
-    auto& writer = p.second;
+      Buffer col_buf;
+      auto col_os = BufferOutputStream::fromBuffer(&col_buf);
+      writer->writeIndex(col_os.get());
 
-    Buffer col_buf;
-    auto col_os = BufferOutputStream::fromBuffer(&col_buf);
-    writer->writeIndex(col_os.get());
-
-    os->appendVarUInt((uint8_t) key.entry_type);
-    os->appendVarUInt(key.column_id);
-    os->appendVarUInt(col_buf.size());
-    os->write((char*) col_buf.data(), col_buf.size());
+      os->appendVarUInt((uint8_t) key.entry_type);
+      os->appendVarUInt(key.column_id);
+      os->appendVarUInt(col_buf.size());
+      os->write((char*) col_buf.data(), col_buf.size());
+    }
   }
+
+  // allocate pages
+  Vector<PageRef> pages;
+  {
+    size_t remaining = buf.size();
+    Option<PageRef> next = head;
+    while (remaining > 0) {
+      if (next.isEmpty()) {
+        pages.emplace_back(
+            page_mgr_->allocPage(
+                std::max(kIndexPageSize, remaining + kIndexPageOverhead)));
+
+        break;
+      } else {
+        RAISE(kNotImplementedError);
+      }
+    }
+  }
+
+  // write index to disk
+  uint64_t written = 0;
+  Buffer page_buf;
+  auto page_os = BufferOutputStream::fromBuffer(&page_buf);
+  for (size_t i = 0; i < pages.size(); ++i) {
+    page_buf.clear();
+
+    auto used = std::min(
+        pages[i].size - kIndexPageOverhead,
+        buf.size() - written);
+
+    if (i + 1 < pages.size()) {
+      page_os->appendUInt64(pages[i+1].offset);
+      page_os->appendUInt64(pages[i+1].size);
+    } else {
+      page_os->appendUInt64(0);
+      page_os->appendUInt64(0);
+    }
+
+    page_os->appendUInt64(used);
+    page_os->write(buf.structAt<char>(written), used);
+
+    page_mgr_->writePage(pages[i], page_buf);
+    written += used;
+  }
+
+  RCHECK(written == buf.size(), "invalid page allocation");
+
+  return pages[0];
 }
 
 
