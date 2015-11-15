@@ -34,7 +34,7 @@ public:
   void addDatum(uint64_t rep_level, uint64_t def_level, double value);
 
   ColumnEncoding type() const override {
-    return ColumnEncoding::DOUBLE;
+    return ColumnEncoding::FLOAT_IEEE754;
   }
 
   msg::FieldType fieldType() const override {

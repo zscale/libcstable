@@ -65,62 +65,40 @@ TEST_CASE(CSTableTest, TestV1CSTableColumnWriterReader, [] () {
 
   cstable::RecordSchema schema;
 
-  //Vector<cstable::ColumnConfig> columns;
-  //columns.emplace_back(cstable::ColumnConfig {
-  //  .column_name = "bitpacked",
-  //  .storage_type = cstable::ColumnEncoding::UINT32_BITPACKED,
-  //  .logical_type = msg::FieldType::UINT32,
-  //  .rlevel_max = rep_max,
-  //  .dlevel_max = def_max
-  //});
+  schema.addUnsignedIntegerArray(
+      "bitpacked",
+      true,
+      cstable::ColumnEncoding::UINT32_BITPACKED);
 
-  //columns.emplace_back(cstable::ColumnConfig {
-  //  .column_name = "boolean",
-  //  .storage_type = cstable::ColumnEncoding::BOOLEAN,
-  //  .logical_type = msg::FieldType::BOOLEAN,
-  //  .rlevel_max = rep_max,
-  //  .dlevel_max = def_max
-  //});
+  schema.addUnsignedIntegerArray(
+      "boolean",
+      true,
+      cstable::ColumnEncoding::BOOLEAN_BITPACKED);
 
-  //columns.emplace_back(cstable::ColumnConfig {
-  //  .column_name = "double",
-  //  .storage_type = cstable::ColumnEncoding::DOUBLE,
-  //  .logical_type = msg::FieldType::DOUBLE,
-  //  .rlevel_max = rep_max,
-  //  .dlevel_max = def_max
-  //});
+  schema.addFloatArray(
+      "double",
+      true,
+      cstable::ColumnEncoding::FLOAT_IEEE754);
 
-  //columns.emplace_back(cstable::ColumnConfig {
-  //  .column_name = "leb128",
-  //  .storage_type = cstable::ColumnEncoding::UINT64_LEB128,
-  //  .logical_type = msg::FieldType::UINT64,
-  //  .rlevel_max = rep_max,
-  //  .dlevel_max = def_max
-  //});
+  schema.addUnsignedIntegerArray(
+      "leb128",
+      true,
+      cstable::ColumnEncoding::UINT64_LEB128);
 
-  //columns.emplace_back(cstable::ColumnConfig {
-  //  .column_name = "string",
-  //  .storage_type = cstable::ColumnEncoding::STRING_PLAIN,
-  //  .logical_type = msg::FieldType::STRING,
-  //  .rlevel_max = rep_max,
-  //  .dlevel_max = def_max
-  //});
+  schema.addStringArray(
+      "string",
+      true,
+      cstable::ColumnEncoding::STRING_PLAIN);
 
-  //columns.emplace_back(cstable::ColumnConfig {
-  //  .column_name = "uint32",
-  //  .storage_type = cstable::ColumnEncoding::UINT32_PLAIN,
-  //  .logical_type = msg::FieldType::UINT32,
-  //  .rlevel_max = rep_max,
-  //  .dlevel_max = def_max
-  //});
+  schema.addUnsignedIntegerArray(
+      "uint32",
+      true,
+      cstable::ColumnEncoding::UINT32_PLAIN);
 
-  //columns.emplace_back(cstable::ColumnConfig {
-  //  .column_name = "uint64",
-  //  .storage_type = cstable::ColumnEncoding::UINT64_PLAIN,
-  //  .logical_type = msg::FieldType::UINT64,
-  //  .rlevel_max = rep_max,
-  //  .dlevel_max = def_max
-  //});
+  schema.addUnsignedIntegerArray(
+      "uint64",
+      true,
+      cstable::ColumnEncoding::UINT64_PLAIN);
 
   auto tbl_writer = cstable::CSTableWriter::createFile(
       filename,

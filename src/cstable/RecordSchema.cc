@@ -68,6 +68,40 @@ void RecordSchema::addUnsignedIntegerArray(
   columns_by_name_.emplace(name, std::move(col));
 }
 
+void RecordSchema::addFloat(
+    const String& name,
+    bool optional /* = true */,
+    ColumnEncoding encoding /* = ColumnEncoding::FLOAT_IEEE754 */) {
+  auto col = mkScoped(new Column {
+    .name = name,
+    .type = ColumnType::FLOAT,
+    .encoding = encoding,
+    .type_size = 0,
+    .repeated = false,
+    .optional = optional
+  });
+
+  columns_.emplace_back(col.get());
+  columns_by_name_.emplace(name, std::move(col));
+}
+
+void RecordSchema::addFloatArray(
+    const String& name,
+    bool optional /* = true */,
+    ColumnEncoding encoding /* = ColumnEncoding::FLOAT_IEEE754 */) {
+  auto col = mkScoped(new Column {
+    .name = name,
+    .type = ColumnType::FLOAT,
+    .encoding = encoding,
+    .type_size = 0,
+    .repeated = true,
+    .optional = optional
+  });
+
+  columns_.emplace_back(col.get());
+  columns_by_name_.emplace(name, std::move(col));
+}
+
 void RecordSchema::addString(
     const String& name,
     bool optional /* = true */,

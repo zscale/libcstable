@@ -30,7 +30,7 @@ static RefPtr<v1::ColumnReader> openColumnV1(
   auto dmax = c.dlevel_max;
 
   switch (c.storage_type) {
-    case ColumnEncoding::BOOLEAN:
+    case ColumnEncoding::BOOLEAN_BITPACKED:
       return new v1::BooleanColumnReader(rmax, dmax, cdata, csize);
     case ColumnEncoding::UINT32_BITPACKED:
       return new v1::BitPackedIntColumnReader(rmax, dmax, cdata, csize);
@@ -40,7 +40,7 @@ static RefPtr<v1::ColumnReader> openColumnV1(
       return new v1::UInt64ColumnReader(rmax, dmax, cdata, csize);
     case ColumnEncoding::UINT64_LEB128:
       return new v1::LEB128ColumnReader(rmax, dmax, cdata, csize);
-    case ColumnEncoding::DOUBLE:
+    case ColumnEncoding::FLOAT_IEEE754:
       return new v1::DoubleColumnReader(rmax, dmax, cdata, csize);
     case ColumnEncoding::STRING_PLAIN:
       return new v1::StringColumnReader(rmax, dmax, cdata, csize);

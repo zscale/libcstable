@@ -33,6 +33,16 @@ public:
   RecordSchema();
   RecordSchema(const RecordSchema& other);
 
+  void addBool(
+      const String& name,
+      bool optional = true,
+      ColumnEncoding encoding = ColumnEncoding::BOOLEAN_BITPACKED);
+
+  void addBoolArray(
+      const String& name,
+      bool optional = true,
+      ColumnEncoding encoding = ColumnEncoding::BOOLEAN_BITPACKED);
+
   void addUnsignedInteger(
       const String& name,
       bool optional = true,
@@ -44,6 +54,28 @@ public:
       bool optional = true,
       ColumnEncoding encoding = ColumnEncoding::UINT64_LEB128,
       uint64_t max_value = 0);
+
+  void addSignedInteger(
+      const String& name,
+      bool optional = true,
+      ColumnEncoding encoding = ColumnEncoding::UINT64_LEB128,
+      uint64_t max_value = 0);
+
+  void addSignedIntegerArray(
+      const String& name,
+      bool optional = true,
+      ColumnEncoding encoding = ColumnEncoding::UINT64_LEB128,
+      uint64_t max_value = 0);
+
+  void addFloat(
+      const String& name,
+      bool optional = true,
+      ColumnEncoding encoding = ColumnEncoding::FLOAT_IEEE754);
+
+  void addFloatArray(
+      const String& name,
+      bool optional = true,
+      ColumnEncoding encoding = ColumnEncoding::FLOAT_IEEE754);
 
   void addString(
       const String& name,

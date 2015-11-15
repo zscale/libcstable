@@ -40,7 +40,7 @@ public:
   }
 
   ColumnEncoding storageType() const override {
-    return ColumnEncoding::BOOLEAN;
+    return ColumnEncoding::BOOLEAN_BITPACKED;
   }
 
 protected:

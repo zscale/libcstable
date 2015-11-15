@@ -34,7 +34,7 @@ public:
   void commit();
 
   ColumnEncoding type() const override {
-    return ColumnEncoding::BOOLEAN;
+    return ColumnEncoding::BOOLEAN_BITPACKED;
   }
 
   msg::FieldType fieldType() const override {

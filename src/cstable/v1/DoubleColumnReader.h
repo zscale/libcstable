@@ -39,7 +39,7 @@ public:
   }
 
   ColumnEncoding storageType() const override {
-    return ColumnEncoding::DOUBLE;
+    return ColumnEncoding::FLOAT_IEEE754;
   }
 
 protected:

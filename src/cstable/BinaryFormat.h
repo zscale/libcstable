@@ -113,17 +113,17 @@ enum class ColumnType : uint8_t {
   UNSIGNED_INT = 2,
   SIGNED_INT = 3,
   STRING = 4,
-  DOUBLE = 5,
+  FLOAT = 5,
   DATETIME = 6
 };
 
 enum class ColumnEncoding : uint8_t {
-  BOOLEAN = 1,
+  BOOLEAN_BITPACKED = 1,
   UINT32_BITPACKED = 10,
   UINT32_PLAIN = 11,
   UINT64_PLAIN = 12,
   UINT64_LEB128 = 13,
-  DOUBLE = 14,
+  FLOAT_IEEE754 = 14,
   STRING_PLAIN = 100
 };
 

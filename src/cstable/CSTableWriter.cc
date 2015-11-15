@@ -112,7 +112,7 @@ static RefPtr<ColumnWriter> openColumnV1(const ColumnConfig& c) {
   auto dmax = c.dlevel_max;
 
   switch (c.storage_type) {
-    case ColumnEncoding::BOOLEAN:
+    case ColumnEncoding::BOOLEAN_BITPACKED:
       return new v1::BooleanColumnWriter(rmax, dmax);
     case ColumnEncoding::UINT32_BITPACKED:
       return new v1::BitPackedIntColumnWriter(rmax, dmax);
@@ -122,7 +122,7 @@ static RefPtr<ColumnWriter> openColumnV1(const ColumnConfig& c) {
       return new v1::UInt64ColumnWriter(rmax, dmax);
     case ColumnEncoding::UINT64_LEB128:
       return new v1::LEB128ColumnWriter(rmax, dmax);
-    case ColumnEncoding::DOUBLE:
+    case ColumnEncoding::FLOAT_IEEE754:
       return new v1::DoubleColumnWriter(rmax, dmax);
     case ColumnEncoding::STRING_PLAIN:
       return new v1::StringColumnWriter(rmax, dmax);
