@@ -9,11 +9,9 @@
  */
 #pragma once
 #include <stx/stdtypes.h>
-#include <stx/util/binarymessagewriter.h>
-#include <stx/util/BitPackEncoder.h>
-#include <stx/io/outputstream.h>
 #include <cstable/BinaryFormat.h>
 #include <cstable/PageManager.h>
+#include <cstable/PageIndex.h>
 #include <cstable/PageWriter.h>
 
 namespace stx {
@@ -24,7 +22,9 @@ public:
   static const uint64_t kPageSize = 512 * 2;
 
   UInt64PageWriter(
-      RefPtr<PageManager> page_mgr);
+      PageIndexKey key,
+      RefPtr<PageManager> page_mgr,
+      RefPtr<PageIndex> page_idx);
 
   void writeValue(uint64_t value) override;
 
@@ -33,6 +33,7 @@ protected:
   void allocPage();
   void flushPage();
 
+  PageIndexKey key_;
   RefPtr<PageManager> page_mgr_;
   bool has_page_;
   cstable::PageRef page_;

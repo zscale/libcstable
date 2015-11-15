@@ -18,13 +18,23 @@
 namespace stx {
 namespace cstable {
 
+class PageWriter;
+
+struct PageIndexKey {
+  uint32_t column_id;
+  PageIndexEntryType entry_type;
+};
+
 class PageIndex : public RefCounted {
 public:
 
   PageIndex(BinaryFormatVersion version);
 
+  void addPageWriter(PageIndexKey key, PageWriter* page_writer);
+
 protected:
   BinaryFormatVersion version_;
+  Vector<Pair<PageIndexKey, PageWriter*>> page_writers_;
 };
 
 } // namespace cstable

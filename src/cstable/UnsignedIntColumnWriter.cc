@@ -17,10 +17,15 @@ UnsignedIntColumnWriter::UnsignedIntColumnWriter(
     RefPtr<PageManager> page_mgr,
     RefPtr<PageIndex> page_idx) :
     DefaultColumnWriter(config, page_mgr, page_idx) {
+  PageIndexKey key = {
+    .column_id = config.column_id,
+    .entry_type = PageIndexEntryType::DATA
+  };
+
   switch (config_.storage_type) {
 
     case ColumnType::UINT64_PLAIN:
-      data_writer_ = mkScoped(new UInt64PageWriter(page_mgr));
+      data_writer_ = mkScoped(new UInt64PageWriter(key, page_mgr, page_idx));
       break;
 
     default:
@@ -36,8 +41,14 @@ void UnsignedIntColumnWriter::writeUnsignedInt(
     uint64_t rlvl,
     uint64_t dlvl,
     uint64_t value) {
-  rlevel_writer_->writeValue(rlvl);
-  dlevel_writer_->writeValue(dlvl);
+  if (rlevel_writer_.get()) {
+    rlevel_writer_->writeValue(rlvl);
+  }
+
+  if (dlevel_writer_.get()) {
+    dlevel_writer_->writeValue(dlvl);
+  }
+
   data_writer_->writeValue(value);
 }
 

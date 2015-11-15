@@ -131,6 +131,12 @@ struct FileHeader {
   Vector<ColumnConfig> columns;
 };
 
+enum class PageIndexEntryType {
+  DATA = 1,
+  RLEVEL = 2,
+  DLEVEL = 3
+};
+
 enum class BinaryFormatVersion {
   v0_1_0,
   v0_2_0

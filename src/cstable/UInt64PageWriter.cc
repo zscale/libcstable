@@ -14,11 +14,16 @@ namespace stx {
 namespace cstable {
 
 UInt64PageWriter::UInt64PageWriter(
-    RefPtr<PageManager> page_mgr) :
+    PageIndexKey key,
+    RefPtr<PageManager> page_mgr,
+    RefPtr<PageIndex> page_idx) :
+    key_(key),
     page_mgr_(page_mgr),
     has_page_(false),
     page_os_(&page_buf_),
-    meta_os_(&meta_buf_) {}
+    meta_os_(&meta_buf_) {
+  page_idx->addPageWriter(key_, this);
+}
 
 void UInt64PageWriter::writeValue(uint64_t value) {
   if (!has_page_ || page_buf_.size() + sizeof(uint64_t) > page_.size) {

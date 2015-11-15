@@ -31,15 +31,41 @@ DefaultColumnWriter::DefaultColumnWriter(
     RefPtr<PageManager> page_mgr,
     RefPtr<PageIndex> page_idx) :
     ColumnWriter(config.rlevel_max, config.dlevel_max),
-    config_(config),
-    //rlevel_writer_(new UInt64PageWriter(page_mgr, config_.rlevel_max)),
-    //dlevel_writer_(new UInt64PageWriter(page_mgr, config_.dlevel_max)) {}
-    rlevel_writer_(new UInt64PageWriter(page_mgr)),
-    dlevel_writer_(new UInt64PageWriter(page_mgr)) {}
+    config_(config) {
+  if (config.rlevel_max > 0) {
+    PageIndexKey rlevel_idx_key {
+      .column_id = config.column_id,
+      .entry_type = PageIndexEntryType::RLEVEL
+    };
+
+    rlevel_writer_ = mkScoped(
+        new UInt64PageWriter(rlevel_idx_key, page_mgr, page_idx));
+
+    page_idx->addPageWriter(rlevel_idx_key, rlevel_writer_.get());
+  }
+
+  if (config.dlevel_max > 0) {
+    PageIndexKey dlevel_idx_key {
+      .column_id = config.column_id,
+      .entry_type = PageIndexEntryType::DLEVEL
+    };
+
+    dlevel_writer_ = mkScoped(
+        new UInt64PageWriter(dlevel_idx_key, page_mgr, page_idx));
+
+    page_idx->addPageWriter(dlevel_idx_key, dlevel_writer_.get());
+  }
+}
+
 
 void DefaultColumnWriter::addNull(uint64_t rep_level, uint64_t def_level) {
-  rlevel_writer_->writeValue(rep_level);
-  dlevel_writer_->writeValue(def_level);
+  if (rlevel_writer_.get()) {
+    rlevel_writer_->writeValue(rep_level);
+  }
+
+  if (dlevel_writer_.get()) {
+    dlevel_writer_->writeValue(def_level);
+  }
 }
 
 void DefaultColumnWriter::addDatum(
@@ -47,7 +73,7 @@ void DefaultColumnWriter::addDatum(
     uint64_t def_level,
     const void* data,
     size_t size) {
-  RAISE(kNotYetImplementedError);
+  RAISE(kNotImplementedError);
 }
 
 } // namespace cstable
