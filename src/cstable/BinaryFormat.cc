@@ -35,6 +35,7 @@ void readHeader(
   switch (vnum) {
     case 0x1:
       *version = BinaryFormatVersion::v0_1_0;
+      cstable::v0_1_0::readHeader(header, is);
       return;
     case 0x2:
       *version = BinaryFormatVersion::v0_2_0;
@@ -73,6 +74,30 @@ void readHeader(
     default:
       RAISE(kRuntimeError, "can't open cstable: too many metablocks found");
   }
+
+}
+
+namespace v0_1_0 {
+
+void readHeader(FileHeader* hdr, InputStream* is) {
+  auto flags = is->readUInt64();
+  (void) flags; // make gcc happy
+
+  hdr->num_rows = is->readUInt64();
+
+  auto ncols = is->readUInt32();
+  for (size_t i = 0; i < ncols; ++i) {
+    ColumnConfig col;
+    col.storage_type = (cstable::ColumnType) is->readUInt32();
+    col.column_name = is->readString(is->readUInt32());
+    col.column_id = 0;
+    col.rlevel_max = is->readUInt32();
+    col.dlevel_max = is->readUInt32();
+    col.body_offset = is->readUInt64();
+    col.body_size = is->readUInt64();
+    hdr->columns.emplace_back(col);
+  }
+}
 
 }
 

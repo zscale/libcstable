@@ -11,6 +11,7 @@
 #include <stx/stdtypes.h>
 #include <stx/autoref.h>
 #include <stx/protobuf/MessageObject.h>
+#include <cstable/BinaryFormat.h>
 
 namespace stx {
 namespace cstable {
@@ -19,6 +20,8 @@ class ColumnReader : public RefCounted {
 public:
 
   virtual msg::FieldType type() const = 0;
+  virtual ColumnType storageType() const = 0;
+
   virtual uint64_t maxRepetitionLevel() const = 0;
   virtual uint64_t maxDefinitionLevel() const = 0;
 

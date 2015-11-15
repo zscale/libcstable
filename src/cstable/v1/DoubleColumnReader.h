@@ -38,6 +38,10 @@ public:
     return msg::FieldType::DOUBLE;
   }
 
+  ColumnType storageType() const override {
+    return ColumnType::DOUBLE;
+  }
+
 protected:
   util::BinaryMessageReader data_reader_;
   double cur_val_;

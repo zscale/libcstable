@@ -39,6 +39,10 @@ public:
     return msg::FieldType::UINT32;
   }
 
+  ColumnType storageType() const override {
+    return ColumnType::UINT32_PLAIN;
+  }
+
 protected:
   util::BinaryMessageReader data_reader_;
   uint32_t cur_val_;

@@ -43,6 +43,10 @@ public:
     return msg::FieldType::STRING;
   }
 
+  ColumnType storageType() const override {
+    return ColumnType::STRING_PLAIN;
+  }
+
 protected:
   util::BinaryMessageReader data_reader_;
 };

@@ -124,6 +124,8 @@ struct ColumnConfig {
   msg::FieldType logical_type;
   size_t rlevel_max;
   size_t dlevel_max;
+  uint64_t body_offset; // deprecated after v0.1.x
+  uint64_t body_size; // deprecated after v0.1.x
 };
 
 struct MetaBlock {
@@ -136,6 +138,7 @@ struct MetaBlock {
 
 struct FileHeader {
   Vector<ColumnConfig> columns;
+  uint64_t num_rows; // deprecated after v0.1.x
 };
 
 struct PageRef;
@@ -157,6 +160,7 @@ enum class PageIndexEntryType : uint8_t {
 namespace v0_1_0 {
 const uint16_t kVersion = 1;
 const uint32_t kMagicBytesUInt32 = 0x17231723;
+void readHeader(FileHeader* mb, InputStream* is);
 }
 
 /* v0.2.0 */

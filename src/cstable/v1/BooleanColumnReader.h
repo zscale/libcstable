@@ -39,6 +39,10 @@ public:
     return msg::FieldType::BOOLEAN;
   }
 
+  ColumnType storageType() const override {
+    return ColumnType::BOOLEAN;
+  }
+
 protected:
   util::BitPackDecoder data_reader_;
   uint8_t cur_val_;

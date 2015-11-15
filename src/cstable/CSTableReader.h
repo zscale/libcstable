@@ -43,8 +43,9 @@ public:
 
   DefaultCSTableReader(
       BinaryFormatVersion version,
-      RefPtr<PageManager> page_mgr,
-      const Vector<ColumnConfig>& columns);
+      Vector<ColumnConfig> columns,
+      Vector<RefPtr<ColumnReader>> column_readers,
+      uint64_t num_rows);
 
   RefPtr<ColumnReader> getColumnByName(const String& column_name) override;
 
@@ -58,10 +59,10 @@ public:
 
 protected:
   BinaryFormatVersion version_;
-  RefPtr<PageManager> page_mgr_;
   Vector<ColumnConfig> columns_;
   HashMap<uint32_t, RefPtr<ColumnReader>> column_readers_by_id_;
   HashMap<String, RefPtr<ColumnReader>> column_readers_by_name_;
+  uint64_t num_rows_;
 };
 
 } // namespace cstable

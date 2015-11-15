@@ -39,6 +39,10 @@ public:
     return msg::FieldType::UINT32;
   }
 
+  ColumnType storageType() const override {
+    return ColumnType::UINT32_BITPACKED;
+  }
+
 protected:
   uint32_t max_value_;
   util::BitPackDecoder data_reader_;
