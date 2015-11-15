@@ -36,8 +36,8 @@ public:
   void addDatum(uint64_t rep_level, uint64_t def_level, uint32_t value);
   void commit();
 
-  ColumnType type() const override {
-    return ColumnType::UINT32_BITPACKED;
+  ColumnEncoding type() const override {
+    return ColumnEncoding::UINT32_BITPACKED;
   }
 
   msg::FieldType fieldType() const override {

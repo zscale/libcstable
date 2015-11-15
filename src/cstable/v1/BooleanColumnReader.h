@@ -39,8 +39,8 @@ public:
     return msg::FieldType::BOOLEAN;
   }
 
-  ColumnType storageType() const override {
-    return ColumnType::BOOLEAN;
+  ColumnEncoding storageType() const override {
+    return ColumnEncoding::BOOLEAN;
   }
 
 protected:

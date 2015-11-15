@@ -33,8 +33,8 @@ public:
 
   void commit();
 
-  ColumnType type() const override {
-    return ColumnType::BOOLEAN;
+  ColumnEncoding type() const override {
+    return ColumnEncoding::BOOLEAN;
   }
 
   msg::FieldType fieldType() const override {

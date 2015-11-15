@@ -103,24 +103,39 @@ enum class BinaryFormatVersion {
   v0_2_0
 };
 
+inline uint64_t padToNextSector(uint64_t val) {
+  return (((val) + (kSectorSize - 1)) / kSectorSize) * kSectorSize;
+}
+
 enum class ColumnType : uint8_t {
+  SUBRECORD = 0,
+  BOOLEAN = 1,
+  UNSINGED_INT = 2,
+  SIGNED_INT = 3,
+  STRING = 4,
+  DOUBLE = 5,
+  DATETIME = 6
+};
+
+enum class ColumnEncoding : uint8_t {
   BOOLEAN = 1,
   UINT32_BITPACKED = 10,
   UINT32_PLAIN = 11,
   UINT64_PLAIN = 12,
   UINT64_LEB128 = 13,
   DOUBLE = 14,
-  STRING_PLAIN = 100,
+  STRING_PLAIN = 100
 };
 
-inline uint64_t padToNextSector(uint64_t val) {
-  return (((val) + (kSectorSize - 1)) / kSectorSize) * kSectorSize;
-}
+String columnTypeToString(ColumnType type);
+ColumnType columnTypeFromString(String str);
+
+
 
 struct ColumnConfig {
   uint32_t column_id;
   String column_name;
-  cstable::ColumnType storage_type;
+  cstable::ColumnEncoding storage_type;
   msg::FieldType logical_type;
   size_t rlevel_max;
   size_t dlevel_max;

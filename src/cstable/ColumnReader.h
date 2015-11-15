@@ -20,7 +20,7 @@ class ColumnReader : public RefCounted {
 public:
 
   virtual msg::FieldType type() const = 0;
-  virtual ColumnType storageType() const = 0;
+  virtual ColumnEncoding storageType() const = 0;
 
   virtual uint64_t maxRepetitionLevel() const = 0;
   virtual uint64_t maxDefinitionLevel() const = 0;

@@ -35,8 +35,8 @@ public:
 
   void addDatum(uint64_t rep_level, uint64_t def_level, const String& value);
 
-  ColumnType type() const override {
-    return ColumnType::STRING_PLAIN;
+  ColumnEncoding type() const override {
+    return ColumnEncoding::STRING_PLAIN;
   }
 
   msg::FieldType fieldType() const override {

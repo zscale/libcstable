@@ -33,8 +33,8 @@ public:
 
   void addDatum(uint64_t rep_level, uint64_t def_level, double value);
 
-  ColumnType type() const override {
-    return ColumnType::DOUBLE;
+  ColumnEncoding type() const override {
+    return ColumnEncoding::DOUBLE;
   }
 
   msg::FieldType fieldType() const override {

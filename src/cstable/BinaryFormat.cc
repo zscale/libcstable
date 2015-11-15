@@ -88,7 +88,7 @@ void readHeader(FileHeader* hdr, InputStream* is) {
   auto ncols = is->readUInt32();
   for (size_t i = 0; i < ncols; ++i) {
     ColumnConfig col;
-    col.storage_type = (cstable::ColumnType) is->readUInt32();
+    col.storage_type = (cstable::ColumnEncoding) is->readUInt32();
     col.column_name = is->readString(is->readUInt32());
     col.column_id = 0;
     col.rlevel_max = is->readUInt32();
@@ -186,7 +186,7 @@ void readHeader(
   for (size_t i = 0; i < ncols; ++i) {
     ColumnConfig col;
     col.logical_type = (msg::FieldType) is->readVarUInt();
-    col.storage_type = (cstable::ColumnType) is->readVarUInt();
+    col.storage_type = (cstable::ColumnEncoding) is->readVarUInt();
     col.column_id = is->readVarUInt();
     col.column_name = is->readLenencString();
     col.rlevel_max = is->readVarUInt();

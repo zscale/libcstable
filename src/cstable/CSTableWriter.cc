@@ -24,25 +24,25 @@ namespace cstable {
 
 RefPtr<CSTableWriter> CSTableWriter::createFile(
     const String& filename,
-    const Vector<ColumnConfig>& columns,
+    const RecordSchema& schema,
     Option<RefPtr<LockRef>> lockref /* = None<RefPtr<LockRef>>() */) {
   return createFile(
       filename,
       BinaryFormatVersion::v0_2_0,
-      columns,
+      schema,
       lockref);
 }
 
 RefPtr<CSTableWriter> CSTableWriter::createFile(
     const String& filename,
     BinaryFormatVersion version,
-    const Vector<ColumnConfig>& columns,
+    const RecordSchema& schema,
     Option<RefPtr<LockRef>> lockref /* = None<RefPtr<LockRef>>() */) {
   auto file = File::openFile(filename, File::O_WRITE | File::O_CREATE);
   auto file_os = FileOutputStream::fromFileDescriptor(file.fd());
 
   FileHeader header;
-  header.columns = columns;
+  //header.columns = columns;
 
   // write header
   size_t header_size ;
@@ -64,7 +64,8 @@ RefPtr<CSTableWriter> CSTableWriter::createFile(
       version,
       page_mgr,
       new PageIndex(version, page_mgr),
-      columns);
+      schema,
+      header.columns);
 }
 
 RefPtr<CSTableWriter> CSTableWriter::reopenFile(
@@ -78,19 +79,19 @@ static RefPtr<ColumnWriter> openColumnV1(const ColumnConfig& c) {
   auto dmax = c.dlevel_max;
 
   switch (c.storage_type) {
-    case ColumnType::BOOLEAN:
+    case ColumnEncoding::BOOLEAN:
       return new v1::BooleanColumnWriter(rmax, dmax);
-    case ColumnType::UINT32_BITPACKED:
+    case ColumnEncoding::UINT32_BITPACKED:
       return new v1::BitPackedIntColumnWriter(rmax, dmax);
-    case ColumnType::UINT32_PLAIN:
+    case ColumnEncoding::UINT32_PLAIN:
       return new v1::UInt32ColumnWriter(rmax, dmax);
-    case ColumnType::UINT64_PLAIN:
+    case ColumnEncoding::UINT64_PLAIN:
       return new v1::UInt64ColumnWriter(rmax, dmax);
-    case ColumnType::UINT64_LEB128:
+    case ColumnEncoding::UINT64_LEB128:
       return new v1::LEB128ColumnWriter(rmax, dmax);
-    case ColumnType::DOUBLE:
+    case ColumnEncoding::DOUBLE:
       return new v1::DoubleColumnWriter(rmax, dmax);
-    case ColumnType::STRING_PLAIN:
+    case ColumnEncoding::STRING_PLAIN:
       return new v1::StringColumnWriter(rmax, dmax);
     default:
       RAISEF(
@@ -115,14 +116,16 @@ CSTableWriter::CSTableWriter(
     BinaryFormatVersion version,
     RefPtr<PageManager> page_mgr,
     RefPtr<PageIndex> page_idx,
-    const Vector<ColumnConfig>& columns) :
+    const RecordSchema& schema,
+    Vector<ColumnConfig> columns) :
     version_(version),
     page_mgr_(page_mgr),
     page_idx_(page_idx),
     columns_(columns),
     current_txid_(0),
     num_rows_(0) {
-  // create columns
+
+  // open column writers
   for (size_t i = 0; i < columns_.size(); ++i) {
     RefPtr<ColumnWriter> writer;
     switch (version_) {

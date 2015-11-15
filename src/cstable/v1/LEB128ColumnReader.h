@@ -39,8 +39,8 @@ public:
     return msg::FieldType::UINT64;
   }
 
-  ColumnType storageType() const override {
-    return ColumnType::UINT64_LEB128;
+  ColumnEncoding storageType() const override {
+    return ColumnEncoding::UINT64_LEB128;
   }
 
 protected:

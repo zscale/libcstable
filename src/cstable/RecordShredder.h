@@ -15,6 +15,7 @@
 #include <stx/csv/CSVInputStream.h>
 #include <cstable/ColumnWriter.h>
 #include <cstable/CSTableWriter.h>
+#include <cstable/RecordSchema.h>
 #include <stx/protobuf/MessageSchema.h>
 #include <stx/protobuf/MessageObject.h>
 
@@ -28,36 +29,19 @@ public:
       const msg::MessageSchema* schema);
 
   RecordShredder(
-      const msg::MessageSchema* schema,
+      const RecordSchema* schema,
       CSTableWriter* writer);
 
-  void addRecord(const msg::MessageObject& msg);
+  void addRecordFromJSON(const String& json);
+  void addRecordFromJSON(
+      const json::JSONObject::const_iterator& begin,
+      const json::JSONObject::const_iterator& end);
+
+  //void addRecord(const msg::MessageObject& msg);
   void addRecordsFromCSV(CSVInputStream* csv);
 
 protected:
-
-  void addRecordField(
-      uint32_t r,
-      uint32_t rmax,
-      uint32_t d,
-      const msg::MessageObject& msg,
-      const String& column,
-      const msg::MessageSchemaField& field);
-
-  void writeNull(
-      uint32_t r,
-      uint32_t d,
-      const String& column,
-      const msg::MessageSchemaField& field);
-
-  void writeField(
-      uint32_t r,
-      uint32_t d,
-      const msg::MessageObject& msg,
-      const String& column,
-      const msg::MessageSchemaField& field);
-
-  const msg::MessageSchema* schema_;
+  const RecordSchema* schema_;
   CSTableWriter* writer_;
 };
 

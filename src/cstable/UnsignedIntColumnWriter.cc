@@ -24,7 +24,7 @@ UnsignedIntColumnWriter::UnsignedIntColumnWriter(
 
   switch (config_.storage_type) {
 
-    case ColumnType::UINT64_PLAIN:
+    case ColumnEncoding::UINT64_PLAIN:
       data_writer_ = mkScoped(new UInt64PageWriter(key, page_mgr, page_idx));
       break;
 

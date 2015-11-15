@@ -68,7 +68,7 @@ public:
       const void* data,
       size_t size) = 0;
 
-  virtual ColumnType type() const = 0;
+  virtual ColumnEncoding type() const = 0;
   virtual msg::FieldType fieldType() const = 0;
 
   size_t maxRepetitionLevel() const;
@@ -103,8 +103,8 @@ public:
       const void* data,
       size_t size) override;
 
-  ColumnType type() const override {
-    return ColumnType::UINT32_BITPACKED;
+  ColumnEncoding type() const override {
+    return ColumnEncoding::UINT32_BITPACKED;
   }
 
   msg::FieldType fieldType() const override {

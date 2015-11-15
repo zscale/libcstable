@@ -38,8 +38,8 @@ public:
     return msg::FieldType::DOUBLE;
   }
 
-  ColumnType storageType() const override {
-    return ColumnType::DOUBLE;
+  ColumnEncoding storageType() const override {
+    return ColumnEncoding::DOUBLE;
   }
 
 protected:

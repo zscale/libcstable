@@ -16,6 +16,7 @@
 #include <cstable/PageManager.h>
 #include <cstable/PageIndex.h>
 #include <cstable/ColumnConfig.h>
+#include <cstable/RecordSchema.h>
 
 namespace stx {
 namespace cstable {
@@ -74,7 +75,7 @@ public:
    */
   static RefPtr<CSTableWriter> createFile(
       const String& filename,
-      const Vector<ColumnConfig>& columns,
+      const RecordSchema& schema,
       Option<RefPtr<LockRef>> lockref = None<RefPtr<LockRef>>());
 
   /**
@@ -88,7 +89,7 @@ public:
   static RefPtr<CSTableWriter> createFile(
       const String& filename,
       BinaryFormatVersion version,
-      const Vector<ColumnConfig>& columns,
+      const RecordSchema& schema,
       Option<RefPtr<LockRef>> lockref = None<RefPtr<LockRef>>());
 
   /**
@@ -141,7 +142,8 @@ protected:
       BinaryFormatVersion version_,
       RefPtr<PageManager> page_mgr,
       RefPtr<PageIndex> page_idx,
-      const Vector<ColumnConfig>& columns);
+      const RecordSchema& schema,
+      Vector<ColumnConfig> columns);
 
   void commitV1();
   void commitV2();

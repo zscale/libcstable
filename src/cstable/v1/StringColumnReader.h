@@ -43,8 +43,8 @@ public:
     return msg::FieldType::STRING;
   }
 
-  ColumnType storageType() const override {
-    return ColumnType::STRING_PLAIN;
+  ColumnEncoding storageType() const override {
+    return ColumnEncoding::STRING_PLAIN;
   }
 
 protected:

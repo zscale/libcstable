@@ -30,19 +30,19 @@ static RefPtr<v1::ColumnReader> openColumnV1(
   auto dmax = c.dlevel_max;
 
   switch (c.storage_type) {
-    case ColumnType::BOOLEAN:
+    case ColumnEncoding::BOOLEAN:
       return new v1::BooleanColumnReader(rmax, dmax, cdata, csize);
-    case ColumnType::UINT32_BITPACKED:
+    case ColumnEncoding::UINT32_BITPACKED:
       return new v1::BitPackedIntColumnReader(rmax, dmax, cdata, csize);
-    case ColumnType::UINT32_PLAIN:
+    case ColumnEncoding::UINT32_PLAIN:
       return new v1::UInt32ColumnReader(rmax, dmax, cdata, csize);
-    case ColumnType::UINT64_PLAIN:
+    case ColumnEncoding::UINT64_PLAIN:
       return new v1::UInt64ColumnReader(rmax, dmax, cdata, csize);
-    case ColumnType::UINT64_LEB128:
+    case ColumnEncoding::UINT64_LEB128:
       return new v1::LEB128ColumnReader(rmax, dmax, cdata, csize);
-    case ColumnType::DOUBLE:
+    case ColumnEncoding::DOUBLE:
       return new v1::DoubleColumnReader(rmax, dmax, cdata, csize);
-    case ColumnType::STRING_PLAIN:
+    case ColumnEncoding::STRING_PLAIN:
       return new v1::StringColumnReader(rmax, dmax, cdata, csize);
     default:
       RAISEF(
@@ -141,7 +141,7 @@ RefPtr<ColumnReader> CSTableReader::getColumnByName(
 //  return col->second;
 //}
 
-ColumnType CSTableReader::getColumnType(const String& column_name) {
+ColumnEncoding CSTableReader::getColumnEncoding(const String& column_name) {
   auto col = getColumnByName(column_name);
   return col->storageType();
 }

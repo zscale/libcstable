@@ -39,8 +39,8 @@ public:
     return msg::FieldType::UINT32;
   }
 
-  ColumnType storageType() const override {
-    return ColumnType::UINT32_PLAIN;
+  ColumnEncoding storageType() const override {
+    return ColumnEncoding::UINT32_PLAIN;
   }
 
 protected:

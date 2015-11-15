@@ -28,7 +28,7 @@ public:
     return getColumnByName(column_name);
   }
 
-  ColumnType getColumnType(const String& column_name) ;
+  ColumnEncoding getColumnEncoding(const String& column_name) ;
 
   Set<String> columns() const ;
 
