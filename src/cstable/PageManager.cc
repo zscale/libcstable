@@ -32,7 +32,7 @@ PageManager::PageManager(
   }
 }
 
-PageRef PageManager::allocPage(uint64_t size) {
+PageRef PageManager::allocPage(uint32_t size) {
   PageRef page;
   page.offset = offset_;
   page.size = padToNextSector(size);

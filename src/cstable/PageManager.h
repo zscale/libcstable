@@ -20,7 +20,7 @@ namespace cstable {
 
 struct PageRef {
   uint64_t offset;
-  uint64_t size;
+  uint32_t size;
 };
 
 class PageManager : public RefCounted {
@@ -31,7 +31,7 @@ public:
       File&& file,
       uint64_t offset);
 
-  PageRef allocPage(uint64_t size);
+  PageRef allocPage(uint32_t size);
 
   void writePage(const PageRef& page, const Buffer& buffer);
 

@@ -35,15 +35,9 @@ PageRef PageIndex::write(Option<PageRef> head) {
     for (auto& p : page_writers_) {
       const auto& key = p.first;
       auto& writer = p.second;
-
-      Buffer col_buf;
-      auto col_os = BufferOutputStream::fromBuffer(&col_buf);
-      writer->writeIndex(col_os.get());
-
       os->appendVarUInt((uint8_t) key.entry_type);
       os->appendVarUInt(key.column_id);
-      os->appendVarUInt(col_buf.size());
-      os->write((char*) col_buf.data(), col_buf.size());
+      writer->writeIndex(os.get());
     }
   }
 
@@ -73,18 +67,18 @@ PageRef PageIndex::write(Option<PageRef> head) {
     page_buf.clear();
 
     auto used = std::min(
-        pages[i].size - kIndexPageOverhead,
-        buf.size() - written);
+        uint32_t(pages[i].size - kIndexPageOverhead),
+        uint32_t(buf.size() - written));
 
     if (i + 1 < pages.size()) {
       page_os->appendUInt64(pages[i+1].offset);
-      page_os->appendUInt64(pages[i+1].size);
+      page_os->appendUInt32(pages[i+1].size);
     } else {
       page_os->appendUInt64(0);
-      page_os->appendUInt64(0);
+      page_os->appendUInt32(0);
     }
 
-    page_os->appendUInt64(used);
+    page_os->appendUInt32(used);
     page_os->write(buf.structAt<char>(written), used);
 
     page_mgr_->writePage(pages[i], page_buf);

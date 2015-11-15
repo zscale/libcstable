@@ -88,7 +88,6 @@ namespace cstable {
  *   <index_entry> :=
  *      <lenenc_int>             // entry type (0x1=data, 0x2=repetition level, 0x3=definition level)
  *      <lenenc_int>             // field id
- *      <lenenc_int>             // column index data size
  *      <char>*                  // column index data
  *
  *  <data_page>       :=
