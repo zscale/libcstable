@@ -9,11 +9,71 @@
  */
 #include <cstable/BinaryFormat.h>
 #include <cstable/ColumnConfig.h>
+#include <cstable/PageManager.h>
 #include <stx/util/binarymessagewriter.h>
 #include <stx/SHA1.h>
 
 namespace stx {
 namespace cstable {
+
+void readHeader(
+    BinaryFormatVersion* version,
+    FileHeader* header,
+    MetaBlock* metablock,
+    Option<PageRef>* free_index,
+    InputStream* is) {
+  Buffer prelude(6);
+  is->readNextBytes(prelude.data(), prelude.size());
+
+  if (memcmp(prelude.structAt<void>(0), kMagicBytes, 4) != 0) {
+    RAISE(kRuntimeError, "not a valid cstable file");
+  }
+
+  Vector<MetaBlock> metablocks;
+  auto vnum = *prelude.structAt<uint8_t>(4);
+  switch (vnum) {
+    case 0x1:
+      *version = BinaryFormatVersion::v0_1_0;
+      return;
+    case 0x2:
+      *version = BinaryFormatVersion::v0_2_0;
+      cstable::v0_2_0::readHeader(header, &metablocks, is);
+      break;
+    default:
+      RAISEF(kRuntimeError, "unsupported cstable version: $0", vnum);
+  }
+
+  switch (metablocks.size()) {
+
+    case 0:
+      RAISE(kRuntimeError, "can't open cstable: no valid metablocks found");
+
+    case 1:
+      *metablock = metablocks[0];
+      *free_index = None<PageRef>();
+      break;
+
+    case 2:
+      if (metablocks[0].transaction_id > metablocks[1].transaction_id) {
+        *metablock = metablocks[0];
+        *free_index = Some(PageRef {
+          .offset = metablocks[1].head_index_page_offset,
+          .size = metablocks[1].head_index_page_size
+        });
+      } else {
+        *metablock = metablocks[1];
+        *free_index = Some(PageRef {
+          .offset = metablocks[0].head_index_page_offset,
+          .size = metablocks[0].head_index_page_size
+        });
+      }
+      break;
+
+    default:
+      RAISE(kRuntimeError, "can't open cstable: too many metablocks found");
+  }
+
+}
 
 namespace v0_2_0 {
 
@@ -32,8 +92,7 @@ size_t writeMetaBlock(const MetaBlock& mb, OutputStream* os) {
   return buf.size() + hash.size();
 }
 
-size_t readMetaBlock(const MetaBlock& mb, InputStream* is) {
-  return 0;
+void readMetaBlock(const MetaBlock& mb, InputStream* is) {
 }
 
 size_t writeHeader(const FileHeader& hdr, OutputStream* os) {
@@ -63,14 +122,16 @@ size_t writeHeader(const FileHeader& hdr, OutputStream* os) {
   return buf.size();
 }
 
-size_t readHeader(FileHeader* hdr, InputStream* os) {
+void readHeader(
+    FileHeader* hdr,
+    Vector<MetaBlock>* metablocks,
+    InputStream* os) {
   // logical_type = (msg::FieldType) is->readVarUInt();
   // storage_type = (cstable::ColumnType) is->readVarUInt();
   // column_id = is->readVarUInt();
   // column_name = is->readLenencString();
   // rlevel_max = is->readVarUInt();
   // dlevel_max = is->readVarUInt();
-  return 0;
 }
 
 }

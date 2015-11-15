@@ -22,9 +22,8 @@ namespace cstable {
 namespace v1 {
 
 CSTableReader::CSTableReader(
-    const String& filename) :
-    CSTableReader(
-        new io::MmappedFile(File::openFile(filename, File::O_READ))) {}
+    File&& file) :
+    CSTableReader(new io::MmappedFile(std::move(file))) {}
 
 CSTableReader::CSTableReader(const RefPtr<VFSFile> file) : file_(file) {
   util::BinaryMessageReader header(file_->data(), file_->size());
@@ -35,7 +34,7 @@ CSTableReader::CSTableReader(const RefPtr<VFSFile> file) : file_(file) {
 
   auto version = *header.readUInt16();
   if (version != cstable::v0_1_0::kVersion) {
-    RAISEF(kIllegalStateError, "unsupported sstable version: $0", version);
+    RAISEF(kIllegalStateError, "unsupported cstable version: $0", version);
   }
 
   auto flags = *header.readUInt64();
@@ -65,7 +64,7 @@ CSTableReader::CSTableReader(const RefPtr<VFSFile> file) : file_(file) {
   }
 }
 
-RefPtr<cstable::ColumnReader> CSTableReader::getColumnReader(
+RefPtr<cstable::ColumnReader> CSTableReader::getColumnByName(
     const String& column_name) {
   auto col = columns_.find(column_name);
   if (col == columns_.end()) {

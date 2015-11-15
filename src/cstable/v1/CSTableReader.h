@@ -23,7 +23,7 @@ namespace v1 {
 class CSTableReader : public cstable::CSTableReader {
 public:
 
-  explicit CSTableReader(const String& filename);
+  explicit CSTableReader(File&& file);
   explicit CSTableReader(const RefPtr<VFSFile> file);
   CSTableReader(const CSTableReader& other) = delete;
   CSTableReader& operator=(const CSTableReader other) = delete;
@@ -33,7 +33,7 @@ public:
       void** data,
       size_t* size);
 
-  RefPtr<cstable::ColumnReader> getColumnReader(const String& column_name);
+  RefPtr<cstable::ColumnReader> getColumnByName(const String& column_name);
   ColumnType getColumnType(const String& column_name);
   Set<String> columns() const;
   bool hasColumn(const String& column_name) const;

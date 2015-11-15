@@ -98,6 +98,11 @@ static const char kMagicBytes[4] = {0x23, 0x17, 0x23, 0x17};
 
 static const size_t kSectorSize = 512;
 
+enum class BinaryFormatVersion {
+  v0_1_0,
+  v0_2_0
+};
+
 enum class ColumnType : uint8_t {
   BOOLEAN = 1,
   UINT32_BITPACKED = 10,
@@ -125,7 +130,7 @@ struct MetaBlock {
   uint64_t transaction_id;
   uint64_t num_rows;
   uint64_t head_index_page_offset;
-  uint64_t head_index_page_size;
+  uint32_t head_index_page_size;
   uint64_t file_size;
 };
 
@@ -133,15 +138,19 @@ struct FileHeader {
   Vector<ColumnConfig> columns;
 };
 
+struct PageRef;
+
+void readHeader(
+    BinaryFormatVersion* version,
+    FileHeader* header,
+    MetaBlock* metablock,
+    Option<PageRef>* free_index,
+    InputStream* is);
+
 enum class PageIndexEntryType : uint8_t {
   DATA = 1,
   RLEVEL = 2,
   DLEVEL = 3
-};
-
-enum class BinaryFormatVersion {
-  v0_1_0,
-  v0_2_0
 };
 
 /* v0.1.0 */
@@ -156,9 +165,9 @@ static const uint16_t kVersion = 2;
 const size_t kMetaBlockPosition = 14;
 const size_t kMetaBlockSize = 56;
 size_t writeMetaBlock(const MetaBlock& mb, OutputStream* os);
-size_t readMetaBlock(MetaBlock* mb,InputStream* is);
+void readMetaBlock(MetaBlock* mb, InputStream* is);
 size_t writeHeader(const FileHeader& hdr, OutputStream* os);
-size_t readHeader(FileHeader* mb, OutputStream* os);
+void readHeader(FileHeader* mb, Vector<MetaBlock>* metablocks, InputStream* is);
 }
 
 }

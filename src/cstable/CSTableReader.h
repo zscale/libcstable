@@ -12,6 +12,7 @@
 #include <stx/io/file.h>
 #include <cstable/ColumnReader.h>
 #include <cstable/BinaryFormat.h>
+#include <cstable/PageManager.h>
 
 namespace stx {
 namespace cstable {
@@ -21,7 +22,11 @@ public:
 
   static RefPtr<CSTableReader> openFile(const String& filename);
 
-  virtual RefPtr<ColumnReader> getColumnReader(const String& column_name) = 0;
+  virtual RefPtr<ColumnReader> getColumnByName(const String& column_name) = 0;
+
+  RefPtr<ColumnReader> getColumnReader(const String& column_name) {
+    return getColumnByName(column_name);
+  }
 
   virtual ColumnType getColumnType(const String& column_name) = 0;
 
@@ -31,6 +36,26 @@ public:
 
   virtual size_t numRecords() const = 0;
 
+};
+
+class DefaultCSTableReader : public CSTableReader {
+public:
+
+  DefaultCSTableReader(
+      RefPtr<PageManager> page_mgr);
+
+  RefPtr<ColumnReader> getColumnByName(const String& column_name) override;
+
+  ColumnType getColumnType(const String& column_name) override;
+
+  Set<String> columns() const override;
+
+  bool hasColumn(const String& column_name) const override;
+
+  size_t numRecords() const override;
+
+protected:
+  RefPtr<PageManager> page_mgr_;
 };
 
 } // namespace cstable

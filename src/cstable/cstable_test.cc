@@ -41,10 +41,10 @@ TEST_CASE(CSTableTest, TestV1CSTableContainer, [] () {
   tbl_writer.addColumn("key2", column2_writer.get());
   tbl_writer.commit();
 
-  cstable::v1::CSTableReader tbl_reader(filename);
-  EXPECT_EQ(tbl_reader.numRecords(), num_records);
-  EXPECT_EQ(tbl_reader.hasColumn("key1"), true);
-  EXPECT_EQ(tbl_reader.hasColumn("key2"), true);
+  auto tbl_reader = cstable::CSTableReader::openFile(filename);
+  EXPECT_EQ(tbl_reader->numRecords(), num_records);
+  EXPECT_EQ(tbl_reader->hasColumn("key1"), true);
+  EXPECT_EQ(tbl_reader->hasColumn("key2"), true);
 });
 
 TEST_CASE(CSTableTest, TestV1CSTableColumnWriterReader, [] () {
@@ -95,14 +95,14 @@ TEST_CASE(CSTableTest, TestV1CSTableColumnWriterReader, [] () {
   tbl_writer.addColumn("uint64", uint64_writer.get());
   tbl_writer.commit();
 
-  cstable::v1::CSTableReader tbl_reader(filename);
-  auto bitpacked_reader = tbl_reader.getColumnReader("bitpacked");
-  auto boolean_reader = tbl_reader.getColumnReader("boolean");
-  auto double_reader = tbl_reader.getColumnReader("double");
-  auto leb128_reader = tbl_reader.getColumnReader("leb128");
-  auto string_reader = tbl_reader.getColumnReader("string");
-  auto uint32_reader = tbl_reader.getColumnReader("uint32");
-  auto uint64_reader = tbl_reader.getColumnReader("uint64");
+  auto tbl_reader = cstable::CSTableReader::openFile(filename);
+  auto bitpacked_reader = tbl_reader->getColumnReader("bitpacked");
+  auto boolean_reader = tbl_reader->getColumnReader("boolean");
+  auto double_reader = tbl_reader->getColumnReader("double");
+  auto leb128_reader = tbl_reader->getColumnReader("leb128");
+  auto string_reader = tbl_reader->getColumnReader("string");
+  auto uint32_reader = tbl_reader->getColumnReader("uint32");
+  auto uint64_reader = tbl_reader->getColumnReader("uint64");
 
   EXPECT_EQ(bitpacked_reader->type() == msg::FieldType::UINT32, true);
   EXPECT_EQ(boolean_reader->type() == msg::FieldType::BOOLEAN, true);
@@ -189,15 +189,22 @@ TEST_CASE(CSTableTest, TestV2UInt64Plain, [] () {
     .dlevel_max = 0
   });
 
-  auto tbl_writer = cstable::CSTableWriter::createFile(filename, columns);
-  auto mycol = tbl_writer->getColumnByName("mycol");
+  {
+    auto tbl_writer = cstable::CSTableWriter::createFile(filename, columns);
+    auto mycol = tbl_writer->getColumnByName("mycol");
 
-  for (size_t i = 1; i < 10000; ++i) {
-    mycol->writeUnsignedInt(0, 0, 23 * i);
-    mycol->writeUnsignedInt(0, 0, 42 * i);
-    mycol->writeUnsignedInt(0, 0, 17 * i);
+    for (size_t i = 1; i < 10000; ++i) {
+      mycol->writeUnsignedInt(0, 0, 23 * i);
+      mycol->writeUnsignedInt(0, 0, 42 * i);
+      mycol->writeUnsignedInt(0, 0, 17 * i);
+    }
+
+    tbl_writer->commit();
   }
 
-  tbl_writer->commit();
+  {
+    auto tbl_reader = cstable::CSTableReader::openFile(filename);
+    auto mycol = tbl_reader->getColumnByName("mycol");
+  }
 });
 
