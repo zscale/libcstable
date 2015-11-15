@@ -159,6 +159,7 @@ void CSTableWriter::commit() {
 void CSTableWriter::commitV1() {
   for (size_t i = 0; i < columns_.size(); ++i) {
     auto writer = column_writers_[i].asInstanceOf<v1::ColumnWriter>();
+    writer->commit();
     columns_[i].body_size = writer->bodySize();
   }
 

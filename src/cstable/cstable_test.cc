@@ -69,25 +69,80 @@ TEST_CASE(CSTableTest, TestV1CSTableContainer, [] () {
 TEST_CASE(CSTableTest, TestV1CSTableColumnWriterReader, [] () {
   String filename = "/tmp/__fnord__cstabletest2.cstable";
   auto num_records = 4000;
-  auto rep_max = 1;
-  auto def_max = 1;
+  uint64_t rep_max = 1;
+  uint64_t def_max = 1;
 
   FileUtil::rm(filename);
 
-  auto bitpacked_writer = mkRef(
-    new cstable::v1::BitPackedIntColumnWriter(rep_max, def_max));
-  auto boolean_writer = mkRef(
-    new cstable::v1::BooleanColumnWriter(rep_max, def_max));
-  auto double_writer = mkRef(
-    new cstable::v1::DoubleColumnWriter(rep_max, def_max));
-  auto leb128_writer = mkRef(
-    new cstable::v1::LEB128ColumnWriter(rep_max, def_max));
-  auto string_writer = mkRef(
-    new cstable::v1::StringColumnWriter(rep_max, def_max));
-  auto uint32_writer = mkRef(
-    new cstable::v1::UInt32ColumnWriter(rep_max, def_max));
-  auto uint64_writer = mkRef(
-    new cstable::v1::UInt64ColumnWriter(rep_max, def_max));
+  Vector<cstable::ColumnConfig> columns;
+  columns.emplace_back(cstable::ColumnConfig {
+    .column_name = "bitpacked",
+    .storage_type = cstable::ColumnType::UINT32_BITPACKED,
+    .logical_type = msg::FieldType::UINT32,
+    .rlevel_max = rep_max,
+    .dlevel_max = def_max
+  });
+
+  columns.emplace_back(cstable::ColumnConfig {
+    .column_name = "boolean",
+    .storage_type = cstable::ColumnType::BOOLEAN,
+    .logical_type = msg::FieldType::BOOLEAN,
+    .rlevel_max = rep_max,
+    .dlevel_max = def_max
+  });
+
+  columns.emplace_back(cstable::ColumnConfig {
+    .column_name = "double",
+    .storage_type = cstable::ColumnType::DOUBLE,
+    .logical_type = msg::FieldType::DOUBLE,
+    .rlevel_max = rep_max,
+    .dlevel_max = def_max
+  });
+
+  columns.emplace_back(cstable::ColumnConfig {
+    .column_name = "leb128",
+    .storage_type = cstable::ColumnType::UINT64_LEB128,
+    .logical_type = msg::FieldType::UINT64,
+    .rlevel_max = rep_max,
+    .dlevel_max = def_max
+  });
+
+  columns.emplace_back(cstable::ColumnConfig {
+    .column_name = "string",
+    .storage_type = cstable::ColumnType::STRING_PLAIN,
+    .logical_type = msg::FieldType::STRING,
+    .rlevel_max = rep_max,
+    .dlevel_max = def_max
+  });
+
+  columns.emplace_back(cstable::ColumnConfig {
+    .column_name = "uint32",
+    .storage_type = cstable::ColumnType::UINT32_PLAIN,
+    .logical_type = msg::FieldType::UINT32,
+    .rlevel_max = rep_max,
+    .dlevel_max = def_max
+  });
+
+  columns.emplace_back(cstable::ColumnConfig {
+    .column_name = "uint64",
+    .storage_type = cstable::ColumnType::UINT64_PLAIN,
+    .logical_type = msg::FieldType::UINT64,
+    .rlevel_max = rep_max,
+    .dlevel_max = def_max
+  });
+
+  auto tbl_writer = cstable::CSTableWriter::createFile(
+      filename,
+      cstable::BinaryFormatVersion::v0_1_0,
+      columns);
+
+  auto bitpacked_writer = tbl_writer->getColumnByName("bitpacked");
+  auto boolean_writer = tbl_writer->getColumnByName("boolean");
+  auto double_writer = tbl_writer->getColumnByName("double");
+  auto leb128_writer = tbl_writer->getColumnByName("leb128");
+  auto string_writer = tbl_writer->getColumnByName("string");
+  auto uint32_writer = tbl_writer->getColumnByName("uint32");
+  auto uint64_writer = tbl_writer->getColumnByName("uint64");
 
   for (auto i = 0; i < num_records; i++) {
     uint8_t boolean_v = i % 2;
@@ -95,6 +150,7 @@ TEST_CASE(CSTableTest, TestV1CSTableColumnWriterReader, [] () {
     uint64_t uint64_v = static_cast<uint64_t>(i);
     const String string_v = "value";
 
+    tbl_writer->addRow();
     bitpacked_writer->addDatum(rep_max, def_max, &i, sizeof(i));
     boolean_writer->addDatum(rep_max, def_max, &boolean_v, sizeof(boolean_v));
     double_writer->addDatum(rep_max, def_max, &double_v, sizeof(double_v));
@@ -104,20 +160,14 @@ TEST_CASE(CSTableTest, TestV1CSTableColumnWriterReader, [] () {
     uint64_writer->addDatum(rep_max, def_max, &uint64_v, sizeof(uint64_v));
   }
 
-  cstable::v1::CSTableWriter tbl_writer(filename, num_records);
-  tbl_writer.addColumn("bitpacked", bitpacked_writer.get());
-  tbl_writer.addColumn("boolean", boolean_writer.get());
-  tbl_writer.addColumn("double", double_writer.get());
-  tbl_writer.addColumn("leb128", leb128_writer.get());
-  tbl_writer.addColumn("string", string_writer.get());
-  tbl_writer.addColumn("uint32", uint32_writer.get());
-  tbl_writer.addColumn("uint64", uint64_writer.get());
-  tbl_writer.commit();
+  tbl_writer->commit();
 
   auto fhash = SHA1::compute(FileUtil::read(filename));
   EXPECT_EQ(fhash.toString(), "f602dfda7577e72a3efcc3907adee4675ae1eab1");
 
   auto tbl_reader = cstable::CSTableReader::openFile(filename);
+  EXPECT_EQ(tbl_reader->numRecords(), num_records);
+
   auto bitpacked_reader = tbl_reader->getColumnReader("bitpacked");
   auto boolean_reader = tbl_reader->getColumnReader("boolean");
   auto double_reader = tbl_reader->getColumnReader("double");
@@ -198,7 +248,7 @@ TEST_CASE(CSTableTest, TestV1CSTableColumnWriterReader, [] () {
 //});
 
 TEST_CASE(CSTableTest, TestV2UInt64Plain, [] () {
-  String filename = "/tmp/__fnord__cstabletest2.cstable";
+  String filename = "/tmp/__fnord__cstabletest3.cstable";
   FileUtil::rm(filename);
 
   Vector<cstable::ColumnConfig> columns;
