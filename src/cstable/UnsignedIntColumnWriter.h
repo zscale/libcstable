@@ -20,9 +20,7 @@ public:
   UnsignedIntColumnWriter(
       ColumnConfig config,
       RefPtr<PageManager> page_mgr,
-      RefPtr<Buffer> meta_buf,
-      RefPtr<Buffer> rlevel_meta_buf,
-      RefPtr<Buffer> dlevel_meta_buf);
+      RefPtr<PageIndex> page_idx);
 
   void writeUnsignedInt(
       uint64_t rlvl,

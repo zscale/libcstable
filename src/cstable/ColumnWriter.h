@@ -16,6 +16,7 @@
 #include <cstable/ColumnConfig.h>
 #include <cstable/PageManager.h>
 #include <cstable/UInt64PageWriter.h>
+#include <cstable/PageIndex.h>
 
 namespace stx {
 namespace cstable {
@@ -48,9 +49,7 @@ public:
   DefaultColumnWriter(
       ColumnConfig config,
       RefPtr<PageManager> page_mgr,
-      RefPtr<Buffer> meta_buf,
-      RefPtr<Buffer> rlevel_meta_buf,
-      RefPtr<Buffer> dlevel_meta_buf);
+      RefPtr<PageIndex> page_idx);
 
   void writeNull(uint64_t rlvl, uint64_t dlvl);
 

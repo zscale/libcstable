@@ -15,15 +15,8 @@ namespace cstable {
 UnsignedIntColumnWriter::UnsignedIntColumnWriter(
     ColumnConfig config,
     RefPtr<PageManager> page_mgr,
-    RefPtr<Buffer> meta_buf,
-    RefPtr<Buffer> rlevel_meta_buf,
-    RefPtr<Buffer> dlevel_meta_buf) :
-    DefaultColumnWriter(
-        config,
-        page_mgr,
-        meta_buf,
-        rlevel_meta_buf,
-        dlevel_meta_buf) {
+    RefPtr<PageIndex> page_idx) :
+    DefaultColumnWriter(config, page_mgr, page_idx) {
   switch (config_.storage_type) {
 
     case ColumnType::UINT64_PLAIN:

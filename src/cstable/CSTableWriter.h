@@ -141,9 +141,6 @@ protected:
 
   BinaryFormatVersion version_;
   Vector<ColumnConfig> columns_;
-  Vector<RefPtr<Buffer>> column_metadata_;
-  Vector<RefPtr<Buffer>> column_rlevel_metadata_;
-  Vector<RefPtr<Buffer>> column_dlevel_metadata_;
   HashMap<uint32_t, RefPtr<DefaultColumnWriter>> column_writers_by_id_;
   HashMap<String, RefPtr<DefaultColumnWriter>> column_writers_by_name_;
   uint64_t current_txid_;

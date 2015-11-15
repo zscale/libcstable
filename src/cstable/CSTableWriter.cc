@@ -18,7 +18,7 @@ RefPtr<CSTableWriter> CSTableWriter::createFile(
     const String& filename,
     const Vector<ColumnConfig>& columns,
     Option<RefPtr<LockRef>> lockref /* = None<RefPtr<LockRef>>() */) {
-  createFile(
+  return createFile(
       filename,
       BinaryFormatVersion::v0_2_0,
       columns,
@@ -48,9 +48,6 @@ CSTableWriter::CSTableWriter(
     const Vector<ColumnConfig>& columns) :
     version_(version),
     columns_(columns),
-    column_metadata_(columns.size()),
-    column_rlevel_metadata_(columns.size()),
-    column_dlevel_metadata_(columns.size()),
     current_txid_(0),
     num_rows_(0),
     page_idx_(new PageIndex(version)) {
@@ -87,17 +84,10 @@ CSTableWriter::CSTableWriter(
     RefPtr<DefaultColumnWriter> writer;
 
     switch (columns_[i].logical_type) {
-
       case msg::FieldType::UINT64:
       case msg::FieldType::UINT32:
-        writer = new UnsignedIntColumnWriter(
-            columns_[i],
-            page_mgr_,
-            column_metadata_[i],
-            column_rlevel_metadata_[i],
-            column_dlevel_metadata_[i]);
+        writer = new UnsignedIntColumnWriter(columns_[i], page_mgr_, page_idx_);
         break;
-
     }
 
     column_writers_by_id_.emplace(columns_[i].column_id, writer);
