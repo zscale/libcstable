@@ -34,7 +34,12 @@ public:
       const json::JSONObject::const_iterator& begin,
       const json::JSONObject::const_iterator& end);
 
-  void addRecord(const msg::DynamicMessage& msg);
+  void addRecordFromProtobuf(const msg::DynamicMessage& msg);
+  void addRecordFromProtobuf(
+      const msg::MessageObject& msg,
+      const msg::MessageSchema& schema);
+
+
   void addRecordsFromCSV(CSVInputStream* csv);
 
 protected:

@@ -12,6 +12,7 @@
 #include <stx/exception.h>
 #include <stx/autoref.h>
 #include <stx/json/json.h>
+#include <stx/protobuf/MessageSchema.h>
 #include <cstable/BinaryFormat.h>
 
 namespace stx {
@@ -111,6 +112,8 @@ public:
   //void fromJSON(
   //    json::JSONObject::const_iterator begin,
   //    json::JSONObject::const_iterator end);
+
+  static RecordSchema fromProtobuf(const msg::MessageSchema& schema);
 
 protected:
   HashMap<String, ScopedPtr<Column>> columns_by_name_;

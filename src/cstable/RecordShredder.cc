@@ -102,7 +102,7 @@ static void addProtoRecordField(
     uint32_t rmax,
     uint32_t d,
     const msg::MessageObject& msg,
-    RefPtr<msg::MessageSchema> msg_schema,
+    const msg::MessageSchema& msg_schema,
     const String& column,
     RecordSchema::Column* field,
     CSTableWriter* writer) {
@@ -118,7 +118,7 @@ static void addProtoRecordField(
   }
 
   size_t n = 0;
-  auto field_id = msg_schema->fieldId(field->name);
+  auto field_id = msg_schema.fieldId(field->name);
   for (const auto& o : msg.asObject()) {
     if (o.id != field_id) { // FIXME
       continue;
@@ -128,14 +128,14 @@ static void addProtoRecordField(
 
     switch (field->type) {
       case ColumnType::SUBRECORD: {
-        auto o_schema = msg_schema->fieldSchema(field_id);
+        auto o_schema = msg_schema.fieldSchema(field_id);
         for (const auto& f : field->subschema->columns()) {
           addProtoRecordField(
               next_r,
               rmax,
               next_d,
               o,
-              o_schema,
+              *o_schema,
               column + field->name + ".",
               f,
               writer);
@@ -161,9 +161,15 @@ static void addProtoRecordField(
   }
 }
 
-void RecordShredder::addRecord(const msg::DynamicMessage& msg) {
+void RecordShredder::addRecordFromProtobuf(const msg::DynamicMessage& msg) {
+  addRecordFromProtobuf(msg.data(), *msg.schema());
+}
+
+void RecordShredder::addRecordFromProtobuf(
+    const msg::MessageObject& msg,
+    const msg::MessageSchema& schema) {
   for (const auto& f : record_schema_->columns()) {
-    addProtoRecordField(0, 0, 0, msg.data(), msg.schema(), "", f, writer_);
+    addProtoRecordField(0, 0, 0, msg, schema, "", f, writer_);
   }
 
   writer_->addRow();
