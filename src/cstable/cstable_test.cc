@@ -12,7 +12,6 @@
 #include <stx/io/file.h>
 #include <stx/test/unittest.h>
 #include <cstable/v1/CSTableWriter.h>
-#include <cstable/v1/CSTableReader.h>
 #include <cstable/v1/BitPackedIntColumnWriter.h>
 #include <cstable/v1/BooleanColumnWriter.h>
 #include <cstable/v1/DoubleColumnWriter.h>
@@ -21,7 +20,7 @@
 #include <cstable/v1/UInt32ColumnWriter.h>
 #include <cstable/v1/UInt64ColumnWriter.h>
 #include <cstable/CSTableWriter.h>
-
+#include <cstable/CSTableReader.h>
 
 using namespace stx;
 

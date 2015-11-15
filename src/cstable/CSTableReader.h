@@ -22,42 +22,28 @@ public:
 
   static RefPtr<CSTableReader> openFile(const String& filename);
 
-  virtual RefPtr<ColumnReader> getColumnByName(const String& column_name) = 0;
+  RefPtr<ColumnReader> getColumnByName(const String& column_name);
 
   RefPtr<ColumnReader> getColumnReader(const String& column_name) {
     return getColumnByName(column_name);
   }
 
-  virtual ColumnType getColumnType(const String& column_name) = 0;
+  ColumnType getColumnType(const String& column_name) ;
 
-  virtual Set<String> columns() const = 0;
+  Set<String> columns() const ;
 
-  virtual bool hasColumn(const String& column_name) const = 0;
+  bool hasColumn(const String& column_name) const ;
 
-  virtual size_t numRecords() const = 0;
+  size_t numRecords() const;
 
-};
+protected:
 
-class DefaultCSTableReader : public CSTableReader {
-public:
-
-  DefaultCSTableReader(
+  CSTableReader(
       BinaryFormatVersion version,
       Vector<ColumnConfig> columns,
       Vector<RefPtr<ColumnReader>> column_readers,
       uint64_t num_rows);
 
-  RefPtr<ColumnReader> getColumnByName(const String& column_name) override;
-
-  ColumnType getColumnType(const String& column_name) override;
-
-  Set<String> columns() const override;
-
-  bool hasColumn(const String& column_name) const override;
-
-  size_t numRecords() const override;
-
-protected:
   BinaryFormatVersion version_;
   Vector<ColumnConfig> columns_;
   HashMap<uint32_t, RefPtr<ColumnReader>> column_readers_by_id_;

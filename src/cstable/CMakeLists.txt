@@ -24,7 +24,6 @@ add_library(cstable STATIC
     v1/BooleanColumnReader.cc
     v1/BooleanColumnWriter.cc
     v1/CSTableBuilder.cc
-    v1/CSTableReader.cc
     v1/CSTableWriter.cc
     v1/ColumnWriter.cc
     v1/DoubleColumnReader.cc

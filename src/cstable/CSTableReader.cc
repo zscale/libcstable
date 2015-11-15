@@ -78,7 +78,7 @@ RefPtr<CSTableReader> CSTableReader::openFile(const String& filename) {
         column_readers.emplace_back(reader.get());
       }
 
-      return new DefaultCSTableReader(
+      return new CSTableReader(
           version,
           header.columns,
           column_readers,
@@ -96,7 +96,7 @@ RefPtr<CSTableReader> CSTableReader::openFile(const String& filename) {
   }
 }
 
-DefaultCSTableReader::DefaultCSTableReader(
+CSTableReader::CSTableReader(
     BinaryFormatVersion version,
     Vector<ColumnConfig> columns,
     Vector<RefPtr<ColumnReader>> column_readers,
@@ -115,7 +115,7 @@ DefaultCSTableReader::DefaultCSTableReader(
   }
 }
 
-RefPtr<ColumnReader> DefaultCSTableReader::getColumnByName(
+RefPtr<ColumnReader> CSTableReader::getColumnByName(
     const String& column_name) {
   auto col = column_readers_by_name_.find(column_name);
   if (col == column_readers_by_name_.end()) {
@@ -125,7 +125,7 @@ RefPtr<ColumnReader> DefaultCSTableReader::getColumnByName(
   return col->second;
 }
 
-//RefPtr<ColumnReader> DefaultCSTableReader::getColumnById(
+//RefPtr<ColumnReader> CSTableReader::getColumnById(
 //    uint32_t column_id) const {
 //  auto col = column_readers_by_id_.find(column_id);
 //  if (col == column_readers_by_id_.end()) {
@@ -135,12 +135,12 @@ RefPtr<ColumnReader> DefaultCSTableReader::getColumnByName(
 //  return col->second;
 //}
 
-ColumnType DefaultCSTableReader::getColumnType(const String& column_name) {
+ColumnType CSTableReader::getColumnType(const String& column_name) {
   auto col = getColumnByName(column_name);
   return col->storageType();
 }
 
-Set<String> DefaultCSTableReader::columns() const {
+Set<String> CSTableReader::columns() const {
   Set<String> cols;
 
   for (const auto& c : columns_) {
@@ -150,12 +150,12 @@ Set<String> DefaultCSTableReader::columns() const {
   return cols;
 }
 
-bool DefaultCSTableReader::hasColumn(const String& column_name) const {
+bool CSTableReader::hasColumn(const String& column_name) const {
   auto col = column_readers_by_name_.find(column_name);
   return col != column_readers_by_name_.end();
 }
 
-size_t DefaultCSTableReader::numRecords() const {
+size_t CSTableReader::numRecords() const {
   return num_rows_;
 }
 
