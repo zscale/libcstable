@@ -23,7 +23,7 @@ namespace cstable {
  * Assumptions:
  *   - aligned 512 write bytes to disk are atomic
  *
- * v1:
+ * v0.1.x:
  *
  *   <cstable> :=
  *       <header>
@@ -46,7 +46,7 @@ namespace cstable {
  *       <uint64_t>              // column data start offset
  *       <uint64_t>              // column data size
  *
- * v2:
+ * v0.2.0:
  *
  *   <cstable> :=
  *       <header>
@@ -93,13 +93,8 @@ namespace cstable {
  *      <char>*                  // page data
  *
  */
-class BinaryFormat {
-public:
-  static const uint16_t kVersion = 1;
-  static const uint32_t kMagicBytes = 0x17231723;
-};
-
 static const char kMagicBytes[4] = {0x23, 0x17, 0x23, 0x17};
+
 static const size_t kSectorSize = 512;
 
 enum class ColumnType : uint8_t {
@@ -127,6 +122,12 @@ enum class BinaryFormatVersion {
   v0_1_0,
   v0_2_0
 };
+
+/* v0.1.0 */
+namespace v0_1_0 {
+const uint16_t kVersion = 1;
+const uint32_t kMagicBytesUInt32 = 0x17231723;
+}
 
 /* v0.2.0 */
 namespace v0_2_0 {

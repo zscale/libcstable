@@ -29,12 +29,12 @@ CSTableReader::CSTableReader(
 CSTableReader::CSTableReader(const RefPtr<VFSFile> file) : file_(file) {
   util::BinaryMessageReader header(file_->data(), file_->size());
   auto magic = *header.readUInt32();
-  if (magic != BinaryFormat::kMagicBytes) {
+  if (magic != cstable::v0_1_0::kMagicBytesUInt32) {
     RAISE(kIllegalStateError, "not a valid cstable");
   }
 
   auto version = *header.readUInt16();
-  if (version != BinaryFormat::kVersion) {
+  if (version != cstable::v0_1_0::kVersion) {
     RAISEF(kIllegalStateError, "unsupported sstable version: $0", version);
   }
 

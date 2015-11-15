@@ -28,8 +28,8 @@ CSTableWriter::CSTableWriter(
     const uint64_t num_records) :
     file_(std::move(file)) {
   util::BinaryMessageWriter header;
-  header.appendUInt32(BinaryFormat::kMagicBytes);
-  header.appendUInt16(BinaryFormat::kVersion);
+  header.appendUInt32(cstable::v0_1_0::kMagicBytesUInt32);
+  header.appendUInt16(cstable::v0_1_0::kVersion);
   header.appendUInt64(0); // flags
   header.appendUInt64(num_records);
   file_.write(header.data(), header.size());
