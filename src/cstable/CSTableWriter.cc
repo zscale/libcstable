@@ -31,39 +31,27 @@ RefPtr<CSTableWriter> CSTableWriter::createFile(
     const Vector<ColumnConfig>& columns,
     Option<RefPtr<LockRef>> lockref /* = None<RefPtr<LockRef>>() */) {
   auto file = File::openFile(filename, File::O_WRITE | File::O_CREATE);
+  auto file_os = FileOutputStream::fromFileDescriptor(file.fd());
 
   // build header
-  Buffer hdr;
-  hdr.reserve(8192);
+  FileHeader header;
+  header.columns = columns;
 
-  auto os = BufferOutputStream::fromBuffer(&hdr);
-  os->write(kMagicBytes, sizeof(kMagicBytes));
-  os->appendUInt16(2); // version
-  os->appendUInt64(0); // flags
-  RCHECK(hdr.size() == cstable::v0_2_0::kMetaBlockPosition, "invalid meta block offset");
-  os->appendString(String(cstable::v0_2_0::kMetaBlockSize * 2, '\0')); // empty meta blocks
-  os->appendString(String(128, '\0')); // 128 bytes reserved
-  os->appendUInt32(columns.size());
-  for (const auto& col : columns) {
-    col.encode(os.get());
+  // write header
+  size_t header_size = 0;
+  switch (version) {
+    case BinaryFormatVersion::v0_1_0:
+      RAISE(kIllegalArgumentError, "unsupported version: v0.1.0");
+    case BinaryFormatVersion::v0_2_0:
+      header_size = cstable::v0_2_0::writeHeader(header, file_os.get());
+      break;
   }
 
-  // pad header to next 512 byte boundary
-  auto header_padding = padToNextSector(hdr.size()) - hdr.size();
-  os->appendString(String(header_padding, '\0'));
-
-  // flush header to disk & init pagemanager
-  file.pwrite(0, hdr.data(), hdr.size());
-
-  auto page_mgr = mkRef(
-      new PageManager(version, std::move(file), hdr.size()));
-
-  auto page_idx = mkRef(new PageIndex(version));
-
+  // open cstable writer
   return new CSTableWriter(
       version,
-      page_mgr,
-      page_idx,
+      new PageManager(version, std::move(file), header_size),
+      new PageIndex(version),
       columns);
 }
 

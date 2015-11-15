@@ -12,6 +12,7 @@
 #include <stdint.h>
 #include <stx/io/inputstream.h>
 #include <stx/io/outputstream.h>
+#include <stx/protobuf/MessageObject.h>
 
 namespace stx {
 namespace cstable {
@@ -110,11 +111,24 @@ inline uint64_t padToNextSector(uint64_t val) {
   return (((val) + (kSectorSize - 1)) / kSectorSize) * kSectorSize;
 }
 
+struct ColumnConfig {
+  uint32_t column_id;
+  String column_name;
+  cstable::ColumnType storage_type;
+  msg::FieldType logical_type;
+  size_t rlevel_max;
+  size_t dlevel_max;
+};
+
 struct MetaBlock {
   uint64_t transaction_id;
   uint64_t num_rows;
   uint64_t head_index_page;
   uint64_t file_size;
+};
+
+struct FileHeader {
+  Vector<ColumnConfig> columns;
 };
 
 enum class BinaryFormatVersion {
@@ -133,8 +147,10 @@ namespace v0_2_0 {
 static const uint16_t kVersion = 2;
 const size_t kMetaBlockPosition = 14;
 const size_t kMetaBlockSize = 52;
-void writeMetaBlock(const MetaBlock& mb, OutputStream* os);
-void readMetaBlock(const MetaBlock& mb, InputStream* is);
+size_t writeMetaBlock(const MetaBlock& mb, OutputStream* os);
+size_t readMetaBlock(MetaBlock* mb,InputStream* is);
+size_t writeHeader(const FileHeader& hdr, OutputStream* os);
+size_t readHeader(FileHeader* mb, OutputStream* os);
 }
 
 }

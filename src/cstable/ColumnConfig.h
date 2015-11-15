@@ -19,19 +19,6 @@
 namespace stx {
 namespace cstable {
 
-struct ColumnConfig {
-  uint32_t column_id;
-  String column_name;
-  cstable::ColumnType storage_type;
-  msg::FieldType logical_type;
-  size_t rlevel_max;
-  size_t dlevel_max;
-
-  void encode(OutputStream* os) const;
-  void decode(InputStream* is);
-
-};
-
 } // namespace cstable
 } // namespace stx
 
