@@ -11,6 +11,8 @@
 #define _FNORD_CSTABLE_BINARYFORMAT_H
 #include <stdlib.h>
 #include <stdint.h>
+#include <stx/io/inputstream.h>
+#include <stx/io/outputstream.h>
 
 namespace stx {
 namespace cstable {
@@ -98,7 +100,6 @@ public:
 };
 
 static const char kMagicBytes[4] = {0x23, 0x17, 0x23, 0x17};
-
 static const size_t kSectorSize = 512;
 
 enum class ColumnType : uint8_t {
@@ -113,6 +114,27 @@ enum class ColumnType : uint8_t {
 
 inline uint64_t padToNextSector(uint64_t val) {
   return (((val) + (kSectorSize - 1)) / kSectorSize) * kSectorSize;
+}
+
+struct MetaBlock {
+  uint64_t transaction_id;
+  uint64_t num_rows;
+  uint64_t head_index_page;
+  uint64_t file_size;
+};
+
+enum class BinaryFormatVersion {
+  v0_1_0,
+  v0_2_0
+};
+
+/* v0.2.0 */
+namespace v0_2_0 {
+static const uint16_t kVersion = 2;
+const size_t kMetaBlockPosition = 14;
+const size_t kMetaBlockSize = 52;
+void writeMetaBlock(const MetaBlock& mb, OutputStream* os);
+void readMetaBlock(const MetaBlock& mb, InputStream* is);
 }
 
 }

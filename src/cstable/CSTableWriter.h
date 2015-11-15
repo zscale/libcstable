@@ -129,8 +129,6 @@ protected:
   Vector<RefPtr<Buffer>> column_dlevel_metadata_;
   HashMap<uint32_t, RefPtr<DefaultColumnWriter>> column_writers_by_id_;
   HashMap<String, RefPtr<DefaultColumnWriter>> column_writers_by_name_;
-  size_t meta_block_offset_;
-  size_t meta_block_size_;
   uint64_t current_txid_;
   uint64_t num_rows_;
   RefPtr<PageManager> page_mgr_;

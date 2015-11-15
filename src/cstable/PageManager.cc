@@ -16,10 +16,21 @@ namespace stx {
 namespace cstable {
 
 PageManager::PageManager(
+    BinaryFormatVersion version,
     File&& file,
     uint64_t offset) :
+    version_(version),
     file_(std::move(file)),
-    offset_(offset) {}
+    offset_(offset) {
+  switch (version) {
+    case BinaryFormatVersion::v0_1_0:
+      RAISE(kIllegalArgumentError, "unsupported version: v0.1.0");
+    case BinaryFormatVersion::v0_2_0:
+      meta_block_position_ = cstable::v0_2_0::kMetaBlockPosition,
+      meta_block_size_ = cstable::v0_2_0::kMetaBlockSize;
+      break;
+  }
+}
 
 PageRef PageManager::allocPage(uint64_t size) {
   PageRef page;
@@ -53,6 +64,34 @@ void PageManager::writePage(
   }
 
   file_.pwrite(page_offset, page_data, page_size);
+}
+
+void PageManager::writeTransaction(const MetaBlock& mb) {
+  // fsync all changes before writing new tx
+  file_.fsync();
+
+  // build new meta block
+  Buffer buf;
+  buf.reserve(meta_block_size_);
+  auto os = BufferOutputStream::fromBuffer(&buf);
+
+  switch (version_) {
+    case BinaryFormatVersion::v0_1_0:
+      RAISE(kIllegalArgumentError, "unsupported version: v0.1.0");
+    case BinaryFormatVersion::v0_2_0:
+      cstable::v0_2_0::writeMetaBlock(mb, os.get());
+      break;
+  }
+
+  RCHECK(buf.size() == meta_block_size_, "invalid meta block size");
+
+  // write to metablock slot
+  auto mb_index = mb.transaction_id % 2;
+  auto mb_offset = meta_block_position_ + meta_block_size_ * mb_index;
+  file_.pwrite(mb_offset, buf.data(), buf.size());
+
+  // fsync one last time
+  file_.fsync();
 }
 
 uint64_t PageManager::getOffset() const {

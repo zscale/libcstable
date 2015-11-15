@@ -13,6 +13,7 @@
 #include <stx/autoref.h>
 #include <stx/buffer.h>
 #include <stx/io/file.h>
+#include <cstable/BinaryFormat.h>
 
 namespace stx {
 namespace cstable {
@@ -25,7 +26,10 @@ struct PageRef {
 class PageManager : public RefCounted {
 public:
 
-  PageManager(File&& file, uint64_t offset);
+  PageManager(
+      BinaryFormatVersion version,
+      File&& file,
+      uint64_t offset);
 
   PageRef allocPage(uint64_t size);
 
@@ -41,13 +45,18 @@ public:
       const void* data,
       size_t data_size);
 
+  void writeTransaction(const MetaBlock& mb);
+
   uint64_t getOffset() const;
 
   File* file();
 
 protected:
+  BinaryFormatVersion version_;
   File file_;
   uint64_t offset_;
+  size_t meta_block_position_;
+  size_t meta_block_size_;
 };
 
 } // namespace cstable

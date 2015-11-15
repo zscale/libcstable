@@ -36,8 +36,6 @@ CSTableWriter::CSTableWriter(
     column_metadata_(columns.size()),
     column_rlevel_metadata_(columns.size()),
     column_dlevel_metadata_(columns.size()),
-    meta_block_offset_(14),
-    meta_block_size_(52),
     current_txid_(0),
     num_rows_(0) {
   // build header
@@ -48,8 +46,8 @@ CSTableWriter::CSTableWriter(
   os->write(kMagicBytes, sizeof(kMagicBytes));
   os->appendUInt16(2); // version
   os->appendUInt64(0); // flags
-  RCHECK(hdr.size() == meta_block_offset_, "invalid meta block offset");
-  os->appendString(String(meta_block_size_ * 2, '\0')); // empty meta blocks
+  RCHECK(hdr.size() == cstable::v0_2_0::kMetaBlockPosition, "invalid meta block offset");
+  os->appendString(String(cstable::v0_2_0::kMetaBlockSize * 2, '\0')); // empty meta blocks
   os->appendString(String(128, '\0')); // 128 bytes reserved
   os->appendUInt32(columns.size());
   for (const auto& col : columns) {
@@ -62,7 +60,11 @@ CSTableWriter::CSTableWriter(
 
   // flush header to disk & init pagemanager
   file.pwrite(0, hdr.data(), hdr.size());
-  page_mgr_ = mkRef(new PageManager(std::move(file), hdr.size()));
+  page_mgr_ = mkRef(
+      new PageManager(
+          BinaryFormatVersion::v0_2_0,
+          std::move(file),
+          hdr.size()));
 
   // create columns
   for (size_t i = 0; i < columns_.size(); ++i) {
@@ -88,34 +90,15 @@ CSTableWriter::CSTableWriter(
 }
 
 void CSTableWriter::commit() {
-  auto txid = current_txid_ + 1;
-  auto file = page_mgr_->file();
-
-  // write new index and fsync all changes
-  file->fsync();
-
   // build new meta block
-  Buffer buf;
-  buf.reserve(meta_block_size_);
+  MetaBlock mb;
+  mb.transaction_id = current_txid_ + 1;
+  mb.num_rows = num_rows_;
+  mb.head_index_page = 0;
+  mb.file_size = page_mgr_->getOffset();
 
-  auto os = BufferOutputStream::fromBuffer(&buf);
-  os->appendUInt64(txid); // transaction id
-  os->appendUInt64(num_rows_); // number of rows
-  os->appendUInt64(0); // head index page offset as multiple of 512 bytes
-  os->appendUInt64(page_mgr_->getOffset()); // file size in bytes
-
-  auto hash = SHA1::compute(buf.data(), buf.size());
-  os->write((char*) hash.data(), hash.size()); // sha1 hash
-
-  RCHECK(buf.size() == meta_block_size_, "invalid meta block size");
-
-  // write to metablock slot
-  auto mb_index = txid % 2;
-  auto mb_offset = meta_block_offset_ + meta_block_size_ * mb_index;
-  file->pwrite(mb_offset, buf.data(), buf.size());
-
-  // fsync one last time
-  file->fsync();
+  // commit tx to disk
+  page_mgr_->writeTransaction(mb);
 }
 
 RefPtr<DefaultColumnWriter> CSTableWriter::getColumnByName(
