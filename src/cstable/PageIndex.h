@@ -14,6 +14,7 @@
 #include <stx/buffer.h>
 #include <stx/io/file.h>
 #include <cstable/BinaryFormat.h>
+#include <cstable/PageManager.h>
 
 namespace stx {
 namespace cstable {
@@ -28,12 +29,17 @@ struct PageIndexKey {
 class PageIndex : public RefCounted {
 public:
 
-  PageIndex(BinaryFormatVersion version);
+  PageIndex(
+      BinaryFormatVersion version,
+      RefPtr<PageManager> page_mgr);
 
   void addPageWriter(PageIndexKey key, PageWriter* page_writer);
 
+  void write(PageRef head_page);
+
 protected:
   BinaryFormatVersion version_;
+  RefPtr<PageManager> page_mgr_;
   Vector<Pair<PageIndexKey, PageWriter*>> page_writers_;
 };
 

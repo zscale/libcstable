@@ -12,7 +12,11 @@
 namespace stx {
 namespace cstable {
 
-PageIndex::PageIndex(BinaryFormatVersion version) : version_(version) {}
+PageIndex::PageIndex(
+    BinaryFormatVersion version,
+    RefPtr<PageManager> page_mgr) :
+    version_(version),
+    page_mgr_(page_mgr) {}
 
 void PageIndex::addPageWriter(PageIndexKey key, PageWriter* page_writer) {
   page_writers_.emplace_back(key, page_writer);

@@ -67,6 +67,7 @@ namespace cstable {
  *       <uint64_t>              // transaction id
  *       <uint64_t>              // number of rows
  *       <uint64_t>              // head index page offset
+ *       <uint32_t>              // head index page size
  *       <uint64_t>              // file size in bytes
  *       <20 bytes>              // sha1 checksum
  *
@@ -123,7 +124,8 @@ struct ColumnConfig {
 struct MetaBlock {
   uint64_t transaction_id;
   uint64_t num_rows;
-  uint64_t head_index_page;
+  uint64_t head_index_page_offset;
+  uint64_t head_index_page_size;
   uint64_t file_size;
 };
 
@@ -152,7 +154,7 @@ const uint32_t kMagicBytesUInt32 = 0x17231723;
 namespace v0_2_0 {
 static const uint16_t kVersion = 2;
 const size_t kMetaBlockPosition = 14;
-const size_t kMetaBlockSize = 52;
+const size_t kMetaBlockSize = 56;
 size_t writeMetaBlock(const MetaBlock& mb, OutputStream* os);
 size_t readMetaBlock(MetaBlock* mb,InputStream* is);
 size_t writeHeader(const FileHeader& hdr, OutputStream* os);

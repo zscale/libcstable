@@ -48,10 +48,12 @@ RefPtr<CSTableWriter> CSTableWriter::createFile(
   }
 
   // open cstable writer
+  auto page_mgr = new PageManager(version, std::move(file), header_size);
+
   return new CSTableWriter(
       version,
-      new PageManager(version, std::move(file), header_size),
-      new PageIndex(version),
+      page_mgr,
+      new PageIndex(version, page_mgr),
       columns);
 }
 
@@ -89,11 +91,15 @@ CSTableWriter::CSTableWriter(
 }
 
 void CSTableWriter::commit() {
+  auto idx_head = page_mgr_->allocPage(512);
+
+
   // build new meta block
   MetaBlock mb;
   mb.transaction_id = current_txid_ + 1;
   mb.num_rows = num_rows_;
-  mb.head_index_page = 0;
+  mb.head_index_page_offset = idx_head.offset;
+  mb.head_index_page_size = idx_head.size;
   mb.file_size = page_mgr_->getOffset();
 
   // commit tx to disk

@@ -21,7 +21,8 @@ size_t writeMetaBlock(const MetaBlock& mb, OutputStream* os) {
   util::BinaryMessageWriter buf;
   buf.appendUInt64(mb.transaction_id); // transaction id
   buf.appendUInt64(mb.num_rows); // number of rows
-  buf.appendUInt64(mb.head_index_page); // head index page offset
+  buf.appendUInt64(mb.head_index_page_offset); // head index page offset
+  buf.appendUInt32(mb.head_index_page_size); // head index page size
   buf.appendUInt64(mb.file_size); // file size in bytes
   os->write((char*) buf.data(), buf.size());
 
