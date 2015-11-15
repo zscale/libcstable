@@ -11,6 +11,7 @@
 #include <cstable/ColumnConfig.h>
 #include <cstable/PageManager.h>
 #include <stx/util/binarymessagewriter.h>
+#include <stx/util/binarymessagereader.h>
 #include <stx/SHA1.h>
 
 namespace stx {
@@ -92,7 +93,26 @@ size_t writeMetaBlock(const MetaBlock& mb, OutputStream* os) {
   return buf.size() + hash.size();
 }
 
-void readMetaBlock(const MetaBlock& mb, InputStream* is) {
+bool readMetaBlock(MetaBlock* mb, InputStream* is) {
+  Buffer buf(kMetaBlockSize);
+  is->readNextBytes(buf.data(), kMetaBlockSize);
+
+  auto hash_a = SHA1::compute(buf.data(), kMetaBlockSize - SHA1Hash::kSize);
+  auto hash_b = SHA1Hash(
+      buf.structAt<void>(kMetaBlockSize - SHA1Hash::kSize),
+      SHA1Hash::kSize);
+
+  if (hash_a == hash_b) {
+    util::BinaryMessageReader reader(buf.data(), buf.size());
+    mb->transaction_id = *reader.readUInt64();
+    mb->num_rows = *reader.readUInt64();
+    mb->head_index_page_offset = *reader.readUInt64();
+    mb->head_index_page_size = *reader.readUInt32();
+    mb->file_size = *reader.readUInt64();
+    return true;
+  } else {
+    return false;
+  }
 }
 
 size_t writeHeader(const FileHeader& hdr, OutputStream* os) {
@@ -103,7 +123,7 @@ size_t writeHeader(const FileHeader& hdr, OutputStream* os) {
   RCHECK(buf.size() == kMetaBlockPosition, "invalid meta block offset");
   buf.appendString(String(kMetaBlockSize * 2, '\0')); // empty meta blocks
   buf.appendString(String(128, '\0')); // 128 bytes reserved
-  buf.appendUInt32(hdr.columns.size());
+  buf.appendVarUInt(hdr.columns.size());
 
   for (const auto& col : hdr.columns) {
     buf.appendVarUInt((uint8_t) col.logical_type);
@@ -125,13 +145,29 @@ size_t writeHeader(const FileHeader& hdr, OutputStream* os) {
 void readHeader(
     FileHeader* hdr,
     Vector<MetaBlock>* metablocks,
-    InputStream* os) {
-  // logical_type = (msg::FieldType) is->readVarUInt();
-  // storage_type = (cstable::ColumnType) is->readVarUInt();
-  // column_id = is->readVarUInt();
-  // column_name = is->readLenencString();
-  // rlevel_max = is->readVarUInt();
-  // dlevel_max = is->readVarUInt();
+    InputStream* is) {
+  auto flags = is->readUInt64();
+
+  for (size_t i = 0; i < 2; ++i) {
+    MetaBlock mb;
+    if (readMetaBlock(&mb, is)) {
+      metablocks->emplace_back(mb);
+    }
+  }
+
+  is->skipNextBytes(128);
+
+  auto ncols = is->readVarUInt();
+  for (size_t i = 0; i < ncols; ++i) {
+    ColumnConfig col;
+    col.logical_type = (msg::FieldType) is->readVarUInt();
+    col.storage_type = (cstable::ColumnType) is->readVarUInt();
+    col.column_id = is->readVarUInt();
+    col.column_name = is->readLenencString();
+    col.rlevel_max = is->readVarUInt();
+    col.dlevel_max = is->readVarUInt();
+    hdr->columns.emplace_back(col);
+  }
 }
 
 }

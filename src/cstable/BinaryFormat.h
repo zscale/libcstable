@@ -59,7 +59,7 @@ namespace cstable {
  *       <metablock>             // metablock a
  *       <metablock>             // metablock b
  *       <128 bytes>             // reserved
- *       <uint32_t>              // number of columns
+ *       <lenenc_int>            // number of columns
  *       <column_info>*          // column info for each column
  *       %x00*                   // padding to next 512 byte boundary
  *
@@ -165,7 +165,7 @@ static const uint16_t kVersion = 2;
 const size_t kMetaBlockPosition = 14;
 const size_t kMetaBlockSize = 56;
 size_t writeMetaBlock(const MetaBlock& mb, OutputStream* os);
-void readMetaBlock(MetaBlock* mb, InputStream* is);
+bool readMetaBlock(MetaBlock* mb, InputStream* is);
 size_t writeHeader(const FileHeader& hdr, OutputStream* os);
 void readHeader(FileHeader* mb, Vector<MetaBlock>* metablocks, InputStream* is);
 }
