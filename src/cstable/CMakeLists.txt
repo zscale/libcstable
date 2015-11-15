@@ -17,6 +17,7 @@ add_library(cstable STATIC
     CSTableWriter.cc
     RecordMaterializer.cc
     PageManager.cc
+    PageIndex.cc
     ColumnConfig.cc
     v1/BitPackedIntColumnReader.cc
     v1/BitPackedIntColumnWriter.cc

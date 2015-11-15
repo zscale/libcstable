@@ -7,25 +7,12 @@
  * copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-#pragma once
-#include <stx/stdtypes.h>
-#include <stx/exception.h>
-#include <stx/autoref.h>
-#include <stx/buffer.h>
-#include <stx/io/file.h>
-#include <cstable/BinaryFormat.h>
+#include <cstable/PageIndex.h>
 
 namespace stx {
 namespace cstable {
 
-class PageIndex : public RefCounted {
-public:
-
-  PageIndex(BinaryFormatVersion version);
-
-protected:
-  BinaryFormatVersion version_;
-};
+PageIndex::PageIndex(BinaryFormatVersion version) : version_(version) {}
 
 } // namespace cstable
 } // namespace stx
