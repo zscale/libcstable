@@ -67,11 +67,11 @@ RefPtr<CSTableReader> CSTableReader::openFile(const String& filename) {
       &free_index,
       file_is.get());
 
-  Vector<RefPtr<ColumnReader>> column_readers;
-
   switch (version) {
     case BinaryFormatVersion::v0_1_0: {
       auto mmap = mkRef(new io::MmappedFile(std::move(file)));
+
+      Vector<RefPtr<ColumnReader>> column_readers;
       for (const auto& col : header.columns) {
         auto reader = openColumnV1(col, mmap.get());
         reader->storeMmap(mmap.get());
@@ -91,7 +91,13 @@ RefPtr<CSTableReader> CSTableReader::openFile(const String& filename) {
           std::move(file),
           metablock.file_size);
 
-      break;
+      Vector<RefPtr<ColumnReader>> column_readers;
+
+      return new CSTableReader(
+          version,
+          header.columns,
+          column_readers,
+          metablock.num_rows);
     }
   }
 }
