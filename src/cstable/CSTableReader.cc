@@ -37,16 +37,39 @@ RefPtr<CSTableReader> CSTableReader::openFile(const String& filename) {
       std::move(file),
       metablock.file_size);
 
-  return new DefaultCSTableReader(page_mgr);
+  return new DefaultCSTableReader(
+      version,
+      page_mgr,
+      header.columns);
 }
 
 DefaultCSTableReader::DefaultCSTableReader(
-    RefPtr<PageManager> page_mgr) :
-    page_mgr_(page_mgr) {}
+    BinaryFormatVersion version,
+    RefPtr<PageManager> page_mgr,
+    const Vector<ColumnConfig>& columns) :
+    version_(version),
+    page_mgr_(page_mgr),
+    columns_(columns) {}
 
 RefPtr<ColumnReader> DefaultCSTableReader::getColumnByName(
     const String& column_name) {
+  auto col = column_readers_by_name_.find(column_name);
+  if (col == column_readers_by_name_.end()) {
+    RAISEF(kNotFoundError, "column not found: $0", column_name);
+  }
+
+  return col->second;
 }
+
+//RefPtr<ColumnReader> DefaultCSTableReader::getColumnById(
+//    uint32_t column_id) const {
+//  auto col = column_readers_by_id_.find(column_id);
+//  if (col == column_readers_by_id_.end()) {
+//    RAISEF(kNotFoundError, "column not found: $0", column_id);
+//  }
+//
+//  return col->second;
+//}
 
 ColumnType DefaultCSTableReader::getColumnType(const String& column_name) {
 }

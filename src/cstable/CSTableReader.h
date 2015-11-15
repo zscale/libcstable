@@ -42,7 +42,9 @@ class DefaultCSTableReader : public CSTableReader {
 public:
 
   DefaultCSTableReader(
-      RefPtr<PageManager> page_mgr);
+      BinaryFormatVersion version,
+      RefPtr<PageManager> page_mgr,
+      const Vector<ColumnConfig>& columns);
 
   RefPtr<ColumnReader> getColumnByName(const String& column_name) override;
 
@@ -55,7 +57,11 @@ public:
   size_t numRecords() const override;
 
 protected:
+  BinaryFormatVersion version_;
   RefPtr<PageManager> page_mgr_;
+  Vector<ColumnConfig> columns_;
+  HashMap<uint32_t, RefPtr<ColumnReader>> column_readers_by_id_;
+  HashMap<String, RefPtr<ColumnReader>> column_readers_by_name_;
 };
 
 } // namespace cstable
