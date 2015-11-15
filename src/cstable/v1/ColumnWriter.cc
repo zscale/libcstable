@@ -44,9 +44,42 @@ size_t ColumnWriter::bodySize() const {
 void ColumnWriter::addNull(
     uint64_t rep_level,
     uint64_t def_level) {
-  rlvl_writer_.encode(rep_level);
-  dlvl_writer_.encode(def_level);
+  writeNull(rep_level, def_level);
+}
+
+void ColumnWriter::writeNull(uint64_t rlvl, uint64_t dlvl) {
+  rlvl_writer_.encode(rlvl);
+  dlvl_writer_.encode(dlvl);
   ++num_vals_;
+}
+
+void ColumnWriter::writeUnsignedInt(
+    uint64_t rlvl,
+    uint64_t dlvl,
+    uint64_t value) {
+  addDatum(rlvl, dlvl, &value, sizeof(value));
+}
+
+void ColumnWriter::writeSignedInt(
+    uint64_t rlvl,
+    uint64_t dlvl,
+    int64_t value) {
+  addDatum(rlvl, dlvl, &value, sizeof(value));
+}
+
+void ColumnWriter::writeDouble(
+    uint64_t rlvl,
+    uint64_t dlvl,
+    double value) {
+  addDatum(rlvl, dlvl, &value, sizeof(value));
+}
+
+void ColumnWriter::writeString(
+    uint64_t rlvl,
+    uint64_t dlvl,
+    const char* data,
+    size_t size) {
+  addDatum(rlvl, dlvl, data, size);
 }
 
 } // namespace v1

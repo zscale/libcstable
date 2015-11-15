@@ -27,6 +27,29 @@ public:
 
   ColumnWriter(size_t r_max, size_t d_max);
 
+  void writeNull(uint64_t rlvl, uint64_t dlvl) override;
+
+  void writeUnsignedInt(
+      uint64_t rlvl,
+      uint64_t dlvl,
+      uint64_t value) override;
+
+  void writeSignedInt(
+      uint64_t rlvl,
+      uint64_t dlvl,
+      int64_t value) override;
+
+  void writeDouble(
+      uint64_t rlvl,
+      uint64_t dlvl,
+      double value) override;
+
+  void writeString(
+      uint64_t rlvl,
+      uint64_t dlvl,
+      const char* data,
+      size_t size) override;
+
   void addNull(uint64_t rep_level, uint64_t def_level) override;
 
   void write(void* buf, size_t buf_len);

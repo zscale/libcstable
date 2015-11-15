@@ -57,8 +57,11 @@ DefaultColumnWriter::DefaultColumnWriter(
   }
 }
 
-
 void DefaultColumnWriter::addNull(uint64_t rep_level, uint64_t def_level) {
+  writeNull(rep_level, def_level);
+}
+
+void DefaultColumnWriter::writeNull(uint64_t rep_level, uint64_t def_level) {
   if (rlevel_writer_.get()) {
     rlevel_writer_->appendValue(rep_level);
   }

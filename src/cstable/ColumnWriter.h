@@ -23,7 +23,36 @@ namespace cstable {
 
 class ColumnWriter : public RefCounted {
 public:
+
   ColumnWriter(size_t r_max, size_t d_max);
+
+  virtual void writeNull(uint64_t rlvl, uint64_t dlvl) = 0;
+
+  virtual void writeUnsignedInt(
+      uint64_t rlvl,
+      uint64_t dlvl,
+      uint64_t value) = 0;
+
+  virtual void writeSignedInt(
+      uint64_t rlvl,
+      uint64_t dlvl,
+      int64_t value) = 0;
+
+  virtual void writeDouble(
+      uint64_t rlvl,
+      uint64_t dlvl,
+      double value) = 0;
+
+  void writeString(
+      uint64_t rlvl,
+      uint64_t dlvl,
+      const String& value);
+
+  virtual void writeString(
+      uint64_t rlvl,
+      uint64_t dlvl,
+      const char* data,
+      size_t size) = 0;
 
   /**
    * Deprecated, alias for writeNull
@@ -58,33 +87,7 @@ public:
       RefPtr<PageManager> page_mgr,
       RefPtr<PageIndex> page_idx);
 
-  void writeNull(uint64_t rlvl, uint64_t dlvl);
-
-  virtual void writeUnsignedInt(
-      uint64_t rlvl,
-      uint64_t dlvl,
-      uint64_t value) = 0;
-
-  virtual void writeSignedInt(
-      uint64_t rlvl,
-      uint64_t dlvl,
-      int64_t value) = 0;
-
-  virtual void writeDouble(
-      uint64_t rlvl,
-      uint64_t dlvl,
-      double value) = 0;
-
-  void writeString(
-      uint64_t rlvl,
-      uint64_t dlvl,
-      const String& value);
-
-  virtual void writeString(
-      uint64_t rlvl,
-      uint64_t dlvl,
-      const char* data,
-      size_t size) = 0;
+  void writeNull(uint64_t rlvl, uint64_t dlvl) override;
 
   /**
    * Deprecated, alias for writeNull
