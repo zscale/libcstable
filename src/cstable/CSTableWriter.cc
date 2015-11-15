@@ -91,8 +91,9 @@ CSTableWriter::CSTableWriter(
 }
 
 void CSTableWriter::commit() {
+  // write new index
   auto idx_head = page_mgr_->allocPage(512);
-
+  page_idx_->write(idx_head);
 
   // build new meta block
   MetaBlock mb;

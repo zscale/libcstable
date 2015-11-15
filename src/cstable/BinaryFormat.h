@@ -80,8 +80,9 @@ namespace cstable {
  *       <lenenc_int>            // max definition level
  *
  *   <index_page> :=
- *       <uint32_t>              // page data size as multiple of 512 bytes, inluding 8 bytes metadata
- *       <uint32_t>              // next index page file offset as multiple of 512 bytes
+ *       <uint64_t>              // next index page file offset
+ *       <uint32_t>              // next index page size
+ *       <uint32_t>              // bytes used in this page
  *       <char*>                 // index page data (index_entries back2back)
  *
  *   <index_entry> :=
