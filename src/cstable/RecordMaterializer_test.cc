@@ -28,70 +28,69 @@ UNIT_TEST(RecordMaterializerTest);
 TEST_CASE(RecordMaterializerTest, TestSimpleReMaterialization, [] () {
   String testfile = "/tmp/__fnord_testcstablematerialization.cst";
 
-  RecordSchema level1;
-  level1.addStringArray("str");
+  RecordSchema rs_level1;
+  rs_level1.addStringArray("str");
 
-  RecordSchema schema;
-  schema.addSubrecordArray("level1", level1);
+  RecordSchema rs_schema;
+  rs_schema.addSubrecordArray("level1", rs_level1);
 
-  //msg::MessageSchemaField level1(
-  //    1,
-  //    "level1",
-  //    msg::FieldType::OBJECT,
-  //    0,
-  //    true,
-  //    false);
+  msg::MessageSchemaField level1(
+      4,
+      "level1",
+      msg::FieldType::OBJECT,
+      0,
+      true,
+      false);
 
-  //msg::MessageSchemaField level1_str(
-  //    2,
-  //    "str",
-  //    msg::FieldType::STRING,
-  //    1024,
-  //    true,
-  //    false);
+  msg::MessageSchemaField level1_str(
+      8,
+      "str",
+      msg::FieldType::STRING,
+      1024,
+      true,
+      false);
 
-  //level1.schema = new MessageSchema(
-  //    "Level1",
-  //    Vector<msg::MessageSchemaField> { level1_str });
+  level1.schema = new MessageSchema(
+      "Level1",
+      Vector<msg::MessageSchemaField> { level1_str });
 
-  //msg::MessageSchema schema(
-  //    "TestSchema",
-  //    Vector<msg::MessageSchemaField> { level1 });
+  auto schema = mkRef(new msg::MessageSchema(
+      "TestSchema",
+      Vector<msg::MessageSchemaField> { level1 }));
 
-  //msg::MessageObject sobj;
-  //auto& l1_a = sobj.addChild(1);
-  //l1_a.addChild(2, "fnord1");
-  //l1_a.addChild(2, "fnord2");
-
-  //auto& l1_b = sobj.addChild(1);
-  //l1_b.addChild(2, "fnord3");
-  //l1_b.addChild(2, "fnord4");
+  DynamicMessage sobj(schema);
+  sobj.addObject("level1", [] (DynamicMessage* msg) {
+    msg->addStringField("str", "fnord1");
+    msg->addStringField("str", "fnord2");
+  });
+  sobj.addObject("level1", [] (DynamicMessage* msg) {
+    msg->addStringField("str", "fnord3");
+    msg->addStringField("str", "fnord4");
+  });
 
   FileUtil::rm(testfile);
   auto writer = cstable::CSTableWriter::createFile(
       testfile,
       cstable::BinaryFormatVersion::v0_1_0,
-      schema);
+      rs_schema);
 
-  iputs("start shredding...", 1);
-  cstable::RecordShredder shredder(&schema, writer.get());
-  //shredder.addRecord(sobj);
-  //iputs("commit...", 1);
+  cstable::RecordShredder shredder(&rs_schema, writer.get());
+  shredder.addRecord(sobj);
   writer->commit();
 
   auto reader = cstable::CSTableReader::openFile(testfile);
-  //cstable::RecordMaterializer materializer(&schema, reader.get());
+  cstable::RecordMaterializer materializer(schema.get(), reader.get());
 
-  //msg::MessageObject robj;
-  //materializer.nextRecord(&robj);
+  msg::MessageObject robj;
+  materializer.nextRecord(&robj);
 
-  //EXPECT_EQ(robj.asObject().size(), 2);
-  //EXPECT_EQ(robj.asObject()[0].asObject().size(), 2);
-  //EXPECT_EQ(robj.asObject()[0].asObject()[0].asString(), "fnord1");
-  //EXPECT_EQ(robj.asObject()[0].asObject()[1].asString(), "fnord2");
-  //EXPECT_EQ(robj.asObject()[1].asObject().size(), 2);
-  //EXPECT_EQ(robj.asObject()[1].asObject()[0].asString(), "fnord3");
-  //EXPECT_EQ(robj.asObject()[1].asObject()[1].asString(), "fnord4");
+  EXPECT_EQ(robj.asObject().size(), 2);
+  EXPECT_EQ(robj.asObject()[0].asObject().size(), 2);
+  EXPECT_EQ(robj.asObject()[0].asObject()[0].asString(), "fnord1");
+  EXPECT_EQ(robj.asObject()[0].asObject()[1].asString(), "fnord2");
+  EXPECT_EQ(robj.asObject()[1].asObject().size(), 2);
+  EXPECT_EQ(robj.asObject()[1].asObject()[0].asString(), "fnord3");
+  EXPECT_EQ(robj.asObject()[1].asObject()[1].asString(), "fnord4");
 });
 
 //TEST_CASE(RecordMaterializerTest, TestSimpleReMaterializationWithNull, [] () {
