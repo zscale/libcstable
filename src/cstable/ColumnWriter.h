@@ -25,7 +25,14 @@ class ColumnWriter : public RefCounted {
 public:
   ColumnWriter(size_t r_max, size_t d_max);
 
+  /**
+   * Deprecated, alias for writeNull
+   */
   virtual void addNull(uint64_t rep_level, uint64_t def_level) = 0;
+
+  /**
+   * Deprecated, do not use
+   */
   virtual void addDatum(
       uint64_t rep_level,
       uint64_t def_level,

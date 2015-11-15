@@ -24,7 +24,8 @@ PageManager::PageManager(
     offset_(offset) {
   switch (version) {
     case BinaryFormatVersion::v0_1_0:
-      RAISE(kIllegalArgumentError, "unsupported version: v0.1.0");
+      meta_block_position_ = 0,
+      meta_block_size_ = 0;
     case BinaryFormatVersion::v0_2_0:
       meta_block_position_ = cstable::v0_2_0::kMetaBlockPosition,
       meta_block_size_ = cstable::v0_2_0::kMetaBlockSize;
@@ -67,6 +68,10 @@ void PageManager::writePage(
 }
 
 void PageManager::writeTransaction(const MetaBlock& mb) {
+  RCHECK(
+      version_ != BinaryFormatVersion::v0_1_0,
+      "writeTransaction is not supported in v0.1.x");
+
   // fsync all changes before writing new tx
   file_.fsync();
 

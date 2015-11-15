@@ -140,10 +140,14 @@ protected:
       RefPtr<PageIndex> page_idx,
       const Vector<ColumnConfig>& columns);
 
+  void commitV1();
+  void commitV2();
+
   BinaryFormatVersion version_;
   RefPtr<PageManager> page_mgr_;
   RefPtr<PageIndex> page_idx_;
   Vector<ColumnConfig> columns_;
+  RefPtr<ColumnWriter> column_writers_;
   HashMap<uint32_t, RefPtr<DefaultColumnWriter>> column_writers_by_id_;
   HashMap<String, RefPtr<DefaultColumnWriter>> column_writers_by_name_;
   uint64_t current_txid_;

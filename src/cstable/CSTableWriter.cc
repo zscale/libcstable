@@ -33,22 +33,24 @@ RefPtr<CSTableWriter> CSTableWriter::createFile(
   auto file = File::openFile(filename, File::O_WRITE | File::O_CREATE);
   auto file_os = FileOutputStream::fromFileDescriptor(file.fd());
 
-  // build header
   FileHeader header;
   header.columns = columns;
 
   // write header
-  size_t header_size = 0;
+  size_t header_size ;
   switch (version) {
     case BinaryFormatVersion::v0_1_0:
-      RAISE(kIllegalArgumentError, "unsupported version: v0.1.0");
+      header_size = 0;
+      break;
     case BinaryFormatVersion::v0_2_0:
       header_size = cstable::v0_2_0::writeHeader(header, file_os.get());
       break;
   }
 
-  // open cstable writer
-  auto page_mgr = new PageManager(version, std::move(file), header_size);
+  auto page_mgr = new PageManager(
+      version,
+      std::move(file),
+      header_size);
 
   return new CSTableWriter(
       version,
@@ -91,6 +93,18 @@ CSTableWriter::CSTableWriter(
 }
 
 void CSTableWriter::commit() {
+  switch (version_) {
+    case BinaryFormatVersion::v0_1_0:
+      return commitV1();
+    case BinaryFormatVersion::v0_2_0:
+      return commitV2();
+  }
+}
+
+void CSTableWriter::commitV1() {
+}
+
+void CSTableWriter::commitV2() {
   // write new index
   auto idx_head = page_idx_->write(free_idx_ptr_);
 
