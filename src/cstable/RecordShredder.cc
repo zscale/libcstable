@@ -25,13 +25,13 @@ void writeProtoNull(
     uint32_t r,
     uint32_t d,
     const String& column,
-    const msg::MessageSchemaField& field,
+    RecordSchema::Column* field,
     CSTableWriter* writer) {
-  switch (field.type) {
+  switch (field->type) {
 
-    case msg::FieldType::OBJECT:
-      for (const auto& f : field.schema->fields()) {
-        writeProtoNull(r, d, column + "." + f.name, f, writer);
+    case ColumnType::SUBRECORD:
+      for (const auto& f : field->subschema->columns()) {
+        writeProtoNull(r, d, column + "." + f->name, f, writer);
       }
 
       break;
@@ -49,49 +49,49 @@ void writeProtoField(
     uint32_t d,
     const msg::MessageObject& msg,
     const String& column,
-    const msg::MessageSchemaField& field,
+    RecordSchema::Column* field,
     CSTableWriter* writer) {
   auto col = writer->getColumnByName(column);
 
-  switch (field.type) {
+  switch (field->type) {
 
-    case msg::FieldType::STRING: {
+    case ColumnType::STRING: {
       auto& str = msg.asString();
       col->addDatum(r, d, str.data(), str.size());
       break;
     }
 
-    case msg::FieldType::UINT32: {
-      uint32_t val = msg.asUInt32();
-      col->addDatum(r, d, &val, sizeof(val));
-      break;
-    }
-
-    case msg::FieldType::DATETIME: {
+    case ColumnType::UNSIGNED_INT: {
       uint64_t val = msg.asUInt64();
       col->addDatum(r, d, &val, sizeof(val));
       break;
     }
 
-    case msg::FieldType::UINT64: {
+    case ColumnType::SIGNED_INT: {
       uint64_t val = msg.asUInt64();
       col->addDatum(r, d, &val, sizeof(val));
       break;
     }
 
-    case msg::FieldType::DOUBLE: {
+    case ColumnType::DATETIME: {
+      uint64_t val = msg.asUInt64();
+      col->addDatum(r, d, &val, sizeof(val));
+      break;
+    }
+
+    case ColumnType::FLOAT: {
       uint64_t val = IEEE754::toBytes(msg.asDouble());
       col->addDatum(r, d, &val, sizeof(val));
       break;
     }
 
-    case msg::FieldType::BOOLEAN: {
+    case ColumnType::BOOLEAN: {
       uint8_t val = msg.asBool() ? 1 : 0;
       col->addDatum(r, d, &val, sizeof(val));
       break;
     }
 
-    case msg::FieldType::OBJECT:
+    case ColumnType::SUBRECORD:
       RAISE(kIllegalStateError);
 
   }
@@ -104,45 +104,47 @@ static void addProtoRecordField(
     const msg::MessageObject& msg,
     RefPtr<msg::MessageSchema> msg_schema,
     const String& column,
-    const msg::MessageSchemaField& field,
+    RecordSchema::Column* field,
     CSTableWriter* writer) {
   auto next_r = r;
   auto next_d = d;
 
-  if (field.repeated) {
+  if (field->repeated) {
     ++rmax;
   }
 
-  if (field.optional || field.repeated) {
+  if (field->optional || field->repeated) {
     ++next_d;
   }
 
   size_t n = 0;
-  auto o_field_id = msg_schema->fieldId(field.name);
+  auto field_id = msg_schema->fieldId(field->name);
   for (const auto& o : msg.asObject()) {
-    if (o.id != o_field_id) { // FIXME
+    if (o.id != field_id) { // FIXME
       continue;
     }
 
     ++n;
 
-    switch (field.type) {
-      case msg::FieldType::OBJECT:
-        for (const auto& f : field.schema->fields()) {
+    switch (field->type) {
+      case ColumnType::SUBRECORD: {
+        auto o_schema = msg_schema->fieldSchema(field_id);
+        for (const auto& f : field->subschema->columns()) {
           addProtoRecordField(
               next_r,
               rmax,
               next_d,
               o,
-              msg_schema->fieldSchema(o_field_id),
-              column + field.name + ".",
+              o_schema,
+              column + field->name + ".",
               f,
               writer);
         }
         break;
+      }
 
       default:
-        writeProtoField(next_r, next_d, o, column + field.name, field, writer);
+        writeProtoField(next_r, next_d, o, column + field->name, field, writer);
         break;
     }
 
@@ -150,17 +152,17 @@ static void addProtoRecordField(
   }
 
   if (n == 0) {
-    if (!(field.optional || field.repeated)) {
-      RAISEF(kIllegalArgumentError, "missing field: $0", column + field.name);
+    if (!(field->optional || field->repeated)) {
+      RAISEF(kIllegalArgumentError, "missing field: $0", column + field->name);
     }
 
-    writeProtoNull(r, d, column + field.name, field, writer);
+    writeProtoNull(r, d, column + field->name, field, writer);
     return;
   }
 }
 
 void RecordShredder::addRecord(const msg::DynamicMessage& msg) {
-  for (const auto& f : proto_schema_->fields()) {
+  for (const auto& f : record_schema_->columns()) {
     addProtoRecordField(0, 0, 0, msg.data(), msg.schema(), "", f, writer_);
   }
 
