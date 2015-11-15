@@ -7,8 +7,7 @@
  * copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-#ifndef _FNORD_CSTABLE_BINARYFORMAT_H
-#define _FNORD_CSTABLE_BINARYFORMAT_H
+#pragma once
 #include <stdlib.h>
 #include <stdint.h>
 #include <stx/io/inputstream.h>
@@ -66,7 +65,7 @@ namespace cstable {
  *   <metablock> :=
  *       <uint64_t>              // transaction id
  *       <uint64_t>              // number of rows
- *       <uint64_t>              // head index page offset as multiple of 512 bytes
+ *       <uint64_t>              // head index page offset
  *       <uint64_t>              // file size in bytes
  *       <20 bytes>              // sha1 checksum
  *
@@ -141,4 +140,3 @@ void readMetaBlock(const MetaBlock& mb, InputStream* is);
 }
 }
 
-#endif
