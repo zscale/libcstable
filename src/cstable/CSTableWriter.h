@@ -132,6 +132,9 @@ public:
    */
   RefPtr<ColumnWriter> getColumnById(uint32_t column_id) const;
 
+  void addRow();
+  void addRows(size_t num_records);
+
 protected:
 
   CSTableWriter(
@@ -147,7 +150,7 @@ protected:
   RefPtr<PageManager> page_mgr_;
   RefPtr<PageIndex> page_idx_;
   Vector<ColumnConfig> columns_;
-  RefPtr<ColumnWriter> column_writers_;
+  Vector<RefPtr<ColumnWriter>> column_writers_;
   HashMap<uint32_t, RefPtr<ColumnWriter>> column_writers_by_id_;
   HashMap<String, RefPtr<ColumnWriter>> column_writers_by_name_;
   uint64_t current_txid_;

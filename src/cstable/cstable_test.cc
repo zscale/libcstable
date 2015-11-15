@@ -54,6 +54,7 @@ TEST_CASE(CSTableTest, TestV1CSTableContainer, [] () {
       cstable::BinaryFormatVersion::v0_1_0,
       columns);
 
+  tbl_writer->addRows(num_records);
   tbl_writer->commit();
 
   auto fhash = SHA1::compute(FileUtil::read(filename));

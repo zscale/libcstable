@@ -133,9 +133,18 @@ CSTableWriter::CSTableWriter(
         break;
     }
 
+    column_writers_.emplace_back(writer);
     column_writers_by_id_.emplace(columns_[i].column_id, writer);
     column_writers_by_name_.emplace(columns_[i].column_name, writer);
   }
+}
+
+void CSTableWriter::addRow() {
+  num_rows_++;
+}
+
+void CSTableWriter::addRows(size_t num_rows) {
+  num_rows_ += num_rows;
 }
 
 void CSTableWriter::commit() {
@@ -148,6 +157,52 @@ void CSTableWriter::commit() {
 }
 
 void CSTableWriter::commitV1() {
+  for (size_t i = 0; i < columns_.size(); ++i) {
+    auto writer = column_writers_[i].asInstanceOf<v1::ColumnWriter>();
+    columns_[i].body_size = writer->bodySize();
+  }
+
+  util::BinaryMessageWriter header;
+  header.appendUInt32(cstable::v0_1_0::kMagicBytesUInt32);
+  header.appendUInt16(cstable::v0_1_0::kVersion);
+  header.appendUInt64(0); // flags
+  header.appendUInt64(num_rows_);
+  header.appendUInt32(columns_.size());
+
+  size_t offset = header.size();
+  for (const auto& col : columns_) {
+    offset += 32 + col.column_name.size();
+  }
+
+  for (auto& col : columns_) {
+    col.body_offset = offset;
+    offset += col.body_size;
+
+    header.appendUInt32((uint32_t) col.storage_type);
+    header.appendUInt32(col.column_name.length());
+    header.append(col.column_name.data(), col.column_name.length());
+    header.appendUInt32(col.rlevel_max);
+    header.appendUInt32(col.dlevel_max);
+    header.appendUInt64(col.body_offset);
+    header.appendUInt64(col.body_size);
+  }
+
+  page_mgr_->writePage(0, header.size(), header.data(), header.size());
+
+  for (size_t i = 0; i < columns_.size(); ++i) {
+    const auto& col = columns_[i];
+    auto writer = column_writers_[i].asInstanceOf<v1::ColumnWriter>();
+
+    Buffer buf(col.body_size);
+    writer->write(buf.data(), buf.size());
+    RCHECK(buf.size() == col.body_size, "invalid column body size");
+
+    page_mgr_->writePage(
+        col.body_offset,
+        col.body_size,
+        buf.data(),
+        buf.size());
+  }
 }
 
 void CSTableWriter::commitV2() {
