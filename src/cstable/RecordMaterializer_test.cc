@@ -16,7 +16,7 @@
 #include "cstable/CSTableReader.h"
 #include "cstable/RecordMaterializer.h"
 #include "cstable/v1/StringColumnReader.h"
-#include "cstable/v1/CSTableBuilder.h"
+#include "cstable/RecordShredder.h"
 
 using namespace stx;
 using namespace stx::cstable;
@@ -60,9 +60,11 @@ TEST_CASE(RecordMaterializerTest, TestSimpleReMaterialization, [] () {
   l1_b.addChild(2, "fnord3");
   l1_b.addChild(2, "fnord4");
 
-  cstable::v1::CSTableBuilder builder(&schema);
-  builder.addRecord(sobj);
-  builder.write(testfile);
+  auto columns = RecordShredder::columnsFromSchema(&schema);
+  auto writer = cstable::CSTableWriter::createFile(testfile);
+  cstable::v1::RecordShredder shredder(&schema, writer.get());
+  shredder.addRecord(sobj);
+  writer->commit();
 
   auto reader = cstable::CSTableReader::openFile(testfile);
   cstable::RecordMaterializer materializer(&schema, reader.get());

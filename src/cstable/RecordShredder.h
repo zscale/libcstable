@@ -7,33 +7,32 @@
  * copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-#ifndef _FNORD_CSTABLE_CSTABLEBUILDER_H
-#define _FNORD_CSTABLE_CSTABLEBUILDER_H
+#pragma once
 #include <stx/stdtypes.h>
 #include <stx/io/file.h>
 #include <stx/util/binarymessagewriter.h>
 #include <stx/autoref.h>
 #include <stx/csv/CSVInputStream.h>
-#include <cstable/v1/ColumnWriter.h>
-#include <cstable/v1/CSTableWriter.h>
+#include <cstable/ColumnWriter.h>
+#include <cstable/CSTableWriter.h>
 #include <stx/protobuf/MessageSchema.h>
 #include <stx/protobuf/MessageObject.h>
 
 namespace stx {
 namespace cstable {
-namespace v1 {
 
-class CSTableBuilder {
+class RecordShredder {
 public:
-  CSTableBuilder(const msg::MessageSchema* schema);
+
+  static Vector<ColumnConfig> columnsFromSchema(
+      const msg::MessageSchema* schema);
+
+  RecordShredder(
+      const msg::MessageSchema* schema,
+      CSTableWriter* writer);
 
   void addRecord(const msg::MessageObject& msg);
   void addRecordsFromCSV(CSVInputStream* csv);
-
-  void write(const String& filename);
-  void write(CSTableWriter* writer);
-
-  size_t numRecords() const;
 
 protected:
 
@@ -65,12 +64,10 @@ protected:
       const msg::MessageSchemaField& field);
 
   const msg::MessageSchema* schema_;
+  CSTableWriter* writer_;
   HashMap<String, RefPtr<ColumnWriter>> columns_;
-  size_t num_records_;
 };
 
-} // namespace v1
 } // namespace cstable
 } // namespace stx
 
-#endif
