@@ -187,6 +187,11 @@ ColumnEncoding CSTableReader::getColumnEncoding(const String& column_name) {
   return col->encoding();
 }
 
+ColumnType CSTableReader::getColumnType(const String& column_name) {
+  auto col = getColumnByName(column_name);
+  return col->type();
+}
+
 Set<String> CSTableReader::columns() const {
   Set<String> cols;
 

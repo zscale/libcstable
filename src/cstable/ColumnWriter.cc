@@ -33,6 +33,13 @@ size_t ColumnWriter::maxDefinitionLevel() const {
   return d_max_;
 }
 
+void ColumnWriter::writeDateTime(
+    uint64_t rlvl,
+    uint64_t dlvl,
+    UnixTime value) {
+  writeUnsignedInt(rlvl, dlvl, value.unixMicros());
+}
+
 DefaultColumnWriter::DefaultColumnWriter(
     ColumnConfig config,
     RefPtr<PageManager> page_mgr,

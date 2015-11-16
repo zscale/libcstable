@@ -61,7 +61,7 @@ public:
   virtual void writeDateTime(
       uint64_t rlvl,
       uint64_t dlvl,
-      UnixTime value) = 0;
+      UnixTime value);
 
   virtual ColumnType type() const = 0;
   virtual ColumnEncoding encoding() const = 0;

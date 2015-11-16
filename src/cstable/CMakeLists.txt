@@ -31,6 +31,7 @@ add_library(cstable STATIC
     columns/v1/UInt64ColumnWriter.cc
     v1/CSTableWriter.cc
     ColumnWriter.cc
+    ColumnReader.cc
     CSTableReader.cc
     CSTableWriter.cc
     RecordMaterializer.cc

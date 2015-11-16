@@ -44,6 +44,11 @@ public:
       uint64_t* dlvl,
       String* value) = 0;
 
+  virtual bool readDateTime(
+      uint64_t* rlvl,
+      uint64_t* dlvl,
+      UnixTime* value);
+
   virtual uint64_t nextRepetitionLevel() = 0;
   virtual bool eofReached() const = 0;
 
