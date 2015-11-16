@@ -1,6 +1,8 @@
 libcstable v0.2.0
 =================
 
+[![Build Status](https://travis-ci.org/zscale/libcstable.svg?branch=master)](https://travis-ci.org/zscale/libcstable)
+
 libcstable allows you to write and read cstables (columnar storage tables).
 
 A cstable is a disk-based data structure that stores a collection of "records".
