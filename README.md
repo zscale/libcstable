@@ -4,9 +4,10 @@ libcstable v0.2.0
 libcstable allows you to write and read cstables (columnar storage tables).
 
 A cstable is a disk-based data structure that stores a collection of "records".
-The cstable has a strict schema which each record must adhere to. Nesting
+The cstable has a strict schema which each record must adhere to. Still, nesting
 and repetition within records is fully supported - this means you can store,
-for example, arbitrarily JSON objects or protobufs message in a cstable.
+for example, a list of arbitrarily complex JSON objects or protobufs messages
+  in a cstable.
 
 The layout of the data on disk is "column oriented", i.e. rather than storing
 a list of records, one record after another, we store a list of "columns", one
@@ -75,3 +76,20 @@ Column Types
 
 Shredding & Materializing Records
 ---------------------------------
+
+
+Sources / References
+--------------------
+
+[1] S. Melnik, A. Gubarev, J. Long, G. Romer, S. Shivakumar, M. Tolton, T. Vassilakis (2010). Dremel: Interactive Analysis of Web-Scale Datasets (Google, Inc.)
+
+
+License
+-------
+
+Copyright (c) 2011 Paul Asmuth
+
+libcstable is free software: you can redistribute it and/or modify it under
+the terms of the GNU General Public License v3.0. You should have received a
+copy of the GNU General Public License along with this program. If not, see
+<http://www.gnu.org/licenses/>.
