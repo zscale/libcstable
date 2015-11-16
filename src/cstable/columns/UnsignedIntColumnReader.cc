@@ -62,8 +62,17 @@ bool UnsignedIntColumnReader::readUnsignedInt(
     uint64_t* rlvl,
     uint64_t* dlvl,
     uint64_t* value) {
-  *rlvl = rlevel_reader_->readUnsignedInt();
-  *dlvl = dlevel_reader_->readUnsignedInt();
+  if (rlevel_reader_) {
+    *rlvl = rlevel_reader_->readUnsignedInt();
+  } else {
+    *rlvl = 0;
+  }
+
+  if (dlevel_reader_) {
+    *dlvl = dlevel_reader_->readUnsignedInt();
+  } else {
+    *dlvl = 0;
+  }
 
   if (*dlvl == config_.dlevel_max) {
     *value = data_reader_->readUnsignedInt();
