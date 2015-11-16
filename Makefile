@@ -1,11 +1,11 @@
 all: test
 
-STX_DIR ?= "deps/libstx"
+STX_PATH ?= "deps/libstx"
 
 build:
 	mkdir -p build/devel
 	cd build/devel && \
-	cmake -DSTX_DIR=$(STX_DIR) -DCMAKE_BUILD_TYPE=Debug ../.. && \
+	cmake -DSTX_PATH=$(STX_PATH) -DCMAKE_BUILD_TYPE=Debug ../.. && \
 	make
 
 test: build
