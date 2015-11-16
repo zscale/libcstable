@@ -1,5 +1,3 @@
 - convenience addRecord methods in cstable
 - delete defaultcolumnwriter
-- cstable::LogicalType, cstable::StorageType
-- more schema info to be able to shred/reconstruct json?
 - store max values for e.g. bitpackcolumn
