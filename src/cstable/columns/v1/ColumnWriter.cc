@@ -8,7 +8,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 #include <cstable/columns/v1/ColumnWriter.h>
-#include <stx/IEEE754.h>
+#include <stx/ieee754.h>
 
 namespace stx {
 namespace cstable {
