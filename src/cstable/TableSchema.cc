@@ -178,14 +178,13 @@ void TableSchema::addColumn(
     bool repeated,
     bool optional,
     uint64_t type_size /* = 0 */) {
-  auto col = mkScoped(new Column {
-    .name = name,
-    .type = type,
-    .encoding = encoding,
-    .repeated = repeated,
-    .optional = optional,
-    .type_size = type_size
-  });
+  auto col = mkScoped(new Column());
+  col->name = name;
+  col->type = type;
+  col->encoding = encoding;
+  col->repeated = repeated;
+  col->optional = optional;
+  col->type_size = type_size;
 
   columns_.emplace_back(col.get());
   columns_by_name_.emplace(name, std::move(col));
