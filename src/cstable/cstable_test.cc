@@ -49,9 +49,6 @@ TEST_CASE(CSTableTest, TestV1CSTableContainer, [] () {
   tbl_writer->addRows(num_records);
   tbl_writer->commit();
 
-  //auto fhash = SHA1::compute(FileUtil::read(filename));
-  //EXPECT_EQ(fhash.toString(), "4dabd2586ed0061d29304979fcc9ffae82112804");
-
   auto tbl_reader = cstable::CSTableReader::openFile(filename);
   EXPECT_EQ(tbl_reader->numRecords(), num_records);
   EXPECT_EQ(tbl_reader->hasColumn("key1"), true);
@@ -133,9 +130,6 @@ TEST_CASE(CSTableTest, TestV1CSTableColumnWriterReader, [] () {
   }
 
   tbl_writer->commit();
-
-  //auto fhash = SHA1::compute(FileUtil::read(filename));
-  //EXPECT_EQ(fhash.toString(), "f602dfda7577e72a3efcc3907adee4675ae1eab1");
 
   auto tbl_reader = cstable::CSTableReader::openFile(filename);
   EXPECT_EQ(tbl_reader->numRecords(), num_records);
