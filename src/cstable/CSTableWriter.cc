@@ -182,7 +182,6 @@ CSTableWriter::CSTableWriter(
     }
 
     column_writers_.emplace_back(writer);
-    column_writers_by_id_.emplace(columns_[i].column_id, writer);
     column_writers_by_name_.emplace(columns_[i].column_name, writer);
   }
 }
@@ -272,7 +271,7 @@ void CSTableWriter::commitV2() {
   cur_idx_ptr_ = Some(idx_head);
 }
 
-RefPtr<ColumnWriter> CSTableWriter::getColumnByName(
+RefPtr<ColumnWriter> CSTableWriter::getColumnWriter(
     const String& column_name) const {
   auto col = column_writers_by_name_.find(column_name);
   if (col == column_writers_by_name_.end()) {
@@ -282,18 +281,17 @@ RefPtr<ColumnWriter> CSTableWriter::getColumnByName(
   return col->second;
 }
 
-RefPtr<ColumnWriter> CSTableWriter::getColumnById(
-    uint32_t column_id) const {
-  auto col = column_writers_by_id_.find(column_id);
-  if (col == column_writers_by_id_.end()) {
-    RAISEF(kNotFoundError, "column not found: $0", column_id);
-  }
-
-  return col->second;
+bool CSTableWriter::hasColumn(const String& column_name) const {
+  auto col = column_writers_by_name_.find(column_name);
+  return col != column_writers_by_name_.end();
 }
 
 const RecordSchema* CSTableWriter::schema() {
   return schema_.get();
+}
+
+const Vector<ColumnConfig>& CSTableWriter::columns() const {
+  return columns_;
 }
 
 } // namespace cstable

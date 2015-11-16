@@ -33,7 +33,7 @@ void writeProtoNull(
       break;
 
     default:
-      auto col = writer->getColumnByName(column);
+      auto col = writer->getColumnWriter(column);
       col->writeNull(r, d);
       break;
 
@@ -47,7 +47,7 @@ void writeProtoField(
     const String& column,
     RecordSchema::Column* field,
     CSTableWriter* writer) {
-  auto col = writer->getColumnByName(column);
+  auto col = writer->getColumnWriter(column);
 
   switch (field->type) {
 
@@ -165,130 +165,130 @@ void RecordShredder::addRecordFromProtobuf(
   writer_->addRow();
 }
 
-////void RecordShredder::addRecordsFromCSV(CSVInputStream* csv) {
-////  Vector<String> columns;
-////  csv->readNextRow(&columns);
-////
-////  Set<String> missing_columns;
-////  for (const auto& col : columns_) {
-////    missing_columns.emplace(col.first);
-////  }
-////
-////  Vector<RefPtr<ColumnWriter>> column_writers;
-////  Vector<msg::FieldType> field_types;
-////  for (const auto& col : columns) {
-////    if (columns_.count(col) == 0) {
-////      RAISEF(kRuntimeError, "column '$0' not found in schema", col);
-////    }
-////
-////    missing_columns.erase(col);
-////    column_writers.emplace_back(columns_[col]);
-////    field_types.emplace_back(schema_->fieldType(schema_->fieldId(col)));
-////  }
-////
-////  Vector<RefPtr<ColumnWriter>> missing_column_writers;
-////  for (const auto& col : missing_columns) {
-////    auto writer = columns_[col];
-////    if (writer->maxDefinitionLevel() == 0) {
-////      RAISEF(kRuntimeError, "missing required column: $0", col);
-////    }
-////
-////    missing_column_writers.emplace_back(writer);
-////  }
-////
-////  Vector<String> row;
-////  while (csv->readNextRow(&row)) {
-////    for (size_t i = 0; i < row.size() && i < columns.size(); ++i) {
-////      const auto& col = column_writers[i];
-////      const auto& val = row[i];
-////
-////      if (Human::isNullOrEmpty(val)) {
-////        if (col->maxDefinitionLevel() == 0) {
-////          RAISEF(
-////              kRuntimeError,
-////              "missing value for required column: $0",
-////              columns[i]);
-////        }
-////
-////        col->addNull(0, 0);
-////        continue;
-////      }
-////
-////      switch (field_types[i]) {
-////
-////        case msg::FieldType::STRING: {
-////          col->addDatum(0, col->maxDefinitionLevel(), val.data(), val.size());
-////          break;
-////        }
-////
-////        case msg::FieldType::UINT32: {
-////          uint32_t v;
-////          try {
-////            v = std::stoull(val);
-////          } catch (const StandardException& e) {
-////            RAISEF(kTypeError, "can't convert '$0' to UINT32", val);
-////          }
-////
-////          col->addDatum(0, col->maxDefinitionLevel(), &v, sizeof(v));
-////          break;
-////        }
-////
-////        case msg::FieldType::DATETIME: {
-////          auto t = Human::parseTime(val);
-////          if (t.isEmpty()) {
-////            RAISEF(kTypeError, "can't convert '$0' to DATETIME", val);
-////          }
-////
-////          uint64_t v = t.get().unixMicros();
-////          col->addDatum(0, col->maxDefinitionLevel(), &v, sizeof(v));
-////          break;
-////        }
-////
-////        case msg::FieldType::UINT64: {
-////          uint64_t v;
-////          try {
-////            v = std::stoull(val);
-////          } catch (const StandardException& e) {
-////            RAISEF(kTypeError, "can't convert '$0' to UINT64", val);
-////          }
-////
-////          col->addDatum(0, col->maxDefinitionLevel(), &v, sizeof(v));
-////          break;
-////        }
-////
-////        case msg::FieldType::DOUBLE: {
-////          double v;
-////          try {
-////            v = std::stod(val);
-////          } catch (const StandardException& e) {
-////            RAISEF(kTypeError, "can't convert '$0' to DOUBLE", val);
-////          }
-////
-////          col->addDatum(0, col->maxDefinitionLevel(), &v, sizeof(v));
-////          break;
-////        }
-////
-////        case msg::FieldType::BOOLEAN: {
-////          auto b = Human::parseBoolean(val);
-////          uint8_t v = !b.isEmpty() && b.get() ? 1 : 0;
-////          col->addDatum(0, col->maxDefinitionLevel(), &v, sizeof(v));
-////          break;
-////        }
-////
-////        case msg::FieldType::OBJECT:
-////          RAISE(kIllegalStateError, "can't read OBJECTs from CSV");
-////
-////      }
-////    }
-////
-////    for (auto& col : missing_column_writers) {
-////      col->addNull(0, 0);
-////    }
-////
-////    writer_->addRow();
-////  }
-////}
-//
+void RecordShredder::addRecordsFromCSV(CSVInputStream* csv) {
+  Vector<String> columns;
+  csv->readNextRow(&columns);
+
+  Set<String> missing_columns;
+  for (const auto& col : writer_->columns()) {
+    missing_columns.emplace(col.column_name);
+  }
+
+  Vector<RefPtr<ColumnWriter>> column_writers;
+  Vector<ColumnType> field_types;
+  for (const auto& col : columns) {
+    if (!writer_->hasColumn(col)) {
+      RAISEF(kRuntimeError, "column '$0' not found in schema", col);
+    }
+
+    auto cwriter = writer_->getColumnWriter(col);
+    missing_columns.erase(col);
+    column_writers.emplace_back(cwriter);
+    field_types.emplace_back(cwriter->type());
+  }
+
+  Vector<RefPtr<ColumnWriter>> missing_column_writers;
+  for (const auto& col : missing_columns) {
+    auto cwriter = writer_->getColumnWriter(col);
+    if (cwriter->maxDefinitionLevel() == 0) {
+      RAISEF(kRuntimeError, "missing required column: $0", col);
+    }
+
+    missing_column_writers.emplace_back(cwriter);
+  }
+
+  Vector<String> row;
+  while (csv->readNextRow(&row)) {
+    for (size_t i = 0; i < row.size() && i < columns.size(); ++i) {
+      const auto& col = column_writers[i];
+      const auto& val = row[i];
+
+      if (Human::isNullOrEmpty(val)) {
+        if (col->maxDefinitionLevel() == 0) {
+          RAISEF(
+              kRuntimeError,
+              "missing value for required column: $0",
+              columns[i]);
+        }
+
+        col->writeNull(0, 0);
+        continue;
+      }
+
+      switch (field_types[i]) {
+
+        case ColumnType::STRING: {
+          col->writeString(0, col->maxDefinitionLevel(), val.data(), val.size());
+          break;
+        }
+
+        case ColumnType::UNSIGNED_INT: {
+          uint64_t v;
+          try {
+            v = std::stoull(val);
+          } catch (const StandardException& e) {
+            RAISEF(kTypeError, "can't convert '$0' to UINT64", val);
+          }
+
+          col->writeUnsignedInt(0, col->maxDefinitionLevel(), v);
+          break;
+        }
+
+        case ColumnType::SIGNED_INT: {
+          int64_t v;
+          try {
+            v = std::stoll(val);
+          } catch (const StandardException& e) {
+            RAISEF(kTypeError, "can't convert '$0' to INT64", val);
+          }
+
+          col->writeSignedInt(0, col->maxDefinitionLevel(), v);
+          break;
+        }
+
+        case ColumnType::DATETIME: {
+          auto t = Human::parseTime(val);
+          if (t.isEmpty()) {
+            RAISEF(kTypeError, "can't convert '$0' to DATETIME", val);
+          }
+
+          col->writeDateTime(0, col->maxDefinitionLevel(), t.get());
+          break;
+        }
+
+        case ColumnType::FLOAT: {
+          double v;
+          try {
+            v = std::stod(val);
+          } catch (const StandardException& e) {
+            RAISEF(kTypeError, "can't convert '$0' to DOUBLE", val);
+          }
+
+          col->writeFloat(0, col->maxDefinitionLevel(), v);
+          break;
+        }
+
+        case ColumnType::BOOLEAN: {
+          auto b = Human::parseBoolean(val);
+          auto v = !b.isEmpty() && b.get();
+          col->writeBoolean(0, col->maxDefinitionLevel(), v);
+          break;
+        }
+
+        case ColumnType::SUBRECORD:
+          RAISE(kIllegalStateError, "can't read SUBRECORDs from CSV");
+
+      }
+    }
+
+    for (auto& col : missing_column_writers) {
+      col->writeNull(0, 0);
+    }
+
+    writer_->addRow();
+  }
+}
+
 } // namespace cstable
 } // namespace stx
 

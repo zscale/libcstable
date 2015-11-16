@@ -105,13 +105,13 @@ TEST_CASE(CSTableTest, TestV1CSTableColumnWriterReader, [] () {
       cstable::BinaryFormatVersion::v0_1_0,
       schema);
 
-  auto bitpacked_writer = tbl_writer->getColumnByName("bitpacked");
-  auto boolean_writer = tbl_writer->getColumnByName("boolean");
-  auto double_writer = tbl_writer->getColumnByName("double");
-  auto leb128_writer = tbl_writer->getColumnByName("leb128");
-  auto string_writer = tbl_writer->getColumnByName("string");
-  auto uint32_writer = tbl_writer->getColumnByName("uint32");
-  auto uint64_writer = tbl_writer->getColumnByName("uint64");
+  auto bitpacked_writer = tbl_writer->getColumnWriter("bitpacked");
+  auto boolean_writer = tbl_writer->getColumnWriter("boolean");
+  auto double_writer = tbl_writer->getColumnWriter("double");
+  auto leb128_writer = tbl_writer->getColumnWriter("leb128");
+  auto string_writer = tbl_writer->getColumnWriter("string");
+  auto uint32_writer = tbl_writer->getColumnWriter("uint32");
+  auto uint64_writer = tbl_writer->getColumnWriter("uint64");
 
   for (auto i = 0; i < num_records; i++) {
     tbl_writer->addRow();
@@ -228,7 +228,7 @@ TEST_CASE(CSTableTest, TestV2CSTableContainer, [] () {
 //
 //  {
 //    auto tbl_writer = cstable::CSTableWriter::createFile(filename, schema);
-//    auto mycol = tbl_writer->getColumnByName("mycol");
+//    auto mycol = tbl_writer->getColumnWriter("mycol");
 //
 //    for (size_t i = 1; i < 10000; ++i) {
 //      mycol->writeUnsignedInt(0, 0, 23 * i);
@@ -241,7 +241,7 @@ TEST_CASE(CSTableTest, TestV2CSTableContainer, [] () {
 //
 //  {
 //    auto tbl_reader = cstable::CSTableReader::openFile(filename);
-//    auto mycol = tbl_reader->getColumnByName("mycol");
+//    auto mycol = tbl_reader->getColumnWriter("mycol");
 //
 //    for (size_t i = 1; i < 10000; ++i) {
 //      uint64_t rlevel;
