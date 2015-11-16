@@ -10,7 +10,7 @@
 #include <cstable/columns/UInt64PageWriter.h>
 #include <stx/inspect.h>
 
-namespace stx {
+
 namespace cstable {
 
 UInt64PageWriter::UInt64PageWriter(
@@ -59,5 +59,5 @@ void UInt64PageWriter::writeIndex(OutputStream* os) const {
 
 
 } // namespace cstable
-} // namespace stx
+
 

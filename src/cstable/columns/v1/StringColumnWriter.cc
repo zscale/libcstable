@@ -9,7 +9,7 @@
  */
 #include <cstable/columns/v1/StringColumnWriter.h>
 
-namespace stx {
+
 namespace cstable {
 namespace v1 {
 
@@ -38,7 +38,7 @@ void StringColumnWriter::addDatum(
   ++num_vals_;
 }
 
-void StringColumnWriter::write(util::BinaryMessageWriter* writer) {
+void StringColumnWriter::write(stx::util::BinaryMessageWriter* writer) {
   writer->append(data_writer_.data(), data_writer_.size());
 }
 
@@ -48,4 +48,4 @@ size_t StringColumnWriter::size() const {
 
 } // namespace v1
 } // namespace cstable
-} // namespace stx
+

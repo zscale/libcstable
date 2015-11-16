@@ -9,7 +9,8 @@
  */
 #include <cstable/columns/UnsignedIntColumnWriter.h>
 
-namespace stx {
+using namespace stx;
+
 namespace cstable {
 
 UnsignedIntColumnWriter::UnsignedIntColumnWriter(
@@ -99,5 +100,4 @@ void UnsignedIntColumnWriter::writeDateTime(
 }
 
 } // namespace cstable
-} // namespace stx
 

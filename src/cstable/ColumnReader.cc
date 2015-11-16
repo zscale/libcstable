@@ -9,7 +9,7 @@
  */
 #include <cstable/ColumnReader.h>
 
-namespace stx {
+
 namespace cstable {
 
 bool ColumnReader::readDateTime(
@@ -27,5 +27,5 @@ bool ColumnReader::readDateTime(
 }
 
 } // namespace cstable
-} // namespace stx
+
 

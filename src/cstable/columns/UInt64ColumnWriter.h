@@ -15,7 +15,7 @@
 #include <cstable/UInt64internal/PageWriter.h>
 #include <cstable/columns/v1/ColumnWriter.h>
 
-namespace stx {
+
 namespace cstable {
 
 class UInt64ColumnWriter : public ColumnWriter {
@@ -57,5 +57,5 @@ protected:
 };
 
 } // namespace cstable
-} // namespace stx
+
 

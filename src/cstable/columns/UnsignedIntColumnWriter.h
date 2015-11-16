@@ -11,7 +11,7 @@
 #include <stx/stdtypes.h>
 #include <cstable/ColumnWriter.h>
 
-namespace stx {
+
 namespace cstable {
 
 class UnsignedIntColumnWriter : public DefaultColumnWriter {
@@ -58,5 +58,5 @@ protected:
 };
 
 } // namespace cstable
-} // namespace stx
+
 

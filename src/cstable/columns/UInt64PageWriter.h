@@ -14,7 +14,6 @@
 #include <cstable/io/PageIndex.h>
 #include <cstable/io/PageWriter.h>
 
-namespace stx {
 namespace cstable {
 
 class UInt64PageWriter : public UnsignedIntPageWriter {
@@ -36,10 +35,10 @@ protected:
   bool has_page_;
   cstable::PageRef page_;
   Buffer page_buf_;
-  BufferOutputStream page_os_;
+  stx::BufferOutputStream page_os_;
   Vector<Pair<cstable::PageRef, uint64_t>> pages_;
 };
 
 } // namespace cstable
-} // namespace stx
+
 

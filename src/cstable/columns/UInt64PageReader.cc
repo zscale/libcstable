@@ -9,7 +9,7 @@
  */
 #include <cstable/columns/UInt64PageReader.h>
 
-namespace stx {
+
 namespace cstable {
 
 UInt64PageReader::UInt64PageReader(
@@ -27,5 +27,5 @@ void UInt64PageReader::readIndex(InputStream* os) const {
 }
 
 } // namespace cstable
-} // namespace stx
+
 

@@ -22,7 +22,8 @@
 #include <stx/io/file.h>
 #include <stx/io/mmappedfile.h>
 
-namespace stx {
+using namespace stx;
+
 namespace cstable {
 
 static RefPtr<v1::ColumnReader> openColumnV1(
@@ -197,5 +198,5 @@ size_t CSTableReader::numRecords() const {
 
 
 } // namespace cstable
-} // namespace stx
+
 

@@ -10,7 +10,8 @@
 #include <cstable/cstable.h>
 #include <cstable/TableSchema.h>
 
-namespace stx {
+using namespace stx;
+
 namespace cstable {
 
 TableSchema::TableSchema() {}
@@ -260,5 +261,5 @@ TableSchema TableSchema::fromProtobuf(const msg::MessageSchema& schema) {
 
 
 } // namespace msg
-} // namespace stx
+
 

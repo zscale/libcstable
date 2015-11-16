@@ -13,7 +13,8 @@
 #include <stx/util/binarymessagereader.h>
 #include <stx/SHA1.h>
 
-namespace stx {
+using namespace stx;
+
 namespace cstable {
 
 void readHeader(
@@ -105,12 +106,12 @@ void readHeader(FileHeader* hdr, InputStream* is) {
   });
 }
 
-}
+} // namespace v0_1_0
 
 namespace v0_2_0 {
 
 size_t writeMetaBlock(const MetaBlock& mb, OutputStream* os) {
-  util::BinaryMessageWriter buf;
+  stx::util::BinaryMessageWriter buf;
   buf.appendUInt64(mb.transaction_id); // transaction id
   buf.appendUInt64(mb.num_rows); // number of rows
   buf.appendUInt64(mb.head_index_page_offset); // head index page offset
@@ -134,7 +135,7 @@ bool readMetaBlock(MetaBlock* mb, InputStream* is) {
       SHA1Hash::kSize);
 
   if (hash_a == hash_b) {
-    util::BinaryMessageReader reader(buf.data(), buf.size());
+    stx::util::BinaryMessageReader reader(buf.data(), buf.size());
     mb->transaction_id = *reader.readUInt64();
     mb->num_rows = *reader.readUInt64();
     mb->head_index_page_offset = *reader.readUInt64();
@@ -147,7 +148,7 @@ bool readMetaBlock(MetaBlock* mb, InputStream* is) {
 }
 
 size_t writeHeader(const FileHeader& hdr, OutputStream* os) {
-  util::BinaryMessageWriter buf;
+  stx::util::BinaryMessageWriter buf;
   buf.append(kMagicBytes, sizeof(kMagicBytes));
   buf.appendUInt16(2); // version
   buf.appendUInt64(0); // flags
@@ -202,7 +203,6 @@ void readHeader(
   }
 }
 
-}
+} // namespace v0_2_0
 
-}
-}
+} // namespace cstable

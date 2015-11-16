@@ -9,9 +9,9 @@
  */
 #include <cstable/columns/BitPackedIntPageWriter.h>
 
-namespace stx {
+
 namespace cstable {
 
 } // namespace cstable
-} // namespace stx
+
 

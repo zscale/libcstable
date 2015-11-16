@@ -9,7 +9,7 @@
  */
 #include <cstable/columns/v1/BooleanColumnWriter.h>
 
-namespace stx {
+
 namespace cstable {
 namespace v1 {
 
@@ -54,7 +54,7 @@ void BooleanColumnWriter::commit() {
   data_writer_.flush();
 }
 
-void BooleanColumnWriter::write(util::BinaryMessageWriter* writer) {
+void BooleanColumnWriter::write(stx::util::BinaryMessageWriter* writer) {
   writer->append(data_writer_.data(), data_writer_.size());
 }
 
@@ -65,4 +65,4 @@ size_t BooleanColumnWriter::size() const {
 
 } // namespace v1
 } // namespace cstable
-} // namespace stx
+

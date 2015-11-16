@@ -18,7 +18,7 @@
 #include <cstable/cstable.h>
 #include <cstable/ColumnWriter.h>
 
-namespace stx {
+
 namespace cstable {
 namespace v1 {
 
@@ -76,17 +76,17 @@ public:
 
 protected:
   virtual size_t size() const = 0;
-  virtual void write(util::BinaryMessageWriter* writer) = 0;
+  virtual void write(stx::util::BinaryMessageWriter* writer) = 0;
 
   size_t r_max_;
   size_t d_max_;
-  util::BitPackEncoder rlvl_writer_;
-  util::BitPackEncoder dlvl_writer_;
+  stx::util::BitPackEncoder rlvl_writer_;
+  stx::util::BitPackEncoder dlvl_writer_;
   size_t num_vals_;
 };
 
 } // namespace v1
 } // namespace cstable
-} // namespace stx
+
 
 #endif

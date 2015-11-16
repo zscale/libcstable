@@ -10,7 +10,8 @@
 #include <cstable/columns/UnsignedIntColumnReader.h>
 #include <cstable/columns/UInt64PageReader.h>
 
-namespace stx {
+using namespace stx;
+
 namespace cstable {
 
 UnsignedIntColumnReader::UnsignedIntColumnReader(
@@ -150,5 +151,4 @@ uint64_t UnsignedIntColumnReader::maxDefinitionLevel() const {
 }
 
 } // namespace cstable
-} // namespace stx
 

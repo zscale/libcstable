@@ -9,7 +9,7 @@
  */
 #include <cstable/columns/v1/UInt32ColumnWriter.h>
 
-namespace stx {
+
 namespace cstable {
 namespace v1 {
 
@@ -48,7 +48,7 @@ void UInt32ColumnWriter::addDatum(
   ++num_vals_;
 }
 
-void UInt32ColumnWriter::write(util::BinaryMessageWriter* writer) {
+void UInt32ColumnWriter::write(stx::util::BinaryMessageWriter* writer) {
   writer->append(data_writer_.data(), data_writer_.size());
 }
 
@@ -58,4 +58,4 @@ size_t UInt32ColumnWriter::size() const {
 
 } // namespace v1
 } // namespace cstable
-} // namespace stx
+

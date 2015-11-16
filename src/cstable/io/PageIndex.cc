@@ -11,7 +11,7 @@
 #include <cstable/io/PageWriter.h>
 #include <stx/util/binarymessagewriter.h>
 
-namespace stx {
+
 namespace cstable {
 
 PageIndex::PageIndex(
@@ -31,7 +31,7 @@ PageRef PageIndex::write(Option<PageRef> head) {
   // build index
   Buffer buf;
   {
-    auto os = BufferOutputStream::fromBuffer(&buf);
+    auto os = stx::BufferOutputStream::fromBuffer(&buf);
     for (auto& p : page_writers_) {
       const auto& key = p.first;
       auto& writer = p.second;
@@ -62,7 +62,7 @@ PageRef PageIndex::write(Option<PageRef> head) {
   // write index to disk
   uint64_t written = 0;
   Buffer page_buf;
-  auto page_os = BufferOutputStream::fromBuffer(&page_buf);
+  auto page_os = stx::BufferOutputStream::fromBuffer(&page_buf);
   for (size_t i = 0; i < pages.size(); ++i) {
     page_buf.clear();
 
@@ -102,5 +102,5 @@ void PageIndexReader::addPageReader(PageIndexKey key, PageReader* page_reader) {
 
 
 } // namespace cstable
-} // namespace stx
+
 

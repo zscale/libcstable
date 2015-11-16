@@ -9,7 +9,7 @@
  */
 #include <cstable/columns/v1/StringColumnReader.h>
 
-namespace stx {
+
 namespace cstable {
 namespace v1 {
 
@@ -101,4 +101,4 @@ bool StringColumnReader::readString(
 
 } // namespace v1
 } // namespace cstable
-} // namespace stx
+

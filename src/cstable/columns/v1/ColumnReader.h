@@ -13,7 +13,7 @@
 #include <stx/util/binarymessagereader.h>
 #include <stx/util/BitPackDecoder.h>
 
-namespace stx {
+
 namespace cstable {
 namespace v1 {
 
@@ -50,27 +50,27 @@ public:
     return vals_read_ >= vals_total_;
   }
 
-  void storeMmap(RefPtr<VFSFile> mmap) {
+  void storeMmap(RefPtr<stx::VFSFile> mmap) {
     mmap_ = mmap;
   }
 
 protected:
   uint64_t r_max_;
   uint64_t d_max_;
-  util::BinaryMessageReader reader_;
+  stx::util::BinaryMessageReader reader_;
   size_t vals_total_;
   size_t vals_read_;
   uint64_t rlvl_size_;
   uint64_t dlvl_size_;
   uint64_t data_size_;
-  util::BitPackDecoder rlvl_reader_;
-  util::BitPackDecoder dlvl_reader_;
+  stx::util::BitPackDecoder rlvl_reader_;
+  stx::util::BitPackDecoder dlvl_reader_;
   void* data_;
-  RefPtr<VFSFile> mmap_;
+  RefPtr<stx::VFSFile> mmap_;
 };
 
 } // namespace v1
 } // namespace cstable
-} // namespace stx
+
 
 #endif

@@ -16,7 +16,6 @@
 #include <cstable/cstable.h>
 #include <cstable/io/PageManager.h>
 
-namespace stx {
 namespace cstable {
 
 class PageWriter;
@@ -27,7 +26,7 @@ struct PageIndexKey {
   PageIndexEntryType entry_type;
 };
 
-class PageIndex : public RefCounted {
+class PageIndex : public stx::RefCounted {
 public:
 
   PageIndex(
@@ -60,5 +59,4 @@ protected:
 };
 
 } // namespace cstable
-} // namespace stx
 

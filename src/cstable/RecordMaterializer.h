@@ -17,18 +17,17 @@
 #include <cstable/ColumnReader.h>
 #include <stx/protobuf/MessageSchema.h>
 
-namespace stx {
 namespace cstable {
 
 class RecordMaterializer {
 public:
 
   RecordMaterializer(
-      msg::MessageSchema* schema,
+      stx::msg::MessageSchema* schema,
       CSTableReader* reader,
       Set<String> columns = Set<String> {});
 
-  void nextRecord(msg::MessageObject* record);
+  void nextRecord(stx::msg::MessageObject* record);
   void skipRecord();
 
 protected:
@@ -46,9 +45,9 @@ protected:
     uint64_t d;
     bool pending;
     bool defined;
-    Vector<Tuple<uint64_t, bool, uint32_t>> parents;
+    Vector<stx::Tuple<uint64_t, bool, uint32_t>> parents;
     uint32_t field_id;
-    msg::FieldType field_type;
+    stx::msg::FieldType field_type;
     ColumnType col_type;
 
     String val_str;
@@ -68,25 +67,25 @@ protected:
   void loadColumn(
       const String& column_name,
       ColumnState* column,
-      msg::MessageObject* record);
+      stx::msg::MessageObject* record);
 
   void insertValue(
       ColumnState* column,
-      Vector<Tuple<uint64_t, bool, uint32_t>> parents,
+      Vector<stx::Tuple<uint64_t, bool, uint32_t>> parents,
       Vector<size_t> indexes,
-      msg::MessageObject* record);
+      stx::msg::MessageObject* record);
 
   void insertNull(
       ColumnState* column,
-      Vector<Tuple<uint64_t, bool, uint32_t>> parents,
+      Vector<stx::Tuple<uint64_t, bool, uint32_t>> parents,
       const Vector<size_t> indexes,
-      msg::MessageObject* record);
+      stx::msg::MessageObject* record);
 
   void createColumns(
       const String& prefix,
       uint32_t dmax,
-      Vector<Tuple<uint64_t, bool, uint32_t>> parents,
-      const msg::MessageSchemaField& field,
+      Vector<stx::Tuple<uint64_t, bool, uint32_t>> parents,
+      const stx::msg::MessageSchemaField& field,
       CSTableReader* reader,
       const Set<String>& columns);
 
@@ -94,6 +93,6 @@ protected:
 };
 
 } // namespace cstable
-} // namespace stx
+
 
 #endif

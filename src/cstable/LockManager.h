@@ -12,7 +12,7 @@
 #include <stx/exception.h>
 #include <stx/autoref.h>
 
-namespace stx {
+
 namespace cstable {
 
 class LockRef : public RefCounted {
@@ -24,5 +24,5 @@ class LockManager {
 };
 
 } // namespace cstable
-} // namespace stx
+
 

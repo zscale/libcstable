@@ -14,10 +14,9 @@
 #include <stx/json/json.h>
 #include <stx/protobuf/MessageSchema.h>
 
-namespace stx {
 namespace cstable {
 
-class TableSchema : public RefCounted {
+class TableSchema : public stx::RefCounted {
 public:
 
   struct Column {
@@ -114,14 +113,12 @@ public:
   //    json::JSONObject::const_iterator begin,
   //    json::JSONObject::const_iterator end);
 
-  static TableSchema fromProtobuf(const msg::MessageSchema& schema);
+  static TableSchema fromProtobuf(const stx::msg::MessageSchema& schema);
 
 protected:
   HashMap<String, ScopedPtr<Column>> columns_by_name_;
   Vector<Column*> columns_;
 };
 
-
-} // namespace msg
-} // namespace stx
+} // namespace cstable
 

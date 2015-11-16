@@ -10,7 +10,8 @@
 #include <stx/ieee754.h>
 #include <cstable/RecordMaterializer.h>
 
-namespace stx {
+using namespace stx;
+
 namespace cstable {
 
 RecordMaterializer::RecordMaterializer(
@@ -370,5 +371,5 @@ double RecordMaterializer::ColumnState::getFloat() const {
 }
 
 } // namespace cstable
-} // namespace stx
+
 

@@ -15,7 +15,6 @@
 #include <stx/io/file.h>
 #include <cstable/cstable.h>
 
-namespace stx {
 namespace cstable {
 
 struct PageRef {
@@ -23,7 +22,7 @@ struct PageRef {
   uint32_t size;
 };
 
-class PageManager : public RefCounted {
+class PageManager : public stx::RefCounted {
 public:
 
   PageManager(
@@ -60,5 +59,4 @@ protected:
 };
 
 } // namespace cstable
-} // namespace stx
 

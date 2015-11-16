@@ -9,7 +9,8 @@
  */
 #include <cstable/columns/v1/BitPackedIntColumnWriter.h>
 
-namespace stx {
+using namespace stx;
+
 namespace cstable {
 namespace v1 {
 
@@ -56,7 +57,7 @@ void BitPackedIntColumnWriter::commit() {
   data_writer_.flush();
 }
 
-void BitPackedIntColumnWriter::write(util::BinaryMessageWriter* writer) {
+void BitPackedIntColumnWriter::write(stx::util::BinaryMessageWriter* writer) {
   writer->appendUInt32(max_value_);
   writer->append(data_writer_.data(), data_writer_.size());
 }
@@ -68,4 +69,4 @@ size_t BitPackedIntColumnWriter::size() const {
 
 } // namespace v1
 } // namespace cstable
-} // namespace stx
+

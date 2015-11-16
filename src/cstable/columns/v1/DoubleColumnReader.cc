@@ -9,7 +9,8 @@
  */
 #include <cstable/columns/v1/DoubleColumnReader.h>
 
-namespace stx {
+using namespace stx;
+
 namespace cstable {
 namespace v1 {
 
@@ -99,4 +100,4 @@ bool DoubleColumnReader::readString(
 
 } // namespace v1
 } // namespace cstable
-} // namespace stx
+

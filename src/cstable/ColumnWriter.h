@@ -17,10 +17,9 @@
 #include <cstable/io/PageIndex.h>
 #include <cstable/columns/UInt64PageWriter.h>
 
-namespace stx {
 namespace cstable {
 
-class ColumnWriter : public RefCounted {
+class ColumnWriter : public stx::RefCounted {
 public:
 
   ColumnWriter(size_t r_max, size_t d_max);
@@ -99,5 +98,5 @@ protected:
 };
 
 } // namespace cstable
-} // namespace stx
+
 

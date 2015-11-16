@@ -14,7 +14,7 @@
 #include <cstable/io/PageIndex.h>
 #include <cstable/io/PageReader.h>
 
-namespace stx {
+
 namespace cstable {
 
 class UInt64PageReader : public UnsignedIntPageReader {
@@ -33,5 +33,5 @@ protected:
 };
 
 } // namespace cstable
-} // namespace stx
+
 

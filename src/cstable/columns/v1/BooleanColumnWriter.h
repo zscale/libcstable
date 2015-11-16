@@ -14,7 +14,7 @@
 #include <stx/util/BitPackEncoder.h>
 #include <cstable/columns/v1/ColumnWriter.h>
 
-namespace stx {
+
 namespace cstable {
 namespace v1 {
 
@@ -43,13 +43,13 @@ public:
 
 protected:
   size_t size() const override;
-  void write(util::BinaryMessageWriter* writer) override;
+  void write(stx::util::BinaryMessageWriter* writer) override;
 
-  util::BitPackEncoder data_writer_;
+  stx::util::BitPackEncoder data_writer_;
 };
 
 } // namespace v1
 } // namespace cstable
-} // namespace stx
+
 
 #endif

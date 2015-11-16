@@ -9,7 +9,7 @@
  */
 #include <cstable/columns/v1/LEB128ColumnWriter.h>
 
-namespace stx {
+
 namespace cstable {
 namespace v1 {
 
@@ -45,7 +45,7 @@ void LEB128ColumnWriter::addDatum(
   ++num_vals_;
 }
 
-void LEB128ColumnWriter::write(util::BinaryMessageWriter* writer) {
+void LEB128ColumnWriter::write(stx::util::BinaryMessageWriter* writer) {
   writer->append(data_writer_.data(), data_writer_.size());
 }
 
@@ -55,4 +55,4 @@ size_t LEB128ColumnWriter::size() const {
 
 } // namespace v1
 } // namespace cstable
-} // namespace stx
+

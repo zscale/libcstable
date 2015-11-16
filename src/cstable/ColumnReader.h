@@ -13,10 +13,10 @@
 #include <stx/protobuf/MessageObject.h>
 #include <cstable/cstable.h>
 
-namespace stx {
+
 namespace cstable {
 
-class ColumnReader : public RefCounted {
+class ColumnReader : public stx::RefCounted {
 public:
 
   virtual bool readBoolean(
@@ -61,5 +61,5 @@ public:
 };
 
 } // namespace cstable
-} // namespace stx
+
 

@@ -14,7 +14,7 @@
 #include <stx/io/outputstream.h>
 #include <stx/protobuf/MessageObject.h>
 
-namespace stx {
+
 namespace cstable {
 
 /**
@@ -119,10 +119,47 @@ enum class BinaryFormatVersion {
   v0_2_0
 };
 
-
 static const char kMagicBytes[4] = {0x23, 0x17, 0x23, 0x17};
 
 static const size_t kSectorSize = 512;
+
+using String = std::string;
+using StringUtil = stx::StringUtil;
+
+template <typename T>
+using ScopedPtr = std::unique_ptr<T>;
+
+template <typename T>
+using Vector = std::vector<T>;
+
+template <typename T>
+using Set = std::set<T>;
+
+template <typename T>
+using Function = std::function<T>;
+
+template <typename T1, typename T2>
+using Pair = std::pair<T1, T2>;
+
+template <typename T1, typename T2>
+using HashMap = std::unordered_map<T1, T2>;
+
+template <typename T>
+using RefPtr = stx::RefPtr<T>;
+using RefCounted = stx::RefCounted;
+
+template <typename T>
+using ScopedPtr = stx::ScopedPtr<T>;
+
+template <typename T>
+using Option = stx::Option<T>;
+
+using InputStream = stx::InputStream;
+using OutputStream = stx::OutputStream;
+using FileOutputStream = stx::FileOutputStream;
+using File = stx::File;
+using Buffer = stx::Buffer;
+using UnixTime = stx::UnixTime;
 
 inline uint64_t padToNextSector(uint64_t val) {
   return (((val) + (kSectorSize - 1)) / kSectorSize) * kSectorSize;
@@ -151,11 +188,9 @@ struct MetaBlock {
 };
 
 } // namespace cstable
-} // namespace stx
 
 #include <cstable/TableSchema.h>
 
-namespace stx {
 namespace cstable {
 
 struct FileHeader {
@@ -197,6 +232,5 @@ size_t writeHeader(const FileHeader& hdr, OutputStream* os);
 void readHeader(FileHeader* mb, Vector<MetaBlock>* metablocks, InputStream* is);
 }
 
-}
-}
+} // namespace cstable
 

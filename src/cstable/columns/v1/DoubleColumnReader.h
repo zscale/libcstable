@@ -13,7 +13,7 @@
 #include <stx/util/BitPackDecoder.h>
 #include <cstable/columns/v1/ColumnReader.h>
 
-namespace stx {
+
 namespace cstable {
 namespace v1 {
 
@@ -60,11 +60,11 @@ public:
   }
 
 protected:
-  util::BinaryMessageReader data_reader_;
+  stx::util::BinaryMessageReader data_reader_;
   double cur_val_;
 };
 
 } // namespace v1
 } // namespace cstable
-} // namespace stx
+
 

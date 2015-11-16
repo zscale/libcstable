@@ -12,7 +12,7 @@
 #include <stx/autoref.h>
 #include <stx/io/outputstream.h>
 
-namespace stx {
+
 namespace cstable {
 
 class PageReader {
@@ -38,5 +38,5 @@ public:
 };
 
 } // namespace cstable
-} // namespace stx
+
 

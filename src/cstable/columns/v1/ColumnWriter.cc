@@ -10,7 +10,8 @@
 #include <cstable/columns/v1/ColumnWriter.h>
 #include <stx/ieee754.h>
 
-namespace stx {
+using namespace stx;
+
 namespace cstable {
 namespace v1 {
 
@@ -28,7 +29,7 @@ void ColumnWriter::commit() {
 }
 
 void ColumnWriter::write(void* buf, size_t buf_len) {
-  util::BinaryMessageWriter writer(buf, buf_len);
+  stx::util::BinaryMessageWriter writer(buf, buf_len);
   writer.appendUInt64(num_vals_);
   writer.appendUInt64(rlvl_writer_.size());
   writer.appendUInt64(dlvl_writer_.size());
@@ -97,5 +98,4 @@ void ColumnWriter::writeDateTime(
 
 } // namespace v1
 } // namespace cstable
-} // namespace stx
 

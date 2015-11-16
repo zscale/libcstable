@@ -19,7 +19,7 @@
 #include <stx/protobuf/MessageSchema.h>
 #include <stx/protobuf/DynamicMessage.h>
 
-namespace stx {
+
 namespace cstable {
 
 class RecordShredder {
@@ -29,21 +29,21 @@ public:
 
   void addRecordFromJSON(const String& json);
   void addRecordFromJSON(
-      const json::JSONObject::const_iterator& begin,
-      const json::JSONObject::const_iterator& end);
+      const stx::json::JSONObject::const_iterator& begin,
+      const stx::json::JSONObject::const_iterator& end);
 
-  void addRecordFromProtobuf(const msg::DynamicMessage& msg);
+  void addRecordFromProtobuf(const stx::msg::DynamicMessage& msg);
   void addRecordFromProtobuf(
-      const msg::MessageObject& msg,
-      const msg::MessageSchema& schema);
+      const stx::msg::MessageObject& msg,
+      const stx::msg::MessageSchema& schema);
 
 
-  void addRecordsFromCSV(CSVInputStream* csv);
+  void addRecordsFromCSV(stx::CSVInputStream* csv);
 
 protected:
   CSTableWriter* writer_;
 };
 
 } // namespace cstable
-} // namespace stx
+
 

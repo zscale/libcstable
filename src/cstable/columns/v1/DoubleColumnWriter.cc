@@ -9,7 +9,7 @@
  */
 #include <cstable/columns/v1/DoubleColumnWriter.h>
 
-namespace stx {
+
 namespace cstable {
 namespace v1 {
 
@@ -40,7 +40,7 @@ void DoubleColumnWriter::addDatum(
   ++num_vals_;
 }
 
-void DoubleColumnWriter::write(util::BinaryMessageWriter* writer) {
+void DoubleColumnWriter::write(stx::util::BinaryMessageWriter* writer) {
   writer->append(data_writer_.data(), data_writer_.size());
 }
 
@@ -51,4 +51,4 @@ size_t DoubleColumnWriter::size() const {
 
 } // namespace v1
 } // namespace cstable
-} // namespace stx
+

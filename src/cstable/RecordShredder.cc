@@ -12,7 +12,8 @@
 #include "stx/human.h"
 #include <cstable/RecordShredder.h>
 
-namespace stx {
+using namespace stx;
+
 namespace cstable {
 
 RecordShredder::RecordShredder(CSTableWriter* writer) : writer_(writer) {}
@@ -290,5 +291,5 @@ void RecordShredder::addRecordsFromCSV(CSVInputStream* csv) {
 }
 
 } // namespace cstable
-} // namespace stx
+
 

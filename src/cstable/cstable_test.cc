@@ -23,9 +23,11 @@
 #include <cstable/RecordShredder.h>
 #include <cstable/RecordMaterializer.h>
 
-using namespace stx;
-using namespace stx::cstable;
-using namespace stx::msg;
+using namespace cstable;
+
+using FileUtil = stx::FileUtil;
+using MessageSchema = stx::msg::MessageSchema;
+using DynamicMessage = stx::msg::DynamicMessage;
 
 UNIT_TEST(CSTableTest);
 
@@ -266,29 +268,29 @@ TEST_CASE(CSTableTest, TestSimpleReMaterialization, [] () {
   TableSchema rs_schema;
   rs_schema.addSubrecordArray("level1", rs_level1);
 
-  msg::MessageSchemaField level1(
+  stx::msg::MessageSchemaField level1(
       4,
       "level1",
-      msg::FieldType::OBJECT,
+      stx::msg::FieldType::OBJECT,
       0,
       true,
       false);
 
-  msg::MessageSchemaField level1_str(
+  stx::msg::MessageSchemaField level1_str(
       8,
       "str",
-      msg::FieldType::STRING,
+      stx::msg::FieldType::STRING,
       1024,
       true,
       false);
 
   level1.schema = new MessageSchema(
       "Level1",
-      Vector<msg::MessageSchemaField> { level1_str });
+      Vector<stx::msg::MessageSchemaField> { level1_str });
 
-  auto schema = mkRef(new msg::MessageSchema(
+  auto schema = mkRef(new stx::msg::MessageSchema(
       "TestSchema",
-      Vector<msg::MessageSchemaField> { level1 }));
+      Vector<stx::msg::MessageSchemaField> { level1 }));
 
   DynamicMessage sobj(schema);
   sobj.addObject("level1", [] (DynamicMessage* msg) {
@@ -313,7 +315,7 @@ TEST_CASE(CSTableTest, TestSimpleReMaterialization, [] () {
   auto reader = cstable::CSTableReader::openFile(testfile);
   cstable::RecordMaterializer materializer(schema.get(), reader.get());
 
-  msg::MessageObject robj;
+  stx::msg::MessageObject robj;
   materializer.nextRecord(&robj);
 
   EXPECT_EQ(robj.asObject().size(), 2);
@@ -328,31 +330,31 @@ TEST_CASE(CSTableTest, TestSimpleReMaterialization, [] () {
 TEST_CASE(CSTableTest, TestSimpleReMaterializationWithNull, [] () {
   String testfile = "/tmp/__fnord_testcstablematerialization.cst";
 
-  msg::MessageSchemaField level1(
+  stx::msg::MessageSchemaField level1(
       1,
       "level1",
-      msg::FieldType::OBJECT,
+      stx::msg::FieldType::OBJECT,
       0,
       true,
       false);
 
-  msg::MessageSchemaField level1_str(
+  stx::msg::MessageSchemaField level1_str(
       2,
       "str",
-      msg::FieldType::STRING,
+      stx::msg::FieldType::STRING,
       1024,
       true,
       false);
 
   level1.schema = new MessageSchema(
       "Level1",
-      Vector<msg::MessageSchemaField> { level1_str });
+      Vector<stx::msg::MessageSchemaField> { level1_str });
 
-  msg::MessageSchema schema(
+  stx::msg::MessageSchema schema(
       "TestSchema",
-      Vector<msg::MessageSchemaField> { level1 });
+      Vector<stx::msg::MessageSchemaField> { level1 });
 
-  msg::MessageObject sobj;
+  stx::msg::MessageObject sobj;
   auto& l1_a = sobj.addChild(1);
   l1_a.addChild(2, "fnord1");
   l1_a.addChild(2, "fnord2");
@@ -376,7 +378,7 @@ TEST_CASE(CSTableTest, TestSimpleReMaterializationWithNull, [] () {
   auto reader = cstable::CSTableReader::openFile(testfile);
   cstable::RecordMaterializer materializer(&schema, reader.get());
 
-  msg::MessageObject robj;
+  stx::msg::MessageObject robj;
   materializer.nextRecord(&robj);
 
   EXPECT_EQ(robj.asObject().size(), 3);
@@ -392,43 +394,43 @@ TEST_CASE(CSTableTest, TestSimpleReMaterializationWithNull, [] () {
 TEST_CASE(CSTableTest, TestReMatWithNonRepeatedParent, [] () {
   String testfile = "/tmp/__fnord_testcstablematerialization.cst";
 
-  msg::MessageSchemaField level1(
+  stx::msg::MessageSchemaField level1(
       1,
       "level1",
-      msg::FieldType::OBJECT,
+      stx::msg::FieldType::OBJECT,
       0,
       true,
       false);
 
-  msg::MessageSchemaField level2(
+  stx::msg::MessageSchemaField level2(
       2,
       "level2",
-      msg::FieldType::OBJECT,
+      stx::msg::FieldType::OBJECT,
       0,
       true,
       false);
 
-  msg::MessageSchemaField level2_str(
+  stx::msg::MessageSchemaField level2_str(
       3,
       "str",
-      msg::FieldType::STRING,
+      stx::msg::FieldType::STRING,
       1024,
       true,
       false);
 
   level2.schema = new MessageSchema(
       "Level2",
-      Vector<msg::MessageSchemaField> { level2_str });
+      Vector<stx::msg::MessageSchemaField> { level2_str });
 
   level1.schema = new MessageSchema(
       "Level1",
-      Vector<msg::MessageSchemaField> { level2 });
+      Vector<stx::msg::MessageSchemaField> { level2 });
 
-  msg::MessageSchema schema(
+  stx::msg::MessageSchema schema(
       "TestSchema",
-      Vector<msg::MessageSchemaField> { level1 });
+      Vector<stx::msg::MessageSchemaField> { level1 });
 
-  msg::MessageObject sobj;
+  stx::msg::MessageObject sobj;
   auto& l1_a = sobj.addChild(1);
   auto& l2_aa = l1_a.addChild(2);
   l2_aa.addChild(3, "fnord1");
@@ -456,7 +458,7 @@ TEST_CASE(CSTableTest, TestReMatWithNonRepeatedParent, [] () {
   auto reader = cstable::CSTableReader::openFile(testfile);
   cstable::RecordMaterializer materializer(&schema, reader.get());
 
-  msg::MessageObject robj;
+  stx::msg::MessageObject robj;
   materializer.nextRecord(&robj);
 
   EXPECT_EQ(robj.asObject().size(), 3);

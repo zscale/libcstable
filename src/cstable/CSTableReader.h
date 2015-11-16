@@ -14,10 +14,9 @@
 #include <cstable/cstable.h>
 #include <cstable/io/PageManager.h>
 
-namespace stx {
 namespace cstable {
 
-class CSTableReader : public RefCounted {
+class CSTableReader : public stx::RefCounted {
 public:
 
   static RefPtr<CSTableReader> openFile(const String& filename);
@@ -48,5 +47,5 @@ protected:
 };
 
 } // namespace cstable
-} // namespace stx
+
 

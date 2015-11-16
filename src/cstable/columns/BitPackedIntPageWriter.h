@@ -15,7 +15,7 @@
 #include <cstable/io/PageManager.h>
 #include <cstable/io/PageWriter.h>
 
-namespace stx {
+
 namespace cstable {
 
 class BitPackedIntPageWriter : public UnsignedIntPageWriter {
@@ -33,5 +33,5 @@ protected:
 };
 
 } // namespace cstable
-} // namespace stx
+
 

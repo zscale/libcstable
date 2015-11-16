@@ -14,7 +14,6 @@
 #include <stx/util/BitPackDecoder.h>
 #include <cstable/columns/v1/ColumnReader.h>
 
-namespace stx {
 namespace cstable {
 namespace v1 {
 
@@ -62,12 +61,11 @@ public:
 
 protected:
   uint32_t max_value_;
-  util::BitPackDecoder data_reader_;
+  stx::util::BitPackDecoder data_reader_;
   uint32_t cur_val_;
 };
 
 } // namespace v1
 } // namespace cstable
-} // namespace stx
 
 #endif

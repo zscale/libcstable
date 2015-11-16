@@ -9,7 +9,7 @@
  */
 #include <cstable/columns/v1/UInt32ColumnReader.h>
 
-namespace stx {
+
 namespace cstable {
 namespace v1 {
 
@@ -99,4 +99,4 @@ bool UInt32ColumnReader::readString(
 
 } // namespace v1
 } // namespace cstable
-} // namespace stx
+

@@ -14,7 +14,7 @@
 #include <stx/util/BitPackDecoder.h>
 #include <cstable/columns/v1/ColumnReader.h>
 
-namespace stx {
+
 namespace cstable {
 namespace v1 {
 
@@ -61,12 +61,12 @@ public:
   }
 
 protected:
-  util::BitPackDecoder data_reader_;
+  stx::util::BitPackDecoder data_reader_;
   uint8_t cur_val_;
 };
 
 } // namespace v1
 } // namespace cstable
-} // namespace stx
+
 
 #endif

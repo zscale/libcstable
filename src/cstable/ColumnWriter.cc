@@ -9,7 +9,8 @@
  */
 #include <cstable/ColumnWriter.h>
 
-namespace stx {
+using namespace stx;
+
 namespace cstable {
 
 ColumnWriter::ColumnWriter(
@@ -83,5 +84,5 @@ void DefaultColumnWriter::writeNull(uint64_t rep_level, uint64_t def_level) {
 }
 
 } // namespace cstable
-} // namespace stx
+
 

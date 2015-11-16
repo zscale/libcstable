@@ -14,7 +14,7 @@
 #include <cstable/io/PageManager.h>
 #include <cstable/io/PageIndex.h>
 
-namespace stx {
+
 namespace cstable {
 
 class UnsignedIntColumnReader : public ColumnReader {
@@ -70,5 +70,5 @@ protected:
 };
 
 } // namespace cstable
-} // namespace stx
+
 

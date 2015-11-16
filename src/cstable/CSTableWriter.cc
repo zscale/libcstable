@@ -18,8 +18,10 @@
 #include <cstable/columns/v1/StringColumnWriter.h>
 #include <stx/SHA1.h>
 #include <stx/io/fileutil.h>
+#include <stx/option.h>
 
-namespace stx {
+using namespace stx;
+
 namespace cstable {
 
 RefPtr<CSTableWriter> CSTableWriter::createFile(
@@ -210,7 +212,7 @@ void CSTableWriter::commitV1() {
     columns_[i].body_size = writer->bodySize();
   }
 
-  util::BinaryMessageWriter header;
+  stx::util::BinaryMessageWriter header;
   header.appendUInt32(cstable::v0_1_0::kMagicBytesUInt32);
   header.appendUInt16(cstable::v0_1_0::kVersion);
   header.appendUInt64(0); // flags
@@ -295,5 +297,5 @@ const Vector<ColumnConfig>& CSTableWriter::columns() const {
 }
 
 } // namespace cstable
-} // namespace stx
+
 
