@@ -33,12 +33,12 @@ public:
 
   void commit();
 
-  ColumnEncoding type() const override {
+  ColumnEncoding encoding() const override {
     return ColumnEncoding::BOOLEAN_BITPACKED;
   }
 
-  msg::FieldType fieldType() const override {
-    return msg::FieldType::BOOLEAN;
+  ColumnType type() const override {
+    return ColumnType::UNSIGNED_INT;
   }
 
 protected:

@@ -41,12 +41,12 @@ public:
   void addDatum(uint64_t rep_level, uint64_t def_level, uint32_t value);
   void commit();
 
-  ColumnEncoding type() const override {
-    return ColumnEncoding::UINT32_BITPACKED;
+  ColumnEncoding encoding() const override {
+    return ColumnEncoding::UINT64_PLAIN;
   }
 
-  msg::FieldType fieldType() const override {
-    return msg::FieldType::UINT32;
+  ColumnType type() const override {
+    return ColumnType::UNSIGNED_INT;
   }
 
 protected:

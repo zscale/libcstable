@@ -63,8 +63,8 @@ public:
       uint64_t dlvl,
       UnixTime value) = 0;
 
-  virtual ColumnEncoding type() const = 0;
-  virtual msg::FieldType fieldType() const = 0;
+  virtual ColumnEncoding encoding() const = 0;
+  virtual ColumnType type() const = 0;
 
   size_t maxRepetitionLevel() const;
   size_t maxDefinitionLevel() const;
@@ -84,12 +84,12 @@ public:
 
   void writeNull(uint64_t rlvl, uint64_t dlvl) override;
 
-  ColumnEncoding type() const override {
+  ColumnEncoding encoding() const override {
     return ColumnEncoding::UINT32_BITPACKED;
   }
 
-  msg::FieldType fieldType() const override {
-    return msg::FieldType::UINT32;
+  ColumnType type() const override {
+    return ColumnType::UNSIGNED_INT;
   }
 
 protected:
@@ -97,6 +97,7 @@ protected:
   ScopedPtr<UnsignedIntPageWriter> rlevel_writer_;
   ScopedPtr<UnsignedIntPageWriter> dlevel_writer_;
 };
+
 } // namespace cstable
 } // namespace stx
 

@@ -140,39 +140,43 @@ void cmd_from_csv(const cli::FlagParser& flags) {
         continue;
       }
 
-      switch (col->fieldType()) {
+      switch (col->type()) {
 
-        case msg::FieldType::STRING: {
+        case cstable::ColumnType::STRING: {
           col->writeString(0, col->maxDefinitionLevel(), val.data(), val.size());
           break;
         }
 
-        case msg::FieldType::UINT32:
-        case msg::FieldType::UINT64: {
+        case cstable::ColumnType::UNSIGNED_INT: {
           col->writeUnsignedInt(0, col->maxDefinitionLevel(), std::stoull(val));
           break;
         }
 
-        case msg::FieldType::DOUBLE: {
+        case cstable::ColumnType::SIGNED_INT: {
+          col->writeSignedInt(0, col->maxDefinitionLevel(), std::stoll(val));
+          break;
+        }
+
+        case cstable::ColumnType::FLOAT: {
           col->writeFloat(0, col->maxDefinitionLevel(), std::stod(val));
           break;
         }
 
-        case msg::FieldType::DATETIME: {
+        case cstable::ColumnType::DATETIME: {
           auto t = Human::parseTime(val);
           auto v = !t.isEmpty() ? UnixTime(0) : t.get();
           col->writeDateTime(0, col->maxDefinitionLevel(), v);
           break;
         }
 
-        case msg::FieldType::BOOLEAN: {
+        case cstable::ColumnType::BOOLEAN: {
           auto b = Human::parseBoolean(val);
           auto v = !b.isEmpty() && b.get();
           col->writeBoolean(0, col->maxDefinitionLevel(), v);
           break;
         }
 
-        case msg::FieldType::OBJECT:
+        case cstable::ColumnType::SUBRECORD:
           RAISE(kIllegalStateError);
 
       }

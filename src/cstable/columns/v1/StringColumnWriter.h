@@ -35,12 +35,12 @@ public:
 
   void addDatum(uint64_t rep_level, uint64_t def_level, const String& value);
 
-  ColumnEncoding type() const override {
+  ColumnEncoding encoding() const override {
     return ColumnEncoding::STRING_PLAIN;
   }
 
-  msg::FieldType fieldType() const override {
-    return msg::FieldType::STRING;
+  ColumnType type() const override {
+    return ColumnType::STRING;
   }
 
 protected:

@@ -33,12 +33,12 @@ public:
 
   void addDatum(uint64_t rep_level, uint64_t def_level, double value);
 
-  ColumnEncoding type() const override {
+  ColumnEncoding encoding() const override {
     return ColumnEncoding::FLOAT_IEEE754;
   }
 
-  msg::FieldType fieldType() const override {
-    return msg::FieldType::DOUBLE;
+  ColumnType type() const override {
+    return ColumnType::FLOAT;
   }
 
 protected:
