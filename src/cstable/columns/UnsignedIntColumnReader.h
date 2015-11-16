@@ -10,6 +10,9 @@
 #pragma once
 #include <stx/stdtypes.h>
 #include <cstable/ColumnReader.h>
+#include <cstable/PageReader.h>
+#include <cstable/PageManager.h>
+#include <cstable/PageIndex.h>
 
 namespace stx {
 namespace cstable {
@@ -19,6 +22,8 @@ public:
 
   UnsignedIntColumnReader(
       ColumnConfig config,
+      ScopedPtr<UnsignedIntPageReader> rlevel_reader,
+      ScopedPtr<UnsignedIntPageReader> dlevel_reader,
       RefPtr<PageManager> page_mgr,
       PageIndexReader* page_idx);
 
@@ -38,6 +43,11 @@ public:
 
   bool eofReached() const override;
 
+protected:
+  ColumnConfig config_;
+  ScopedPtr<UnsignedIntPageReader> rlevel_reader_;
+  ScopedPtr<UnsignedIntPageReader> dlevel_reader_;
+  ScopedPtr<UnsignedIntPageReader> data_reader_;
 };
 
 } // namespace cstable

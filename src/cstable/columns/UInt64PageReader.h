@@ -21,10 +21,7 @@ class UInt64PageReader : public UnsignedIntPageReader {
 public:
   static const uint64_t kPageSize = 512 * 2;
 
-  UInt64PageReader(
-      PageIndexKey key,
-      RefPtr<PageManager> page_mgr,
-      PageIndexReader* page_idx);
+  UInt64PageReader(RefPtr<PageManager> page_mgr);
 
   void readIndex(InputStream* os) const override;
 

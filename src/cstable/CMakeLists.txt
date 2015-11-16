@@ -11,7 +11,9 @@ add_library(cstable STATIC
     BinaryFormat.cc
     columns/BitPackedIntPageWriter.cc
     columns/UInt64PageWriter.cc
+    columns/UInt64PageReader.cc
     columns/UnsignedIntColumnWriter.cc
+    columns/UnsignedIntColumnReader.cc
     columns/v1/BitPackedIntColumnReader.cc
     columns/v1/BitPackedIntColumnWriter.cc
     columns/v1/BooleanColumnReader.cc

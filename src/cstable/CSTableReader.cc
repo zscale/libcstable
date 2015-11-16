@@ -60,8 +60,8 @@ static RefPtr<ColumnReader> openColumnV2(
     const ColumnConfig& c,
     RefPtr<PageManager> page_mgr,
     PageIndexReader* page_idx) {
-  ScopedPtr<PageReader> rlevel_reader;
-  ScopedPtr<PageReader> dlevel_reader;
+  ScopedPtr<UnsignedIntPageReader> rlevel_reader;
+  ScopedPtr<UnsignedIntPageReader> dlevel_reader;
 
   if (c.rlevel_max > 0) {
     PageIndexKey rlevel_idx_key {
@@ -69,15 +69,18 @@ static RefPtr<ColumnReader> openColumnV2(
       .entry_type = PageIndexEntryType::RLEVEL
     };
 
-    rlevel_reader = mkScoped(
-        new UInt64PageReader(rlevel_idx_key, page_mgr, page_idx));
-
+    rlevel_reader = mkScoped(new UInt64PageReader(page_mgr));
     page_idx->addPageReader(rlevel_idx_key, rlevel_reader.get());
   }
 
   switch (c.logical_type) {
     case ColumnType::UNSIGNED_INT:
-      return new UnsignedIntColumnReader(c, page_mgr, page_idx);
+      return new UnsignedIntColumnReader(
+          c,
+          std::move(rlevel_reader),
+          std::move(dlevel_reader),
+          page_mgr,
+          page_idx);
     default:
       RAISEF(
           kRuntimeError,
