@@ -116,7 +116,7 @@ TEST_CASE(CSTableTest, TestV1CSTableColumnWriterReader, [] () {
   for (auto i = 0; i < num_records; i++) {
     tbl_writer->addRow();
     bitpacked_writer->writeUnsignedInt(rep_max, def_max, i);
-    boolean_writer->writeBoolean(rep_max, def_max, i % 2 == 1);
+    boolean_writer->writeBoolean(rep_max, def_max, i % 2 == 0);
     double_writer->writeFloat(rep_max, def_max, i * 1.1);
     leb128_writer->writeUnsignedInt(rep_max, def_max, i + 12);
     string_writer->writeString(rep_max, def_max, StringUtil::format("x$0x", i));
@@ -155,11 +155,11 @@ TEST_CASE(CSTableTest, TestV1CSTableColumnWriterReader, [] () {
       EXPECT_EQ(val_uint, i);
     }
 
-    //{
-    //  bool val_bool;
-    //  EXPECT_TRUE(boolean_reader->readBoolean(&rlvl, &dlvl, &val_bool));
-    //  EXPECT_EQ(val_bool, i % 2);
-    //}
+    {
+      bool val_bool;
+      EXPECT_TRUE(boolean_reader->readBoolean(&rlvl, &dlvl, &val_bool));
+      EXPECT_EQ(val_bool, i % 2 == 0);
+    }
 
     {
       double val_float;

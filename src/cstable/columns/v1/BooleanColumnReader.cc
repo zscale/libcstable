@@ -27,7 +27,7 @@ bool BooleanColumnReader::readBoolean(
     bool* value) {
   uint64_t tmp;
   if (readUnsignedInt(rlvl, dlvl, &tmp)) {
-    *value = tmp > 1;
+    *value = tmp > 0;
     return true;
   } else {
     *value = false;
