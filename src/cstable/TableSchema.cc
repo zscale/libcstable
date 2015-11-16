@@ -38,14 +38,13 @@ void TableSchema::addUnsignedInteger(
     bool optional /* = true */,
     ColumnEncoding encoding /* = ColumnEncoding::UINT64_LEB128 */,
     uint64_t max_value /* = 0 */) {
-  auto col = mkScoped(new Column {
-    .name = name,
-    .type = ColumnType::UNSIGNED_INT,
-    .encoding = encoding,
-    .type_size = max_value,
-    .repeated = false,
-    .optional = optional
-  });
+  auto col = mkScoped(new Column());
+  col->name = name;
+  col->type = ColumnType::UNSIGNED_INT;
+  col->encoding = encoding;
+  col->type_size = max_value;
+  col->repeated = false;
+  col->optional = optional;
 
   columns_.emplace_back(col.get());
   columns_by_name_.emplace(name, std::move(col));
@@ -56,14 +55,13 @@ void TableSchema::addUnsignedIntegerArray(
     bool optional /* = true */,
     ColumnEncoding encoding /* = ColumnEncoding::UINT64_LEB128 */,
     uint64_t max_value /* = 0 */) {
-  auto col = mkScoped(new Column {
-    .name = name,
-    .type = ColumnType::UNSIGNED_INT,
-    .encoding = encoding,
-    .type_size = max_value,
-    .repeated = true,
-    .optional = optional
-  });
+  auto col = mkScoped(new Column());
+  col->name = name;
+  col->type = ColumnType::UNSIGNED_INT;
+  col->encoding = encoding;
+  col->type_size = max_value;
+  col->repeated = true;
+  col->optional = optional;
 
   columns_.emplace_back(col.get());
   columns_by_name_.emplace(name, std::move(col));
@@ -73,14 +71,13 @@ void TableSchema::addFloat(
     const String& name,
     bool optional /* = true */,
     ColumnEncoding encoding /* = ColumnEncoding::FLOAT_IEEE754 */) {
-  auto col = mkScoped(new Column {
-    .name = name,
-    .type = ColumnType::FLOAT,
-    .encoding = encoding,
-    .type_size = 0,
-    .repeated = false,
-    .optional = optional
-  });
+  auto col = mkScoped(new Column());
+  col->name = name;
+  col->type = ColumnType::FLOAT;
+  col->encoding = encoding;
+  col->type_size = 0;
+  col->repeated = false;
+  col->optional = optional;
 
   columns_.emplace_back(col.get());
   columns_by_name_.emplace(name, std::move(col));
@@ -90,14 +87,13 @@ void TableSchema::addFloatArray(
     const String& name,
     bool optional /* = true */,
     ColumnEncoding encoding /* = ColumnEncoding::FLOAT_IEEE754 */) {
-  auto col = mkScoped(new Column {
-    .name = name,
-    .type = ColumnType::FLOAT,
-    .encoding = encoding,
-    .type_size = 0,
-    .repeated = true,
-    .optional = optional
-  });
+  auto col = mkScoped(new Column());
+  col->name = name;
+  col->type = ColumnType::FLOAT;
+  col->encoding = encoding;
+  col->type_size = 0;
+  col->repeated = true;
+  col->optional = optional;
 
   columns_.emplace_back(col.get());
   columns_by_name_.emplace(name, std::move(col));
@@ -108,14 +104,13 @@ void TableSchema::addString(
     bool optional /* = true */,
     ColumnEncoding encoding /* = ColumnEncoding::STRING_PLAIN */,
     uint64_t max_len /* = 0 */) {
-  auto col = mkScoped(new Column {
-    .name = name,
-    .type = ColumnType::STRING,
-    .encoding = encoding,
-    .type_size = max_len,
-    .repeated = false,
-    .optional = optional
-  });
+  auto col = mkScoped(new Column());
+  col->name = name;
+  col->type = ColumnType::STRING;
+  col->encoding = encoding;
+  col->type_size = max_len;
+  col->repeated = false;
+  col->optional = optional;
 
   columns_.emplace_back(col.get());
   columns_by_name_.emplace(name, std::move(col));
@@ -126,14 +121,13 @@ void TableSchema::addStringArray(
     bool optional /* = true */,
     ColumnEncoding encoding /* = ColumnEncoding::STRING_PLAIN */,
     uint64_t max_len /* = 0 */) {
-  auto col = mkScoped(new Column {
-    .name = name,
-    .type = ColumnType::STRING,
-    .encoding = encoding,
-    .type_size = max_len,
-    .repeated = true,
-    .optional = optional
-  });
+  auto col = mkScoped(new Column());
+  col->name = name;
+  col->type = ColumnType::STRING;
+  col->encoding = encoding;
+  col->type_size = max_len;
+  col->repeated = true;
+  col->optional = optional;
 
   columns_.emplace_back(col.get());
   columns_by_name_.emplace(name, std::move(col));
@@ -143,13 +137,12 @@ void TableSchema::addSubrecord(
     const String& name,
     TableSchema schema,
     bool optional /* = true */) {
-  auto col = mkScoped(new Column {
-    .name = name,
-    .type = ColumnType::SUBRECORD,
-    .repeated = false,
-    .optional = optional,
-    .subschema = mkScoped(new TableSchema(schema))
-  });
+  auto col = mkScoped(new Column());
+  col->name = name;
+  col->type = ColumnType::SUBRECORD;
+  col->repeated = false;
+  col->optional = optional;
+  col->subschema = mkScoped(new TableSchema(schema));
 
   columns_.emplace_back(col.get());
   columns_by_name_.emplace(name, std::move(col));
@@ -159,13 +152,12 @@ void TableSchema::addSubrecordArray(
     const String& name,
     TableSchema schema,
     bool optional /* = true */) {
-  auto col = mkScoped(new Column {
-    .name = name,
-    .type = ColumnType::SUBRECORD,
-    .repeated = true,
-    .optional = optional,
-    .subschema = mkScoped(new TableSchema(schema))
-  });
+  auto col = mkScoped(new Column());
+  col->name = name;
+  col->type = ColumnType::SUBRECORD;
+  col->repeated = true;
+  col->optional = optional;
+  col->subschema = mkScoped(new TableSchema(schema));
 
   columns_.emplace_back(col.get());
   columns_by_name_.emplace(name, std::move(col));
