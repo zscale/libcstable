@@ -161,60 +161,60 @@ TEST_CASE(CSTableTest, TestV1CSTableColumnWriterReader, [] () {
     //  EXPECT_EQ(val_bool, i % 2);
     //}
 
-    //{
-    //  double val_float;
-    //  EXPECT_TRUE(double_reader->readFloat(&rlvl, &dlvl, &val_float));
-    //  EXPECT_EQ(val_float, i * 1.1);
-    //}
+    {
+      double val_float;
+      EXPECT_TRUE(double_reader->readFloat(&rlvl, &dlvl, &val_float));
+      EXPECT_EQ(val_float, i * 1.1);
+    }
 
-    //{
-    //  uint64_t val_uint;
-    //  EXPECT_TRUE(leb128_reader->readUnsignedInt(&rlvl, &dlvl, &val_uint));
-    //  EXPECT_EQ(val_uint, i + 12);
-    //}
+    {
+      uint64_t val_uint;
+      EXPECT_TRUE(leb128_reader->readUnsignedInt(&rlvl, &dlvl, &val_uint));
+      EXPECT_EQ(val_uint, i + 12);
+    }
 
-    //{
-    //  String val_str;
-    //  EXPECT_TRUE(string_reader->readString(&rlvl, &dlvl, &val_str));
-    //  EXPECT_EQ(val_str, StringUtil::format("x$0x", i));
-    //}
+    {
+      String val_str;
+      EXPECT_TRUE(string_reader->readString(&rlvl, &dlvl, &val_str));
+      EXPECT_EQ(val_str, StringUtil::format("x$0x", i));
+    }
 
-    //{
-    //  uint64_t val_uint;
-    //  EXPECT_TRUE(uint32_reader->readUnsignedInt(&rlvl, &dlvl, &val_uint));
-    //  EXPECT_EQ(val_uint, i * 5);
-    //}
+    {
+      uint64_t val_uint;
+      EXPECT_TRUE(uint32_reader->readUnsignedInt(&rlvl, &dlvl, &val_uint));
+      EXPECT_EQ(val_uint, i * 5);
+    }
 
-    //{
-    //  uint64_t val_uint;
-    //  EXPECT_TRUE(uint64_reader->readUnsignedInt(&rlvl, &dlvl, &val_uint));
-    //  EXPECT_EQ(val_uint, i * 8);
-    //}
+    {
+      uint64_t val_uint;
+      EXPECT_TRUE(uint64_reader->readUnsignedInt(&rlvl, &dlvl, &val_uint));
+      EXPECT_EQ(val_uint, i * 8);
+    }
   }
 });
-//
-//TEST_CASE(CSTableTest, TestV2CSTableContainer, [] () {
-//  String filename = "/tmp/__fnord__cstabletest2.cstable";
-//  FileUtil::rm(filename);
-//
-//  auto num_records = 32;
-//
-//  cstable::RecordSchema schema;
-//  schema.addUnsignedInteger("key1", true, ColumnEncoding::UINT64_PLAIN);
-//  schema.addUnsignedInteger("key2", true, ColumnEncoding::UINT64_PLAIN);
-//
-//  auto tbl_writer = cstable::CSTableWriter::createFile(
-//      filename,
-//      schema);
-//
-//  tbl_writer->addRows(num_records);
-//  tbl_writer->commit();
-//
-//  auto tbl_reader = cstable::CSTableReader::openFile(filename);
-//  EXPECT_EQ(tbl_reader->numRecords(), num_records);
-//  EXPECT_EQ(tbl_reader->hasColumn("key1"), true);
-//  EXPECT_EQ(tbl_reader->hasColumn("key2"), true);
-//});
+
+TEST_CASE(CSTableTest, TestV2CSTableContainer, [] () {
+  String filename = "/tmp/__fnord__cstabletest2.cstable";
+  FileUtil::rm(filename);
+
+  auto num_records = 32;
+
+  cstable::RecordSchema schema;
+  schema.addUnsignedInteger("key1", true, ColumnEncoding::UINT64_PLAIN);
+  schema.addUnsignedInteger("key2", true, ColumnEncoding::UINT64_PLAIN);
+
+  auto tbl_writer = cstable::CSTableWriter::createFile(
+      filename,
+      schema);
+
+  tbl_writer->addRows(num_records);
+  tbl_writer->commit();
+
+  auto tbl_reader = cstable::CSTableReader::openFile(filename);
+  EXPECT_EQ(tbl_reader->numRecords(), num_records);
+  EXPECT_EQ(tbl_reader->hasColumn("key1"), true);
+  EXPECT_EQ(tbl_reader->hasColumn("key2"), true);
+});
 
 //TEST_CASE(CSTableTest, TestV2UInt64Plain, [] () {
 //  String filename = "/tmp/__fnord__cstabletest3.cstable";
