@@ -96,6 +96,13 @@ void readHeader(FileHeader* hdr, InputStream* is) {
     col.body_size = is->readUInt64();
     hdr->columns.emplace_back(col);
   }
+
+  std::sort(
+      hdr->columns.begin(),
+      hdr->columns.end(),
+      [] (const ColumnConfig& a, const ColumnConfig& b) {
+    return a.column_name < b.column_name;
+  });
 }
 
 }
