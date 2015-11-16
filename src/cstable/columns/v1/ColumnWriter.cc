@@ -8,6 +8,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 #include <cstable/columns/v1/ColumnWriter.h>
+#include <stx/IEEE754.h>
 
 namespace stx {
 namespace cstable {
@@ -41,12 +42,6 @@ size_t ColumnWriter::bodySize() const {
   return 32 + rlvl_writer_.size() + dlvl_writer_.size() + size();
 }
 
-void ColumnWriter::addNull(
-    uint64_t rep_level,
-    uint64_t def_level) {
-  writeNull(rep_level, def_level);
-}
-
 void ColumnWriter::writeNull(uint64_t rlvl, uint64_t dlvl) {
   rlvl_writer_.encode(rlvl);
   dlvl_writer_.encode(dlvl);
@@ -75,11 +70,12 @@ void ColumnWriter::writeSignedInt(
   addDatum(rlvl, dlvl, &value, sizeof(value));
 }
 
-void ColumnWriter::writeDouble(
+void ColumnWriter::writeFloat(
     uint64_t rlvl,
     uint64_t dlvl,
     double value) {
-  addDatum(rlvl, dlvl, &value, sizeof(value));
+  uint64_t val = IEEE754::toBytes(value);
+  addDatum(rlvl, dlvl, &val, sizeof(val));
 }
 
 void ColumnWriter::writeString(
@@ -88,6 +84,15 @@ void ColumnWriter::writeString(
     const char* data,
     size_t size) {
   addDatum(rlvl, dlvl, data, size);
+}
+
+
+void ColumnWriter::writeDateTime(
+    uint64_t rlvl,
+    uint64_t dlvl,
+    UnixTime value) {
+  uint64_t val = value.unixMicros();
+  addDatum(rlvl, dlvl, &val, sizeof(val));
 }
 
 } // namespace v1

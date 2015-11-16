@@ -22,7 +22,7 @@ void ColumnWriter::writeString(
     uint64_t rlvl,
     uint64_t dlvl,
     const String& str) {
-  addDatum(rlvl, dlvl, str.data(), str.size());
+  writeString(rlvl, dlvl, str.data(), str.size());
 }
 
 size_t ColumnWriter::maxRepetitionLevel() const {
@@ -64,9 +64,6 @@ DefaultColumnWriter::DefaultColumnWriter(
   }
 }
 
-void DefaultColumnWriter::addNull(uint64_t rep_level, uint64_t def_level) {
-  writeNull(rep_level, def_level);
-}
 
 void DefaultColumnWriter::writeNull(uint64_t rep_level, uint64_t def_level) {
   if (rlevel_writer_.get()) {
@@ -76,14 +73,6 @@ void DefaultColumnWriter::writeNull(uint64_t rep_level, uint64_t def_level) {
   if (dlevel_writer_.get()) {
     dlevel_writer_->appendValue(def_level);
   }
-}
-
-void DefaultColumnWriter::addDatum(
-    uint64_t rep_level,
-    uint64_t def_level,
-    const void* data,
-    size_t size) {
-  RAISE(kNotImplementedError);
 }
 
 } // namespace cstable

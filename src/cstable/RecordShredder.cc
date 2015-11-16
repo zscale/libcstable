@@ -34,7 +34,7 @@ void writeProtoNull(
 
     default:
       auto col = writer->getColumnByName(column);
-      col->addNull(r, d);
+      col->writeNull(r, d);
       break;
 
   }
@@ -53,37 +53,31 @@ void writeProtoField(
 
     case ColumnType::STRING: {
       auto& str = msg.asString();
-      col->addDatum(r, d, str.data(), str.size());
+      col->writeString(r, d, str.data(), str.size());
       break;
     }
 
     case ColumnType::UNSIGNED_INT: {
-      uint64_t val = msg.asUInt64();
-      col->addDatum(r, d, &val, sizeof(val));
+      col->writeUnsignedInt(r, d, msg.asUInt64());
       break;
     }
 
     case ColumnType::SIGNED_INT: {
-      uint64_t val = msg.asUInt64();
-      col->addDatum(r, d, &val, sizeof(val));
-      break;
+      RAISE(kNotImplementedError);
     }
 
     case ColumnType::DATETIME: {
-      uint64_t val = msg.asUInt64();
-      col->addDatum(r, d, &val, sizeof(val));
+      col->writeDateTime(r, d, msg.asUnixTime());
       break;
     }
 
     case ColumnType::FLOAT: {
-      uint64_t val = IEEE754::toBytes(msg.asDouble());
-      col->addDatum(r, d, &val, sizeof(val));
+      col->writeFloat(r, d, msg.asDouble());
       break;
     }
 
     case ColumnType::BOOLEAN: {
-      uint8_t val = msg.asBool() ? 1 : 0;
-      col->addDatum(r, d, &val, sizeof(val));
+      col->writeBoolean(r, d, msg.asBool());
       break;
     }
 

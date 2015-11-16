@@ -71,7 +71,7 @@ void UnsignedIntColumnWriter::writeSignedInt(
 }
 
 
-void UnsignedIntColumnWriter::writeDouble(
+void UnsignedIntColumnWriter::writeFloat(
     uint64_t rlvl,
     uint64_t dlvl,
     double value) {
@@ -89,6 +89,13 @@ void UnsignedIntColumnWriter::writeString(
     size_t size) {
   uint64_t value = std::stoull(String(data, size));
   writeUnsignedInt(rlvl, dlvl, value);
+}
+
+void UnsignedIntColumnWriter::writeDateTime(
+    uint64_t rlvl,
+    uint64_t dlvl,
+    UnixTime time) {
+  writeUnsignedInt(rlvl, dlvl, time.unixMicros());
 }
 
 } // namespace cstable

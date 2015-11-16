@@ -42,7 +42,7 @@ public:
       uint64_t dlvl,
       int64_t value) = 0;
 
-  virtual void writeDouble(
+  virtual void writeFloat(
       uint64_t rlvl,
       uint64_t dlvl,
       double value) = 0;
@@ -58,19 +58,10 @@ public:
       const char* data,
       size_t size) = 0;
 
-  /**
-   * Deprecated, alias for writeNull
-   */
-  virtual void addNull(uint64_t rep_level, uint64_t def_level) = 0;
-
-  /**
-   * Deprecated, do not use
-   */
-  virtual void addDatum(
-      uint64_t rep_level,
-      uint64_t def_level,
-      const void* data,
-      size_t size) = 0;
+  virtual void writeDateTime(
+      uint64_t rlvl,
+      uint64_t dlvl,
+      UnixTime value) = 0;
 
   virtual ColumnEncoding type() const = 0;
   virtual msg::FieldType fieldType() const = 0;
@@ -92,20 +83,6 @@ public:
       RefPtr<PageIndex> page_idx);
 
   void writeNull(uint64_t rlvl, uint64_t dlvl) override;
-
-  /**
-   * Deprecated, alias for writeNull
-   */
-  void addNull(uint64_t rep_level, uint64_t def_level) override;
-
-  /**
-   * Deprecated, do not use
-   */
-  void addDatum(
-      uint64_t rep_level,
-      uint64_t def_level,
-      const void* data,
-      size_t size) override;
 
   ColumnEncoding type() const override {
     return ColumnEncoding::UINT32_BITPACKED;

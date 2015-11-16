@@ -117,7 +117,7 @@ TEST_CASE(CSTableTest, TestV1CSTableColumnWriterReader, [] () {
     tbl_writer->addRow();
     bitpacked_writer->writeUnsignedInt(rep_max, def_max, i);
     boolean_writer->writeBoolean(rep_max, def_max, i % 2 == 1);
-    double_writer->writeDouble(rep_max, def_max, i * 1.1);
+    double_writer->writeFloat(rep_max, def_max, i * 1.1);
     leb128_writer->writeUnsignedInt(rep_max, def_max, i + 12);
     string_writer->writeString(rep_max, def_max, StringUtil::format("x$0x", i));
     uint32_writer->writeUnsignedInt(rep_max, def_max, i * 5);

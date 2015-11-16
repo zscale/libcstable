@@ -136,46 +136,39 @@ void cmd_from_csv(const cli::FlagParser& flags) {
       }
 
       if (Human::isNullOrEmpty(val)) {
-        col->addNull(0, 0);
+        col->writeNull(0, 0);
         continue;
       }
 
       switch (col->fieldType()) {
 
         case msg::FieldType::STRING: {
-          col->addDatum(0, col->maxDefinitionLevel(), val.data(), val.size());
+          col->writeString(0, col->maxDefinitionLevel(), val.data(), val.size());
           break;
         }
 
-        case msg::FieldType::UINT32: {
-          uint32_t v = std::stoull(val);
-          col->addDatum(0, col->maxDefinitionLevel(), &v, sizeof(v));
-          break;
-        }
-
+        case msg::FieldType::UINT32:
         case msg::FieldType::UINT64: {
-          uint64_t v = std::stoull(val);
-          col->addDatum(0, col->maxDefinitionLevel(), &v, sizeof(v));
+          col->writeUnsignedInt(0, col->maxDefinitionLevel(), std::stoull(val));
           break;
         }
 
         case msg::FieldType::DOUBLE: {
-          double v = std::stod(val);
-          col->addDatum(0, col->maxDefinitionLevel(), &v, sizeof(v));
+          col->writeFloat(0, col->maxDefinitionLevel(), std::stod(val));
           break;
         }
 
         case msg::FieldType::DATETIME: {
           auto t = Human::parseTime(val);
           auto v = !t.isEmpty() ? UnixTime(0) : t.get();
-          col->addDatum(0, col->maxDefinitionLevel(), &v, sizeof(v));
+          col->writeDateTime(0, col->maxDefinitionLevel(), v);
           break;
         }
 
         case msg::FieldType::BOOLEAN: {
           auto b = Human::parseBoolean(val);
-          uint8_t v = !b.isEmpty() && b.get() ? 1 : 0;
-          col->addDatum(0, col->maxDefinitionLevel(), &v, sizeof(v));
+          auto v = !b.isEmpty() && b.get();
+          col->writeBoolean(0, col->maxDefinitionLevel(), v);
           break;
         }
 

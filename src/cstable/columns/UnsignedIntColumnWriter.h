@@ -37,7 +37,7 @@ public:
       uint64_t dlvl,
       int64_t value) override;
 
-  void writeDouble(
+  void writeFloat(
       uint64_t rlvl,
       uint64_t dlvl,
       double value) override;
@@ -47,6 +47,11 @@ public:
       uint64_t dlvl,
       const char* data,
       size_t size) override;
+
+  void writeDateTime(
+      uint64_t rlvl,
+      uint64_t dlvl,
+      UnixTime value) override;
 
 protected:
   ScopedPtr<UnsignedIntPageWriter> data_writer_;

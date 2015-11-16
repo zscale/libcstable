@@ -44,7 +44,7 @@ public:
       uint64_t dlvl,
       int64_t value) override;
 
-  void writeDouble(
+  void writeFloat(
       uint64_t rlvl,
       uint64_t dlvl,
       double value) override;
@@ -55,12 +55,24 @@ public:
       const char* data,
       size_t size) override;
 
-  void addNull(uint64_t rep_level, uint64_t def_level) override;
+  void writeDateTime(
+      uint64_t rlvl,
+      uint64_t dlvl,
+      UnixTime value) override;
 
   void write(void* buf, size_t buf_len);
   virtual void commit();
 
   virtual size_t bodySize() const;
+
+  /**
+   * Deprecated, do not use
+   */
+  virtual void addDatum(
+      uint64_t rep_level,
+      uint64_t def_level,
+      const void* data,
+      size_t size) = 0;
 
 protected:
   virtual size_t size() const = 0;
