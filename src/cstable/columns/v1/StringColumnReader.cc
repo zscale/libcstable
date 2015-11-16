@@ -21,39 +21,83 @@ StringColumnReader::StringColumnReader(
     ColumnReader(r_max, d_max, data, size),
     data_reader_(data_, data_size_) {}
 
-//bool StringColumnReader::next(
-//    uint64_t* rep_level,
-//    uint64_t* def_level,
-//    void** data,
-//    size_t* data_len) {
-//  return next(
-//      rep_level,
-//      def_level,
-//      reinterpret_cast<const char**>(const_cast<const void**>(data)),
-//      data_len);
-//}
-//
-//bool StringColumnReader::next(
-//    uint64_t* rep_level,
-//    uint64_t* def_level,
-//    const char** data,
-//    size_t* data_len) {
-//  auto r = rlvl_reader_.next();
-//  auto d = dlvl_reader_.next();
-//
-//  *rep_level = r;
-//  *def_level = d;
-//  ++vals_read_;
-//
-//  if (d == d_max_) {
-//    *data_len = *data_reader_.readUInt32();
-//    *data = data_reader_.readString(*data_len);
-//    return true;
-//  } else {
-//    *data_len = 0;
-//    return false;
-//  }
-//}
+bool StringColumnReader::readBoolean(
+    uint64_t* rlvl,
+    uint64_t* dlvl,
+    bool* value) {
+  String tmp;
+  if (readString(rlvl, dlvl, &tmp)) {
+    *value = (tmp == "true");
+    return true;
+  } else {
+    *value = 0;
+    return false;
+  }
+}
+
+bool StringColumnReader::readUnsignedInt(
+    uint64_t* rlvl,
+    uint64_t* dlvl,
+    uint64_t* value) {
+  String tmp;
+  if (readString(rlvl, dlvl, &tmp)) {
+    *value = std::stoull(tmp);
+    return true;
+  } else {
+    *value = 0;
+    return false;
+  }
+}
+
+bool StringColumnReader::readSignedInt(
+    uint64_t* rlvl,
+    uint64_t* dlvl,
+    int64_t* value) {
+  String tmp;
+  if (readString(rlvl, dlvl, &tmp)) {
+    *value = std::stoll(tmp);
+    return true;
+  } else {
+    *value = 0;
+    return false;
+  }
+}
+
+bool StringColumnReader::readFloat(
+    uint64_t* rlvl,
+    uint64_t* dlvl,
+    double* value) {
+  String tmp;
+  if (readString(rlvl, dlvl, &tmp)) {
+    *value = std::stod(tmp);
+    return true;
+  } else {
+    *value = 0;
+    return false;
+  }
+}
+
+bool StringColumnReader::readString(
+    uint64_t* rlvl,
+    uint64_t* dlvl,
+    String* value) {
+  auto r = rlvl_reader_.next();
+  auto d = dlvl_reader_.next();
+
+  *rlvl = r;
+  *dlvl = d;
+  ++vals_read_;
+
+  if (d == d_max_) {
+    auto data_len = *data_reader_.readUInt32();
+    auto data = data_reader_.readString(data_len);
+    *value = String(data, data_len);
+    return true;
+  } else {
+    *value = "";
+    return false;
+  }
+}
 
 } // namespace v1
 } // namespace cstable

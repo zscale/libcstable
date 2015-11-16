@@ -18,6 +18,10 @@ UInt64PageReader::UInt64PageReader(
 
 }
 
+uint64_t UInt64PageReader::readUnsignedInt() const {
+  return 0;
+}
+
 void UInt64PageReader::readIndex(InputStream* os) const {
 
 }

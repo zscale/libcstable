@@ -21,41 +21,81 @@ DoubleColumnReader::DoubleColumnReader(
     ColumnReader(r_max, d_max, data, size),
     data_reader_(data_, data_size_) {}
 
-//bool DoubleColumnReader::next(
-//    uint64_t* rep_level,
-//    uint64_t* def_level,
-//    void** data,
-//    size_t* data_len) {
-//  if (next(rep_level, def_level, &cur_val_)) {
-//    *data = &cur_val_;
-//    *data_len = sizeof(cur_val_);
-//    return true;
-//  } else {
-//    *data = nullptr;
-//    *data_len = 0;
-//    return false;
-//  }
-//}
-//
-//bool DoubleColumnReader::next(
-//    uint64_t* rep_level,
-//    uint64_t* def_level,
-//    double* data) {
-//  auto r = rlvl_reader_.next();
-//  auto d = dlvl_reader_.next();
-//
-//  *rep_level = r;
-//  *def_level = d;
-//  ++vals_read_;
-//
-//  if (d == d_max_) {
-//    *data = data_reader_.readFloat();
-//    return true;
-//  } else {
-//    *data = 0;
-//    return false;
-//  }
-//}
+bool DoubleColumnReader::readBoolean(
+    uint64_t* rlvl,
+    uint64_t* dlvl,
+    bool* value) {
+  double tmp;
+  if (readFloat(rlvl, dlvl, &tmp)) {
+    *value = tmp > 1;
+    return true;
+  } else {
+    *value = false;
+    return false;
+  }
+}
+
+bool DoubleColumnReader::readUnsignedInt(
+    uint64_t* rlvl,
+    uint64_t* dlvl,
+    uint64_t* value) {
+  double tmp;
+  if (readFloat(rlvl, dlvl, &tmp)) {
+    *value = tmp;
+    return true;
+  } else {
+    *value = 0;
+    return false;
+  }
+}
+
+bool DoubleColumnReader::readSignedInt(
+    uint64_t* rlvl,
+    uint64_t* dlvl,
+    int64_t* value) {
+  double tmp;
+  if (readFloat(rlvl, dlvl, &tmp)) {
+    *value = tmp;
+    return true;
+  } else {
+    *value = 0;
+    return false;
+  }
+}
+
+bool DoubleColumnReader::readFloat(
+    uint64_t* rlvl,
+    uint64_t* dlvl,
+    double* value) {
+  auto r = rlvl_reader_.next();
+  auto d = dlvl_reader_.next();
+
+  *rlvl = r;
+  *dlvl = d;
+  ++vals_read_;
+
+  if (d == d_max_) {
+    *value = data_reader_.readDouble();
+    return true;
+  } else {
+    *value = 0;
+    return false;
+  }
+}
+
+bool DoubleColumnReader::readString(
+    uint64_t* rlvl,
+    uint64_t* dlvl,
+    String* value) {
+  double tmp;
+  if (readFloat(rlvl, dlvl, &tmp)) {
+    *value = StringUtil::toString(tmp);
+    return true;
+  } else {
+    *value = "";
+    return false;
+  }
+}
 
 } // namespace v1
 } // namespace cstable
