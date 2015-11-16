@@ -13,7 +13,6 @@
 #include <stx/autoref.h>
 #include <stx/protobuf/MessageObject.h>
 #include <cstable/BinaryFormat.h>
-#include <cstable/ColumnConfig.h>
 #include <cstable/PageManager.h>
 #include <cstable/UInt64PageWriter.h>
 #include <cstable/PageIndex.h>

@@ -19,7 +19,6 @@ add_library(cstable STATIC
     RecordShredder.cc
     PageManager.cc
     PageIndex.cc
-    ColumnConfig.cc
     RecordSchema.cc
     v1/BitPackedIntColumnReader.cc
     v1/BitPackedIntColumnWriter.cc

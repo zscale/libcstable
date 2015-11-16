@@ -8,7 +8,6 @@
  * <http://www.gnu.org/licenses/>.
  */
 #include <cstable/BinaryFormat.h>
-#include <cstable/ColumnConfig.h>
 #include <cstable/PageManager.h>
 #include <stx/util/binarymessagewriter.h>
 #include <stx/util/binarymessagereader.h>

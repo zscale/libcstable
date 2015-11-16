@@ -15,7 +15,6 @@
 #include <cstable/LockManager.h>
 #include <cstable/PageManager.h>
 #include <cstable/PageIndex.h>
-#include <cstable/ColumnConfig.h>
 #include <cstable/RecordSchema.h>
 
 namespace stx {
