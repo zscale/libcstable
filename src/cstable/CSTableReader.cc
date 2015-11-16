@@ -9,6 +9,7 @@
  */
 #include <cstable/CSTableReader.h>
 #include <cstable/PageIndex.h>
+#include <cstable/PageReader.h>
 #include <cstable/columns/v1/BooleanColumnReader.h>
 #include <cstable/columns/v1/BitPackedIntColumnReader.h>
 #include <cstable/columns/v1/UInt32ColumnReader.h>
@@ -17,6 +18,7 @@
 #include <cstable/columns/v1/DoubleColumnReader.h>
 #include <cstable/columns/v1/StringColumnReader.h>
 #include <cstable/columns/UnsignedIntColumnReader.h>
+#include <cstable/columns/UInt64PageReader.h>
 #include <stx/io/file.h>
 #include <stx/io/mmappedfile.h>
 
@@ -58,6 +60,21 @@ static RefPtr<ColumnReader> openColumnV2(
     const ColumnConfig& c,
     RefPtr<PageManager> page_mgr,
     PageIndexReader* page_idx) {
+  ScopedPtr<PageReader> rlevel_reader;
+  ScopedPtr<PageReader> dlevel_reader;
+
+  if (c.rlevel_max > 0) {
+    PageIndexKey rlevel_idx_key {
+      .column_id = c.column_id,
+      .entry_type = PageIndexEntryType::RLEVEL
+    };
+
+    rlevel_reader = mkScoped(
+        new UInt64PageReader(rlevel_idx_key, page_mgr, page_idx));
+
+    //page_idx->addPageWriter(rlevel_idx_key, rlevel_writer_.get());
+  }
+
   switch (c.logical_type) {
     case ColumnType::UNSIGNED_INT:
       return new UnsignedIntColumnReader(c, page_mgr, page_idx);
