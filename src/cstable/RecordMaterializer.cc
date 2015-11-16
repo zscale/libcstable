@@ -276,16 +276,22 @@ void RecordMaterializer::ColumnState::fetchIfNotPending() {
       RAISE(kIllegalStateError);
     case ColumnType::BOOLEAN:
       defined = reader->readUnsignedInt(&r, &d, &val_uint);
+      break;
     case ColumnType::UNSIGNED_INT:
       defined = reader->readUnsignedInt(&r, &d, &val_uint);
+      break;
     case ColumnType::SIGNED_INT:
       defined = reader->readSignedInt(&r, &d, &val_sint);
+      break;
     case ColumnType::STRING:
       defined = reader->readString(&r, &d, &val_str);
+      break;
     case ColumnType::FLOAT:
       defined = reader->readFloat(&r, &d, &val_float);
+      break;
     case ColumnType::DATETIME:
       defined = reader->readUnsignedInt(&r, &d, &val_uint);
+      break;
   };
 
   pending = true;
