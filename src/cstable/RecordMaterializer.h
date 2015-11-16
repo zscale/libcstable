@@ -36,16 +36,12 @@ protected:
   struct ColumnState {
     ColumnState(RefPtr<cstable::ColumnReader> _reader) :
         reader(_reader),
-        data(nullptr),
-        size(0),
         r(0),
         d(0),
         pending(false),
         defined(false) {}
 
     RefPtr<cstable::ColumnReader> reader;
-    void* data;
-    size_t size;
     uint64_t r;
     uint64_t d;
     bool pending;
@@ -53,12 +49,17 @@ protected:
     Vector<Tuple<uint64_t, bool, uint32_t>> parents;
     uint32_t field_id;
     msg::FieldType field_type;
+    ColumnType col_type;
 
-    bool val_bool;
     String val_str;
     uint64_t val_uint;
     int64_t val_sint;
     double val_float;
+
+    uint64_t getUnsignedInteger() const;
+    int64_t getSignedInteger() const;
+    String getString() const;
+    double getFloat() const;
 
     void fetchIfNotPending();
     void consume();

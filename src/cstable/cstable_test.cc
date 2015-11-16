@@ -142,54 +142,59 @@ TEST_CASE(CSTableTest, TestV1CSTableColumnWriterReader, [] () {
   auto uint32_reader = tbl_reader->getColumnReader("uint32");
   auto uint64_reader = tbl_reader->getColumnReader("uint64");
 
-  EXPECT_EQ(bitpacked_reader->type() == msg::FieldType::UINT32, true);
-  EXPECT_EQ(boolean_reader->type() == msg::FieldType::BOOLEAN, true);
-  EXPECT_EQ(double_reader->type() == msg::FieldType::DOUBLE, true);
-  EXPECT_EQ(leb128_reader->type() == msg::FieldType::UINT64, true);
-  EXPECT_EQ(string_reader->type() == msg::FieldType::STRING, true);
-  EXPECT_EQ(uint32_reader->type() == msg::FieldType::UINT32, true);
-  EXPECT_EQ(uint64_reader->type() == msg::FieldType::UINT64, true);
+  EXPECT_EQ(bitpacked_reader->type() == ColumnType::UNSIGNED_INT, true);
+  EXPECT_EQ(boolean_reader->type() == ColumnType::BOOLEAN, true);
+  EXPECT_EQ(double_reader->type() == ColumnType::FLOAT, true);
+  EXPECT_EQ(leb128_reader->type() == ColumnType::UNSIGNED_INT, true);
+  EXPECT_EQ(string_reader->type() == ColumnType::STRING, true);
+  EXPECT_EQ(uint32_reader->type() == ColumnType::UNSIGNED_INT, true);
+  EXPECT_EQ(uint64_reader->type() == ColumnType::UNSIGNED_INT, true);
 
   for (auto i = 0; i < num_records; i++) {
-    uint64_t rep_level;
-    uint64_t def_level;
-    size_t size;
-    void* data;
+    uint64_t rlvl;
+    uint64_t dlvl;
 
-    EXPECT_EQ(
-      bitpacked_reader->next(&rep_level, &def_level, &data, &size),
-      true);
-    EXPECT_EQ(*static_cast<uint32_t*>(data), i);
+    {
+      uint64_t val_uint;
+      EXPECT_TRUE(bitpacked_reader->readUnsignedInt(&rlvl, &dlvl, &val_uint));
+      EXPECT_EQ(val_uint, i);
+    }
 
-    EXPECT_EQ(
-      boolean_reader->next(&rep_level, &def_level, &data, &size),
-      true);
-    EXPECT_EQ(*static_cast<uint8_t*>(data), i % 2);
+    {
+      bool val_bool;
+      EXPECT_TRUE(boolean_reader->readBoolean(&rlvl, &dlvl, &val_bool));
+      EXPECT_EQ(val_bool, i % 2);
+    }
 
-    EXPECT_EQ(
-      double_reader->next(&rep_level, &def_level, &data, &size),
-      true);
-    EXPECT_EQ(*static_cast<double*>(data), i * 1.1);
+    {
+      double val_float;
+      EXPECT_TRUE(double_reader->readFloat(&rlvl, &dlvl, &val_float));
+      EXPECT_EQ(val_float, i * 1.1);
+    }
 
-    EXPECT_EQ(
-      leb128_reader->next(&rep_level, &def_level, &data, &size),
-      true);
-    EXPECT_EQ(*static_cast<uint64_t*>(data), i);
+    {
+      uint64_t val_uint;
+      EXPECT_TRUE(leb128_reader->readUnsignedInt(&rlvl, &dlvl, &val_uint));
+      EXPECT_EQ(val_uint, i);
+    }
 
-    EXPECT_EQ(
-      string_reader->next(&rep_level, &def_level, &data, &size),
-      true);
-    EXPECT_EQ(String((const char*) data, size), "value");
+    {
+      String val_str;
+      EXPECT_TRUE(string_reader->readString(&rlvl, &dlvl, &val_str));
+      EXPECT_EQ(val_str, "value");
+    }
 
-    EXPECT_EQ(
-      uint32_reader->next(&rep_level, &def_level, &data, &size),
-      true);
-    EXPECT_EQ(*static_cast<uint32_t*>(data), i);
+    {
+      uint64_t val_uint;
+      EXPECT_TRUE(uint32_reader->readUnsignedInt(&rlvl, &dlvl, &val_uint));
+      EXPECT_EQ(val_uint, i);
+    }
 
-    EXPECT_EQ(
-      uint64_reader->next(&rep_level, &def_level, &data, &size),
-      true);
-    EXPECT_EQ(*static_cast<uint64_t*>(data), static_cast<uint64_t>(i));
+    {
+      uint64_t val_uint;
+      EXPECT_TRUE(uint64_reader->readUnsignedInt(&rlvl, &dlvl, &val_uint));
+      EXPECT_EQ(val_uint, i);
+    }
   }
 });
 

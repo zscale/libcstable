@@ -120,6 +120,7 @@ void RecordMaterializer::createColumns(
         colstate.parents = parents;
         colstate.field_id = field.id;
         colstate.field_type = field.type;
+        colstate.col_type = colstate.reader->type();
         columns_.emplace(colname, colstate);
       }
       break;
@@ -180,29 +181,27 @@ void RecordMaterializer::insertValue(
     case msg::FieldType::UINT32:
       record->addChild(
           column->field_id,
-          *((uint32_t*) column->data));
+          (uint32_t) column->getUnsignedInteger());
       break;
 
     case msg::FieldType::UINT64:
       record->addChild(
           column->field_id,
-          *((uint64_t*) column->data));
+          (uint64_t) column->getUnsignedInteger());
       break;
 
     case msg::FieldType::DATETIME:
       record->addChild(
           column->field_id,
-          UnixTime(*((uint64_t*) column->data)));
+          UnixTime(column->getUnsignedInteger()));
       break;
 
     case msg::FieldType::STRING:
-      record->addChild(
-          column->field_id,
-          String((char*) column->data, column->size));
+      record->addChild(column->field_id, column->getString());
       break;
 
     case msg::FieldType::BOOLEAN:
-      if (*((uint8_t*) column->data) == 1) {
+      if (column->getUnsignedInteger() == 1) {
         record->addChild(column->field_id, msg::TRUE);
       } else {
         record->addChild(column->field_id, msg::FALSE);
@@ -210,9 +209,7 @@ void RecordMaterializer::insertValue(
       break;
 
     case msg::FieldType::DOUBLE:
-      record->addChild(
-          column->field_id,
-          IEEE754::fromBytes(*((uint64_t*) column->data)));
+      record->addChild(column->field_id, column->getFloat());
       break;
 
   }
@@ -274,11 +271,11 @@ void RecordMaterializer::ColumnState::fetchIfNotPending() {
     return;
   }
 
-  switch (reader->type()) {
+  switch (col_type) {
     case ColumnType::SUBRECORD:
       RAISE(kIllegalStateError);
     case ColumnType::BOOLEAN:
-      defined = reader->readBoolean(&r, &d, &val_bool);
+      defined = reader->readUnsignedInt(&r, &d, &val_uint);
     case ColumnType::UNSIGNED_INT:
       defined = reader->readUnsignedInt(&r, &d, &val_uint);
     case ColumnType::SIGNED_INT:
@@ -287,6 +284,8 @@ void RecordMaterializer::ColumnState::fetchIfNotPending() {
       defined = reader->readString(&r, &d, &val_str);
     case ColumnType::FLOAT:
       defined = reader->readFloat(&r, &d, &val_float);
+    case ColumnType::DATETIME:
+      defined = reader->readUnsignedInt(&r, &d, &val_uint);
   };
 
   pending = true;
