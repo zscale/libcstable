@@ -56,7 +56,7 @@ public:
     return ColumnType::BOOLEAN;
   }
 
-  ColumnEncoding storageType() const override {
+  ColumnEncoding encoding() const override {
     return ColumnEncoding::BOOLEAN_BITPACKED;
   }
 

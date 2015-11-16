@@ -184,7 +184,7 @@ RefPtr<ColumnReader> CSTableReader::getColumnByName(
 
 ColumnEncoding CSTableReader::getColumnEncoding(const String& column_name) {
   auto col = getColumnByName(column_name);
-  return col->storageType();
+  return col->encoding();
 }
 
 Set<String> CSTableReader::columns() const {

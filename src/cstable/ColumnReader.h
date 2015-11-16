@@ -48,7 +48,7 @@ public:
   virtual bool eofReached() const = 0;
 
   virtual ColumnType type() const = 0;
-  virtual ColumnEncoding storageType() const = 0;
+  virtual ColumnEncoding encoding() const = 0;
 
   virtual uint64_t maxRepetitionLevel() const = 0;
   virtual uint64_t maxDefinitionLevel() const = 0;

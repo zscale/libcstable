@@ -53,7 +53,7 @@ public:
       String* value) override;
 
   ColumnType type() const override;
-  ColumnEncoding storageType() const override;
+  ColumnEncoding encoding() const override;
 
   uint64_t maxRepetitionLevel() const override;
   uint64_t maxDefinitionLevel() const override;

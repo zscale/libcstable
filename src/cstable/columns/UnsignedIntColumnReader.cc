@@ -128,7 +128,7 @@ ColumnType UnsignedIntColumnReader::type() const {
   return ColumnType::UNSIGNED_INT;
 }
 
-ColumnEncoding UnsignedIntColumnReader::storageType() const {
+ColumnEncoding UnsignedIntColumnReader::encoding() const {
   return config_.storage_type;
 }
 

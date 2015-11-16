@@ -56,7 +56,7 @@ public:
     return ColumnType::UNSIGNED_INT;
   }
 
-  ColumnEncoding storageType() const override {
+  ColumnEncoding encoding() const override {
     return ColumnEncoding::UINT64_PLAIN;
   }
 

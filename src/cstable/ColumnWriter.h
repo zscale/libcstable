@@ -63,8 +63,8 @@ public:
       uint64_t dlvl,
       UnixTime value) = 0;
 
-  virtual ColumnEncoding encoding() const = 0;
   virtual ColumnType type() const = 0;
+  virtual ColumnEncoding encoding() const = 0;
 
   size_t maxRepetitionLevel() const;
   size_t maxDefinitionLevel() const;
