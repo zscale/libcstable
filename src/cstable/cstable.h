@@ -13,7 +13,6 @@
 #include <stx/io/inputstream.h>
 #include <stx/io/outputstream.h>
 #include <stx/protobuf/MessageObject.h>
-#include <cstable/TableSchema.h>
 
 namespace stx {
 namespace cstable {
@@ -95,14 +94,35 @@ namespace cstable {
  *      <char>*                  // page data
  *
  */
-static const char kMagicBytes[4] = {0x23, 0x17, 0x23, 0x17};
+enum class ColumnType : uint8_t {
+  SUBRECORD = 0,
+  BOOLEAN = 1,
+  UNSIGNED_INT = 2,
+  SIGNED_INT = 3,
+  STRING = 4,
+  FLOAT = 5,
+  DATETIME = 6
+};
 
-static const size_t kSectorSize = 512;
+enum class ColumnEncoding : uint8_t {
+  BOOLEAN_BITPACKED = 1,
+  UINT32_BITPACKED = 10,
+  UINT32_PLAIN = 11,
+  UINT64_PLAIN = 12,
+  UINT64_LEB128 = 13,
+  FLOAT_IEEE754 = 14,
+  STRING_PLAIN = 100
+};
 
 enum class BinaryFormatVersion {
   v0_1_0,
   v0_2_0
 };
+
+
+static const char kMagicBytes[4] = {0x23, 0x17, 0x23, 0x17};
+
+static const size_t kSectorSize = 512;
 
 inline uint64_t padToNextSector(uint64_t val) {
   return (((val) + (kSectorSize - 1)) / kSectorSize) * kSectorSize;
@@ -129,6 +149,14 @@ struct MetaBlock {
   uint32_t head_index_page_size;
   uint64_t file_size;
 };
+
+} // namespace cstable
+} // namespace stx
+
+#include <cstable/TableSchema.h>
+
+namespace stx {
+namespace cstable {
 
 struct FileHeader {
   RefPtr<TableSchema> schema;
