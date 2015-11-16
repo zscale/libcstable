@@ -21,41 +21,78 @@ BooleanColumnReader::BooleanColumnReader(
     ColumnReader(r_max, d_max, data, size),
     data_reader_(data_, data_size_, 1) {}
 
-bool BooleanColumnReader::next(
-    uint64_t* rep_level,
-    uint64_t* def_level,
-    void** data,
-    size_t* data_len) {
-  bool val;
-  if (next(rep_level, def_level, &val)) {
-    cur_val_ = val ? 1 : 0;
-
-    *data = &cur_val_;
-    *data_len = sizeof(cur_val_);
+bool BooleanColumnReader::readBoolean(
+    uint64_t* rlvl,
+    uint64_t* dlvl,
+    bool* value) {
+  uint64_t tmp;
+  if (readUnsignedInt(rlvl, dlvl, &tmp)) {
+    *value = tmp > 1;
     return true;
   } else {
-    *data = nullptr;
-    *data_len = 0;
+    *value = false;
     return false;
   }
 }
 
-bool BooleanColumnReader::next(
-    uint64_t* rep_level,
-    uint64_t* def_level,
-    bool* data) {
+bool BooleanColumnReader::readUnsignedInt(
+    uint64_t* rlvl,
+    uint64_t* dlvl,
+    uint64_t* value) {
   auto r = rlvl_reader_.next();
   auto d = dlvl_reader_.next();
 
-  *rep_level = r;
-  *def_level = d;
+  *rlvl = r;
+  *dlvl = d;
   ++vals_read_;
 
   if (d == d_max_) {
-    *data = data_reader_.next();
+    *value = data_reader_.next();
     return true;
   } else {
-    *data = false;
+    *value = false;
+    return false;
+  }
+}
+
+bool BooleanColumnReader::readSignedInt(
+    uint64_t* rlvl,
+    uint64_t* dlvl,
+    int64_t* value) {
+  uint64_t tmp;
+  if (readUnsignedInt(rlvl, dlvl, &tmp)) {
+    *value = tmp;
+    return true;
+  } else {
+    *value = 0;
+    return false;
+  }
+}
+
+bool BooleanColumnReader::readFloat(
+    uint64_t* rlvl,
+    uint64_t* dlvl,
+    double* value) {
+  uint64_t tmp;
+  if (readUnsignedInt(rlvl, dlvl, &tmp)) {
+    *value = tmp;
+    return true;
+  } else {
+    *value = 0;
+    return false;
+  }
+}
+
+bool BooleanColumnReader::readString(
+    uint64_t* rlvl,
+    uint64_t* dlvl,
+    String* value) {
+  uint64_t tmp;
+  if (readUnsignedInt(rlvl, dlvl, &tmp)) {
+    *value = (value > 0 ? "true" : "false");
+    return true;
+  } else {
+    *value = "";
     return false;
   }
 }

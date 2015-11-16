@@ -274,7 +274,21 @@ void RecordMaterializer::ColumnState::fetchIfNotPending() {
     return;
   }
 
-  defined = reader->next(&r, &d, &data, &size);
+  switch (reader->type()) {
+    case ColumnType::SUBRECORD:
+      RAISE(kIllegalStateError);
+    case ColumnType::BOOLEAN:
+      defined = reader->readBoolean(&r, &d, &val_bool);
+    case ColumnType::UNSIGNED_INT:
+      defined = reader->readUnsignedInt(&r, &d, &val_uint);
+    case ColumnType::SIGNED_INT:
+      defined = reader->readSignedInt(&r, &d, &val_sint);
+    case ColumnType::STRING:
+      defined = reader->readString(&r, &d, &val_str);
+    case ColumnType::FLOAT:
+      defined = reader->readFloat(&r, &d, &val_float);
+  };
+
   pending = true;
 }
 

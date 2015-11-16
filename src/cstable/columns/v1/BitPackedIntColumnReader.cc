@@ -25,38 +25,78 @@ BitPackedIntColumnReader::BitPackedIntColumnReader(
         data_size_ - sizeof(uint32_t),
         max_value_) {}
 
-bool BitPackedIntColumnReader::next(
-    uint64_t* rep_level,
-    uint64_t* def_level,
-    void** data,
-    size_t* data_len) {
-  if (next(rep_level, def_level, &cur_val_)) {
-    *data = &cur_val_;
-    *data_len = sizeof(cur_val_);
+bool BitPackedIntColumnReader::readBoolean(
+    uint64_t* rlvl,
+    uint64_t* dlvl,
+    bool* value) {
+  uint64_t tmp;
+  if (readUnsignedInt(rlvl, dlvl, &tmp)) {
+    *value = tmp > 1;
     return true;
   } else {
-    *data = nullptr;
-    *data_len = 0;
+    *value = false;
     return false;
   }
 }
 
-bool BitPackedIntColumnReader::next(
-    uint64_t* rep_level,
-    uint64_t* def_level,
-    uint32_t* data) {
+bool BitPackedIntColumnReader::readUnsignedInt(
+    uint64_t* rlvl,
+    uint64_t* dlvl,
+    uint64_t* value) {
   auto r = rlvl_reader_.next();
   auto d = dlvl_reader_.next();
 
-  *rep_level = r;
-  *def_level = d;
+  *rlvl = r;
+  *dlvl = d;
   ++vals_read_;
 
   if (d == d_max_) {
-    *data = data_reader_.next();
+    *value = data_reader_.next();
     return true;
   } else {
-    *data = 0;
+    *value = 0;
+    return false;
+  }
+}
+
+bool BitPackedIntColumnReader::readSignedInt(
+    uint64_t* rlvl,
+    uint64_t* dlvl,
+    int64_t* value) {
+  uint64_t tmp;
+  if (readUnsignedInt(rlvl, dlvl, &tmp)) {
+    *value = tmp;
+    return true;
+  } else {
+    *value = 0;
+    return false;
+  }
+}
+
+bool BitPackedIntColumnReader::readFloat(
+    uint64_t* rlvl,
+    uint64_t* dlvl,
+    double* value) {
+  uint64_t tmp;
+  if (readUnsignedInt(rlvl, dlvl, &tmp)) {
+    *value = tmp;
+    return true;
+  } else {
+    *value = 0;
+    return false;
+  }
+}
+
+bool BitPackedIntColumnReader::readString(
+    uint64_t* rlvl,
+    uint64_t* dlvl,
+    String* value) {
+  uint64_t tmp;
+  if (readUnsignedInt(rlvl, dlvl, &tmp)) {
+    *value = StringUtil::toString(tmp);
+    return true;
+  } else {
+    *value = "";
     return false;
   }
 }

@@ -54,6 +54,12 @@ protected:
     uint32_t field_id;
     msg::FieldType field_type;
 
+    bool val_bool;
+    String val_str;
+    uint64_t val_uint;
+    int64_t val_sint;
+    double val_float;
+
     void fetchIfNotPending();
     void consume();
   };

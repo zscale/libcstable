@@ -23,6 +23,8 @@ public:
 
   UInt64PageReader(RefPtr<PageManager> page_mgr);
 
+  uint64_t readUnsignedInt() const override;
+
   void readIndex(InputStream* os) const override;
 
 protected:

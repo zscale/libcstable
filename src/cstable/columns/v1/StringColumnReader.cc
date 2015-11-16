@@ -21,39 +21,39 @@ StringColumnReader::StringColumnReader(
     ColumnReader(r_max, d_max, data, size),
     data_reader_(data_, data_size_) {}
 
-bool StringColumnReader::next(
-    uint64_t* rep_level,
-    uint64_t* def_level,
-    void** data,
-    size_t* data_len) {
-  return next(
-      rep_level,
-      def_level,
-      reinterpret_cast<const char**>(const_cast<const void**>(data)),
-      data_len);
-}
-
-bool StringColumnReader::next(
-    uint64_t* rep_level,
-    uint64_t* def_level,
-    const char** data,
-    size_t* data_len) {
-  auto r = rlvl_reader_.next();
-  auto d = dlvl_reader_.next();
-
-  *rep_level = r;
-  *def_level = d;
-  ++vals_read_;
-
-  if (d == d_max_) {
-    *data_len = *data_reader_.readUInt32();
-    *data = data_reader_.readString(*data_len);
-    return true;
-  } else {
-    *data_len = 0;
-    return false;
-  }
-}
+//bool StringColumnReader::next(
+//    uint64_t* rep_level,
+//    uint64_t* def_level,
+//    void** data,
+//    size_t* data_len) {
+//  return next(
+//      rep_level,
+//      def_level,
+//      reinterpret_cast<const char**>(const_cast<const void**>(data)),
+//      data_len);
+//}
+//
+//bool StringColumnReader::next(
+//    uint64_t* rep_level,
+//    uint64_t* def_level,
+//    const char** data,
+//    size_t* data_len) {
+//  auto r = rlvl_reader_.next();
+//  auto d = dlvl_reader_.next();
+//
+//  *rep_level = r;
+//  *def_level = d;
+//  ++vals_read_;
+//
+//  if (d == d_max_) {
+//    *data_len = *data_reader_.readUInt32();
+//    *data = data_reader_.readString(*data_len);
+//    return true;
+//  } else {
+//    *data_len = 0;
+//    return false;
+//  }
+//}
 
 } // namespace v1
 } // namespace cstable

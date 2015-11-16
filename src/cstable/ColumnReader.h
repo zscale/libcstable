@@ -19,6 +19,12 @@ namespace cstable {
 class ColumnReader : public RefCounted {
 public:
 
+  virtual ColumnType type() const = 0;
+  virtual ColumnEncoding storageType() const = 0;
+
+  virtual uint64_t maxRepetitionLevel() const = 0;
+  virtual uint64_t maxDefinitionLevel() const = 0;
+
   virtual bool readBoolean(
       uint64_t* rlvl,
       uint64_t* dlvl,
@@ -34,7 +40,7 @@ public:
       uint64_t* dlvl,
       int64_t* value) = 0;
 
-  virtual bool readDouble(
+  virtual bool readFloat(
       uint64_t* rlvl,
       uint64_t* dlvl,
       double* value) = 0;
@@ -44,24 +50,8 @@ public:
       uint64_t* dlvl,
       String* value) = 0;
 
-  virtual msg::FieldType type() const = 0;
-  virtual ColumnEncoding storageType() const = 0;
-
-  virtual uint64_t maxRepetitionLevel() const = 0;
-  virtual uint64_t maxDefinitionLevel() const = 0;
-
-
   virtual uint64_t nextRepetitionLevel() = 0;
-
   virtual bool eofReached() const = 0;
-
-  /** deprecated -- do not use ! */
-  virtual bool next(
-      uint64_t* rep_level,
-      uint64_t* def_level,
-      void** data,
-      size_t* data_len) = 0;
-
 
 };
 

@@ -44,8 +44,88 @@ UnsignedIntColumnReader::UnsignedIntColumnReader(
   page_idx->addPageReader(key, data_reader_.get());
 }
 
-msg::FieldType UnsignedIntColumnReader::type() const {
-  return msg::FieldType::UINT64;
+bool UnsignedIntColumnReader::readBoolean(
+    uint64_t* rlvl,
+    uint64_t* dlvl,
+    bool* value) {
+  uint64_t tmp;
+  if (readUnsignedInt(rlvl, dlvl, &tmp)) {
+    *value = tmp > 1;
+    return true;
+  } else {
+    *value = false;
+    return false;
+  }
+}
+
+bool UnsignedIntColumnReader::readUnsignedInt(
+    uint64_t* rlvl,
+    uint64_t* dlvl,
+    uint64_t* value) {
+  *rlvl = rlevel_reader_->readUnsignedInt();
+  *dlvl = dlevel_reader_->readUnsignedInt();
+
+  if (*dlvl == config_.dlevel_max) {
+    *value = data_reader_->readUnsignedInt();
+    return true;
+  } else {
+    *value = 0;
+    return false;
+  }
+}
+
+bool UnsignedIntColumnReader::readSignedInt(
+    uint64_t* rlvl,
+    uint64_t* dlvl,
+    int64_t* value) {
+  uint64_t tmp;
+  if (readUnsignedInt(rlvl, dlvl, &tmp)) {
+    *value = tmp;
+    return true;
+  } else {
+    *value = 0;
+    return false;
+  }
+}
+
+bool UnsignedIntColumnReader::readFloat(
+    uint64_t* rlvl,
+    uint64_t* dlvl,
+    double* value) {
+  uint64_t tmp;
+  if (readUnsignedInt(rlvl, dlvl, &tmp)) {
+    *value = tmp;
+    return true;
+  } else {
+    *value = 0;
+    return false;
+  }
+}
+
+bool UnsignedIntColumnReader::readString(
+    uint64_t* rlvl,
+    uint64_t* dlvl,
+    String* value) {
+  uint64_t tmp;
+  if (readUnsignedInt(rlvl, dlvl, &tmp)) {
+    *value = StringUtil::toString(tmp);
+    return true;
+  } else {
+    *value = "";
+    return false;
+  }
+}
+
+uint64_t UnsignedIntColumnReader::nextRepetitionLevel() {
+  return 0;
+}
+
+bool UnsignedIntColumnReader::eofReached() const {
+  return false;
+}
+
+ColumnType UnsignedIntColumnReader::type() const {
+  return ColumnType::UNSIGNED_INT;
 }
 
 ColumnEncoding UnsignedIntColumnReader::storageType() const {
@@ -58,22 +138,6 @@ uint64_t UnsignedIntColumnReader::maxRepetitionLevel() const {
 
 uint64_t UnsignedIntColumnReader::maxDefinitionLevel() const {
   return config_.dlevel_max;
-}
-
-bool UnsignedIntColumnReader::next(
-    uint64_t* rep_level,
-    uint64_t* def_level,
-    void** data,
-    size_t* data_len) {
-  return false;
-}
-
-uint64_t UnsignedIntColumnReader::nextRepetitionLevel() {
-  return 0;
-}
-
-bool UnsignedIntColumnReader::eofReached() const {
-  return false;
 }
 
 } // namespace cstable

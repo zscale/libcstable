@@ -41,7 +41,7 @@ public:
       uint64_t* dlvl,
       int64_t* value) override;
 
-  bool readDouble(
+  bool readFloat(
       uint64_t* rlvl,
       uint64_t* dlvl,
       double* value) override;
@@ -51,16 +51,8 @@ public:
       uint64_t* dlvl,
       String* value) override;
 
-  bool next(uint64_t* rep_level, uint64_t* def_level, double* data);
-
-  bool next(
-      uint64_t* rep_level,
-      uint64_t* def_level,
-      void** data,
-      size_t* data_len) override;
-
-  msg::FieldType type() const override {
-    return msg::FieldType::DOUBLE;
+  ColumnType type() const override {
+    return ColumnType::FLOAT;
   }
 
   ColumnEncoding storageType() const override {

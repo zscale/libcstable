@@ -22,6 +22,7 @@ public:
 
 class UnsignedIntPageReader : public PageReader {
 public:
+  virtual uint64_t readUnsignedInt() const = 0;
 };
 
 class SignedIntPageReader : public PageReader {
