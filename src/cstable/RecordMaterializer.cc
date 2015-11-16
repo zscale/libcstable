@@ -295,6 +295,73 @@ void RecordMaterializer::ColumnState::consume() {
   pending = false;
 }
 
+uint64_t RecordMaterializer::ColumnState::getUnsignedInteger() const {
+  switch (col_type) {
+    case ColumnType::SUBRECORD:
+      RAISE(kIllegalStateError);
+    case ColumnType::BOOLEAN:
+    case ColumnType::UNSIGNED_INT:
+    case ColumnType::DATETIME:
+      return val_uint;
+    case ColumnType::SIGNED_INT:
+      return val_sint;
+    case ColumnType::STRING:
+      return std::stoull(val_str);
+    case ColumnType::FLOAT:
+      return val_float;
+  };
+}
+
+int64_t RecordMaterializer::ColumnState::getSignedInteger() const {
+  switch (col_type) {
+    case ColumnType::SUBRECORD:
+      RAISE(kIllegalStateError);
+    case ColumnType::BOOLEAN:
+    case ColumnType::UNSIGNED_INT:
+    case ColumnType::DATETIME:
+      return val_uint;
+    case ColumnType::SIGNED_INT:
+      return val_sint;
+    case ColumnType::STRING:
+      return std::stoll(val_str);
+    case ColumnType::FLOAT:
+      return val_float;
+  };
+}
+
+String RecordMaterializer::ColumnState::getString() const {
+  switch (col_type) {
+    case ColumnType::SUBRECORD:
+      RAISE(kIllegalStateError);
+    case ColumnType::BOOLEAN:
+    case ColumnType::UNSIGNED_INT:
+    case ColumnType::DATETIME:
+      return StringUtil::toString(val_uint);
+    case ColumnType::SIGNED_INT:
+      return StringUtil::toString(val_sint);
+    case ColumnType::STRING:
+      return val_str;
+    case ColumnType::FLOAT:
+      return StringUtil::toString(val_float);
+  };
+}
+
+double RecordMaterializer::ColumnState::getFloat() const {
+  switch (col_type) {
+    case ColumnType::SUBRECORD:
+      RAISE(kIllegalStateError);
+    case ColumnType::BOOLEAN:
+    case ColumnType::UNSIGNED_INT:
+    case ColumnType::DATETIME:
+      return val_uint;
+    case ColumnType::SIGNED_INT:
+      return val_sint;
+    case ColumnType::STRING:
+      return std::stod(val_str);
+    case ColumnType::FLOAT:
+      return val_float;
+  };
+}
 
 } // namespace cstable
 } // namespace stx
