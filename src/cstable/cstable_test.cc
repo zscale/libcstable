@@ -193,25 +193,28 @@ TEST_CASE(CSTableTest, TestV1CSTableColumnWriterReader, [] () {
   }
 });
 
-//TEST_CASE(CSTableTest, TestV2CSTableContainer, [] () {
-//  String filename = "/tmp/__fnord__cstabletest2.cstable";
-//  FileUtil::rm(filename);
-//
-//  Vector<cstable::ColumnConfig> columns;
-//  columns.emplace_back(cstable::ColumnConfig {
-//    .column_id = 1,
-//    .column_name = "mycol",
-//    .storage_type = cstable::ColumnEncoding::UINT32_BITPACKED,
-//    .logical_type = msg::FieldType::UINT32,
-//    .rlevel_max = 0,
-//    .dlevel_max = 0
-//  });
-//
-//  auto tbl_writer = cstable::CSTableWriter::createFile(filename, columns);
-//  tbl_writer->commit();
-//
-//  EXPECT_EQ(FileUtil::size(filename), 512);
-//});
+TEST_CASE(CSTableTest, TestV2CSTableContainer, [] () {
+  String filename = "/tmp/__fnord__cstabletest2.cstable";
+  FileUtil::rm(filename);
+
+  auto num_records = 32;
+
+  cstable::RecordSchema schema;
+  schema.addUnsignedInteger("key1", true, ColumnEncoding::UINT64_PLAIN);
+  schema.addUnsignedInteger("key2", true, ColumnEncoding::UINT64_PLAIN);
+
+  auto tbl_writer = cstable::CSTableWriter::createFile(
+      filename,
+      schema);
+
+  tbl_writer->addRows(num_records);
+  tbl_writer->commit();
+
+  auto tbl_reader = cstable::CSTableReader::openFile(filename);
+  EXPECT_EQ(tbl_reader->numRecords(), num_records);
+  EXPECT_EQ(tbl_reader->hasColumn("key1"), true);
+  EXPECT_EQ(tbl_reader->hasColumn("key2"), true);
+});
 
 //TEST_CASE(CSTableTest, TestV2UInt64Plain, [] () {
 //  String filename = "/tmp/__fnord__cstabletest3.cstable";

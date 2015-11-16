@@ -43,6 +43,20 @@ protected:
   Vector<Pair<PageIndexKey, PageWriter*>> page_writers_;
 };
 
+class PageIndexReader {
+public:
+
+  PageIndexReader(
+      BinaryFormatVersion version,
+      RefPtr<PageManager> page_mgr);
+
+  //void addPageReader(PageIndexKey key, PageReader* page_reader);
+
+protected:
+  BinaryFormatVersion version_;
+  RefPtr<PageManager> page_mgr_;
+};
+
 } // namespace cstable
 } // namespace stx
 

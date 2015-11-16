@@ -140,8 +140,18 @@ static RefPtr<ColumnWriter> openColumnV2(
     RefPtr<PageManager> page_mgr,
     RefPtr<PageIndex> page_idx) {
   switch (c.logical_type) {
+    //case ColumnType::BOOLEAN:
+    //  return new BooleanColumnWriter(c, page_mgr, page_idx);
     case ColumnType::UNSIGNED_INT:
       return new UnsignedIntColumnWriter(c, page_mgr, page_idx);
+    //case ColumnType::SIGNED_INT:
+    //  return new SignedIntColumnWriter(c, page_mgr, page_idx);
+    //case ColumnType::STRING:
+    //  return new StringColumnWriter(c, page_mgr, page_idx);
+    //case ColumnType::FLOAT:
+    //  return new FloatColumnWriter(c, page_mgr, page_idx);
+    //case ColumnType::DATETIME:
+    //  return new DateTimeColumnWriter(c, page_mgr, page_idx);
   }
 }
 

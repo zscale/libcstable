@@ -8,6 +8,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 #include <cstable/CSTableReader.h>
+#include <cstable/PageIndex.h>
 #include <cstable/columns/v1/BooleanColumnReader.h>
 #include <cstable/columns/v1/BitPackedIntColumnReader.h>
 #include <cstable/columns/v1/UInt32ColumnReader.h>
@@ -15,6 +16,7 @@
 #include <cstable/columns/v1/LEB128ColumnReader.h>
 #include <cstable/columns/v1/DoubleColumnReader.h>
 #include <cstable/columns/v1/StringColumnReader.h>
+#include <cstable/columns/UnsignedIntColumnReader.h>
 #include <stx/io/file.h>
 #include <stx/io/mmappedfile.h>
 
@@ -44,6 +46,21 @@ static RefPtr<v1::ColumnReader> openColumnV1(
       return new v1::DoubleColumnReader(rmax, dmax, cdata, csize);
     case ColumnEncoding::STRING_PLAIN:
       return new v1::StringColumnReader(rmax, dmax, cdata, csize);
+    default:
+      RAISEF(
+          kRuntimeError,
+          "unsupported column type: $0",
+          (uint32_t) c.storage_type);
+  }
+}
+
+static RefPtr<ColumnReader> openColumnV2(
+    const ColumnConfig& c,
+    RefPtr<PageManager> page_mgr,
+    PageIndexReader* page_idx) {
+  switch (c.logical_type) {
+    case ColumnType::UNSIGNED_INT:
+      return new UnsignedIntColumnReader(c, page_mgr, page_idx);
     default:
       RAISEF(
           kRuntimeError,
@@ -86,12 +103,16 @@ RefPtr<CSTableReader> CSTableReader::openFile(const String& filename) {
     }
 
     case BinaryFormatVersion::v0_2_0: {
-      auto page_mgr = new PageManager(
+      auto page_mgr = mkRef(new PageManager(
           version,
           std::move(file),
-          metablock.file_size);
+          metablock.file_size));
 
+      PageIndexReader page_idx(version, page_mgr);
       Vector<RefPtr<ColumnReader>> column_readers;
+      for (const auto& col : header.columns) {
+        column_readers.emplace_back(openColumnV2(col, page_mgr, &page_idx));
+      }
 
       return new CSTableReader(
           version,
