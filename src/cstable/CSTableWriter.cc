@@ -54,13 +54,13 @@ static void createColumns(
       createColumns(colname + ".", r_max, d_max, f, columns);
     }
   } else {
-    columns->emplace_back(cstable::ColumnConfig {
-      .column_name = colname,
-      .storage_type = field->encoding,
-      .logical_type = field->type,
-      .rlevel_max = r_max,
-      .dlevel_max = d_max
-    });
+    cstable::ColumnConfig cconf;
+    cconf.column_name = colname;
+    cconf.storage_type = field->encoding;
+    cconf.logical_type = field->type;
+    cconf.rlevel_max = r_max;
+    cconf.dlevel_max = d_max;
+    columns->emplace_back(cconf);
   }
 }
 
