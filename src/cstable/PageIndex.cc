@@ -90,6 +90,16 @@ PageRef PageIndex::write(Option<PageRef> head) {
   return pages[0];
 }
 
+PageIndexReader::PageIndexReader(
+    BinaryFormatVersion version,
+    RefPtr<PageManager> page_mgr) :
+    version_(version),
+    page_mgr_(page_mgr) {}
+
+void PageIndexReader::addPageReader(PageIndexKey key, PageReader* page_reader) {
+  page_readers_.emplace_back(key, page_reader);
+}
+
 
 } // namespace cstable
 } // namespace stx

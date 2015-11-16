@@ -20,6 +20,7 @@ namespace stx {
 namespace cstable {
 
 class PageWriter;
+class PageReader;
 
 struct PageIndexKey {
   uint32_t column_id;
@@ -50,11 +51,12 @@ public:
       BinaryFormatVersion version,
       RefPtr<PageManager> page_mgr);
 
-  //void addPageReader(PageIndexKey key, PageReader* page_reader);
+  void addPageReader(PageIndexKey key, PageReader* page_reader);
 
 protected:
   BinaryFormatVersion version_;
   RefPtr<PageManager> page_mgr_;
+  Vector<Pair<PageIndexKey, PageReader*>> page_readers_;
 };
 
 } // namespace cstable

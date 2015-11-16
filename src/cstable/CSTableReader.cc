@@ -72,7 +72,7 @@ static RefPtr<ColumnReader> openColumnV2(
     rlevel_reader = mkScoped(
         new UInt64PageReader(rlevel_idx_key, page_mgr, page_idx));
 
-    //page_idx->addPageWriter(rlevel_idx_key, rlevel_writer_.get());
+    page_idx->addPageReader(rlevel_idx_key, rlevel_reader.get());
   }
 
   switch (c.logical_type) {
