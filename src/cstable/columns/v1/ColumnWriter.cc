@@ -53,6 +53,14 @@ void ColumnWriter::writeNull(uint64_t rlvl, uint64_t dlvl) {
   ++num_vals_;
 }
 
+void ColumnWriter::writeBoolean(
+    uint64_t rlvl,
+    uint64_t dlvl,
+    bool value) {
+  uint64_t v = value ? 1 : 0;
+  addDatum(rlvl, dlvl, &v, sizeof(v));
+}
+
 void ColumnWriter::writeUnsignedInt(
     uint64_t rlvl,
     uint64_t dlvl,

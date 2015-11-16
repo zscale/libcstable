@@ -37,6 +37,13 @@ UnsignedIntColumnWriter::UnsignedIntColumnWriter(
   }
 }
 
+void UnsignedIntColumnWriter::writeBoolean(
+    uint64_t rlvl,
+    uint64_t dlvl,
+    bool value) {
+  writeUnsignedInt(rlvl, dlvl, value ? 1 : 0);
+}
+
 void UnsignedIntColumnWriter::writeUnsignedInt(
     uint64_t rlvl,
     uint64_t dlvl,

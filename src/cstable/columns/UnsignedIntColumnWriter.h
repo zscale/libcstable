@@ -22,6 +22,11 @@ public:
       RefPtr<PageManager> page_mgr,
       RefPtr<PageIndex> page_idx);
 
+  void writeBoolean(
+      uint64_t rlvl,
+      uint64_t dlvl,
+      bool value) override;
+
   void writeUnsignedInt(
       uint64_t rlvl,
       uint64_t dlvl,

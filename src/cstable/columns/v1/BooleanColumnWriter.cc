@@ -24,11 +24,19 @@ void BooleanColumnWriter::addDatum(
     uint64_t def_level,
     const void* data,
     size_t size) {
-  if (size != sizeof(uint8_t)) {
-    RAISE(kIllegalArgumentError, "size != sizeof(uint8_t)");
+  switch (size) {
+    case sizeof(uint8_t):
+      addDatum(rep_level, def_level, *((const uint8_t*) data) > 0);
+      return;
+    case sizeof(uint32_t):
+      addDatum(rep_level, def_level, *((const uint32_t*) data) > 0);
+      return;
+    case sizeof(uint64_t):
+      addDatum(rep_level, def_level, *((const uint64_t*) data) > 0);
+      return;
   }
 
-  addDatum(rep_level, def_level, (*((const uint8_t*) data)) > 0);
+  RAISE(kIllegalArgumentError, "invalid size");
 }
 
 void BooleanColumnWriter::addDatum(

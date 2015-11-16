@@ -18,6 +18,13 @@ ColumnWriter::ColumnWriter(
     r_max_(r_max),
     d_max_(d_max) {}
 
+void ColumnWriter::writeString(
+    uint64_t rlvl,
+    uint64_t dlvl,
+    const String& str) {
+  addDatum(rlvl, dlvl, str.data(), str.size());
+}
+
 size_t ColumnWriter::maxRepetitionLevel() const {
   return r_max_;
 }

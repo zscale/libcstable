@@ -29,6 +29,11 @@ public:
 
   void writeNull(uint64_t rlvl, uint64_t dlvl) override;
 
+  void writeBoolean(
+      uint64_t rlvl,
+      uint64_t dlvl,
+      bool value) override;
+
   void writeUnsignedInt(
       uint64_t rlvl,
       uint64_t dlvl,

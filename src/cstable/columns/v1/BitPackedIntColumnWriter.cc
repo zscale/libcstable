@@ -26,11 +26,19 @@ void BitPackedIntColumnWriter::addDatum(
     uint64_t def_level,
     const void* data,
     size_t size) {
-  if (size != sizeof(uint32_t)) {
-    RAISE(kIllegalArgumentError, "size != sizeof(uint32_t)");
+  switch (size) {
+    case sizeof(uint8_t):
+      addDatum(rep_level, def_level, *((const uint8_t*) data));
+      return;
+    case sizeof(uint32_t):
+      addDatum(rep_level, def_level, *((const uint32_t*) data));
+      return;
+    case sizeof(uint64_t):
+      addDatum(rep_level, def_level, *((const uint64_t*) data));
+      return;
   }
 
-  addDatum(rep_level, def_level, *((const uint32_t*) data));
+  RAISE(kIllegalArgumentError, "invalid size");
 }
 
 void BitPackedIntColumnWriter::addDatum(

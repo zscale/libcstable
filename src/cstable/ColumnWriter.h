@@ -27,6 +27,11 @@ public:
 
   virtual void writeNull(uint64_t rlvl, uint64_t dlvl) = 0;
 
+  virtual void writeBoolean(
+      uint64_t rlvl,
+      uint64_t dlvl,
+      bool value) = 0;
+
   virtual void writeUnsignedInt(
       uint64_t rlvl,
       uint64_t dlvl,
