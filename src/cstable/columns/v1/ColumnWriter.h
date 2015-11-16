@@ -15,7 +15,7 @@
 #include <stx/util/binarymessagewriter.h>
 #include <stx/util/BitPackEncoder.h>
 #include <stx/protobuf/MessageObject.h>
-#include <cstable/BinaryFormat.h>
+#include <cstable/cstable.h>
 #include <cstable/ColumnWriter.h>
 
 namespace stx {

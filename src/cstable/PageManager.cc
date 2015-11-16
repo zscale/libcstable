@@ -8,7 +8,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 #include <cstable/PageManager.h>
-#include <cstable/BinaryFormat.h>
+#include <cstable/cstable.h>
 #include <stx/exception.h>
 #include <stx/freeondestroy.h>
 

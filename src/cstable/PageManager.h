@@ -13,7 +13,7 @@
 #include <stx/autoref.h>
 #include <stx/buffer.h>
 #include <stx/io/file.h>
-#include <cstable/BinaryFormat.h>
+#include <cstable/cstable.h>
 
 namespace stx {
 namespace cstable {

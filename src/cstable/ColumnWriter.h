@@ -12,7 +12,7 @@
 #include <stx/exception.h>
 #include <stx/autoref.h>
 #include <stx/protobuf/MessageObject.h>
-#include <cstable/BinaryFormat.h>
+#include <cstable/cstable.h>
 #include <cstable/PageManager.h>
 #include <cstable/PageIndex.h>
 #include <cstable/columns/UInt64PageWriter.h>

@@ -11,7 +11,7 @@
 #include <stx/stdtypes.h>
 #include <stx/io/file.h>
 #include <cstable/ColumnReader.h>
-#include <cstable/BinaryFormat.h>
+#include <cstable/cstable.h>
 #include <cstable/PageManager.h>
 
 namespace stx {

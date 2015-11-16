@@ -8,7 +8,7 @@
 
 # cstable
 add_library(cstable STATIC
-    BinaryFormat.cc
+    cstable.cc
     columns/BitPackedIntPageWriter.cc
     columns/UInt64PageWriter.cc
     columns/UInt64PageReader.cc

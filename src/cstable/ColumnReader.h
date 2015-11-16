@@ -11,7 +11,7 @@
 #include <stx/stdtypes.h>
 #include <stx/autoref.h>
 #include <stx/protobuf/MessageObject.h>
-#include <cstable/BinaryFormat.h>
+#include <cstable/cstable.h>
 
 namespace stx {
 namespace cstable {

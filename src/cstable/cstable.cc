@@ -7,7 +7,7 @@
  * copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-#include <cstable/BinaryFormat.h>
+#include <cstable/cstable.h>
 #include <cstable/PageManager.h>
 #include <stx/util/binarymessagewriter.h>
 #include <stx/util/binarymessagereader.h>
@@ -171,6 +171,7 @@ void readHeader(
     Vector<MetaBlock>* metablocks,
     InputStream* is) {
   auto flags = is->readUInt64();
+  (void) flags; // make gcc happy
 
   for (size_t i = 0; i < 2; ++i) {
     MetaBlock mb;
