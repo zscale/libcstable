@@ -7,14 +7,14 @@
  * copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-#include <cstable/RecordSchema.h>
+#include <cstable/TableSchema.h>
 
 namespace stx {
 namespace cstable {
 
-RecordSchema::RecordSchema() {}
+TableSchema::TableSchema() {}
 
-RecordSchema::RecordSchema(const RecordSchema& other) {
+TableSchema::TableSchema(const TableSchema& other) {
   for (const auto& c : other.columns_by_name_) {
     auto col_cpy = mkScoped(new Column());
     col_cpy->name = c.second->name;
@@ -24,7 +24,7 @@ RecordSchema::RecordSchema(const RecordSchema& other) {
     col_cpy->repeated = c.second->repeated;
     col_cpy->optional = c.second->optional;
     if (c.second->subschema.get()) {
-      col_cpy->subschema = mkScoped(new RecordSchema(*c.second->subschema));
+      col_cpy->subschema = mkScoped(new TableSchema(*c.second->subschema));
     }
 
     columns_.emplace_back(col_cpy.get());
@@ -32,7 +32,7 @@ RecordSchema::RecordSchema(const RecordSchema& other) {
   }
 }
 
-void RecordSchema::addUnsignedInteger(
+void TableSchema::addUnsignedInteger(
     const String& name,
     bool optional /* = true */,
     ColumnEncoding encoding /* = ColumnEncoding::UINT64_LEB128 */,
@@ -50,7 +50,7 @@ void RecordSchema::addUnsignedInteger(
   columns_by_name_.emplace(name, std::move(col));
 }
 
-void RecordSchema::addUnsignedIntegerArray(
+void TableSchema::addUnsignedIntegerArray(
     const String& name,
     bool optional /* = true */,
     ColumnEncoding encoding /* = ColumnEncoding::UINT64_LEB128 */,
@@ -68,7 +68,7 @@ void RecordSchema::addUnsignedIntegerArray(
   columns_by_name_.emplace(name, std::move(col));
 }
 
-void RecordSchema::addFloat(
+void TableSchema::addFloat(
     const String& name,
     bool optional /* = true */,
     ColumnEncoding encoding /* = ColumnEncoding::FLOAT_IEEE754 */) {
@@ -85,7 +85,7 @@ void RecordSchema::addFloat(
   columns_by_name_.emplace(name, std::move(col));
 }
 
-void RecordSchema::addFloatArray(
+void TableSchema::addFloatArray(
     const String& name,
     bool optional /* = true */,
     ColumnEncoding encoding /* = ColumnEncoding::FLOAT_IEEE754 */) {
@@ -102,7 +102,7 @@ void RecordSchema::addFloatArray(
   columns_by_name_.emplace(name, std::move(col));
 }
 
-void RecordSchema::addString(
+void TableSchema::addString(
     const String& name,
     bool optional /* = true */,
     ColumnEncoding encoding /* = ColumnEncoding::STRING_PLAIN */,
@@ -120,7 +120,7 @@ void RecordSchema::addString(
   columns_by_name_.emplace(name, std::move(col));
 }
 
-void RecordSchema::addStringArray(
+void TableSchema::addStringArray(
     const String& name,
     bool optional /* = true */,
     ColumnEncoding encoding /* = ColumnEncoding::STRING_PLAIN */,
@@ -138,39 +138,39 @@ void RecordSchema::addStringArray(
   columns_by_name_.emplace(name, std::move(col));
 }
 
-void RecordSchema::addSubrecord(
+void TableSchema::addSubrecord(
     const String& name,
-    RecordSchema schema,
+    TableSchema schema,
     bool optional /* = true */) {
   auto col = mkScoped(new Column {
     .name = name,
     .type = ColumnType::SUBRECORD,
     .repeated = false,
     .optional = optional,
-    .subschema = mkScoped(new RecordSchema(schema))
+    .subschema = mkScoped(new TableSchema(schema))
   });
 
   columns_.emplace_back(col.get());
   columns_by_name_.emplace(name, std::move(col));
 }
 
-void RecordSchema::addSubrecordArray(
+void TableSchema::addSubrecordArray(
     const String& name,
-    RecordSchema schema,
+    TableSchema schema,
     bool optional /* = true */) {
   auto col = mkScoped(new Column {
     .name = name,
     .type = ColumnType::SUBRECORD,
     .repeated = true,
     .optional = optional,
-    .subschema = mkScoped(new RecordSchema(schema))
+    .subschema = mkScoped(new TableSchema(schema))
   });
 
   columns_.emplace_back(col.get());
   columns_by_name_.emplace(name, std::move(col));
 }
 
-void RecordSchema::addColumn(
+void TableSchema::addColumn(
     const String& name,
     ColumnType type,
     ColumnEncoding encoding,
@@ -190,12 +190,12 @@ void RecordSchema::addColumn(
   columns_by_name_.emplace(name, std::move(col));
 }
 
-const Vector<RecordSchema::Column*>& RecordSchema::columns() const {
+const Vector<TableSchema::Column*>& TableSchema::columns() const {
   return columns_;
 }
 
-RecordSchema RecordSchema::fromProtobuf(const msg::MessageSchema& schema) {
-  RecordSchema rs;
+TableSchema TableSchema::fromProtobuf(const msg::MessageSchema& schema) {
+  TableSchema rs;
 
   for (const auto& f : schema.fields()) {
     switch (f.type) {
@@ -204,12 +204,12 @@ RecordSchema RecordSchema::fromProtobuf(const msg::MessageSchema& schema) {
         if (f.repeated) {
           rs.addSubrecordArray(
               f.name,
-              RecordSchema::fromProtobuf(*f.schema),
+              TableSchema::fromProtobuf(*f.schema),
               f.optional);
         } else {
           rs.addSubrecord(
               f.name,
-              RecordSchema::fromProtobuf(*f.schema),
+              TableSchema::fromProtobuf(*f.schema),
               f.optional);
         }
         break;

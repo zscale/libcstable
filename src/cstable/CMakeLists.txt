@@ -37,7 +37,7 @@ add_library(cstable STATIC
     RecordShredder.cc
     PageManager.cc
     PageIndex.cc
-    RecordSchema.cc
+    TableSchema.cc
     CSTableWriter.cc)
 
 add_executable(test-cstable cstable_test.cc)

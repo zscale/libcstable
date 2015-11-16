@@ -15,7 +15,7 @@
 #include <stx/csv/CSVInputStream.h>
 #include <cstable/ColumnWriter.h>
 #include <cstable/CSTableWriter.h>
-#include <cstable/RecordSchema.h>
+#include <cstable/TableSchema.h>
 #include <stx/protobuf/MessageSchema.h>
 #include <stx/protobuf/DynamicMessage.h>
 

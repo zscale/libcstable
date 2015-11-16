@@ -21,7 +21,7 @@ void writeProtoNull(
     uint32_t r,
     uint32_t d,
     const String& column,
-    RecordSchema::Column* field,
+    TableSchema::Column* field,
     CSTableWriter* writer) {
   switch (field->type) {
 
@@ -45,7 +45,7 @@ void writeProtoField(
     uint32_t d,
     const msg::MessageObject& msg,
     const String& column,
-    RecordSchema::Column* field,
+    TableSchema::Column* field,
     CSTableWriter* writer) {
   auto col = writer->getColumnWriter(column);
 
@@ -94,7 +94,7 @@ static void addProtoRecordField(
     const msg::MessageObject& msg,
     const msg::MessageSchema& msg_schema,
     const String& column,
-    RecordSchema::Column* field,
+    TableSchema::Column* field,
     CSTableWriter* writer) {
   auto next_r = r;
   auto next_d = d;

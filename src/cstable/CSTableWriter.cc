@@ -24,7 +24,7 @@ namespace cstable {
 
 RefPtr<CSTableWriter> CSTableWriter::createFile(
     const String& filename,
-    const RecordSchema& schema,
+    const TableSchema& schema,
     Option<RefPtr<LockRef>> lockref /* = None<RefPtr<LockRef>>() */) {
   return createFile(
       filename,
@@ -37,7 +37,7 @@ static void createColumns(
     const String& prefix,
     uint32_t r_max,
     uint32_t d_max,
-    const RecordSchema::Column* field,
+    const TableSchema::Column* field,
     Vector<ColumnConfig>* columns) {
   auto colname = prefix + field->name;
 
@@ -67,13 +67,13 @@ static void createColumns(
 RefPtr<CSTableWriter> CSTableWriter::createFile(
     const String& filename,
     BinaryFormatVersion version,
-    const RecordSchema& schema,
+    const TableSchema& schema,
     Option<RefPtr<LockRef>> lockref /* = None<RefPtr<LockRef>>() */) {
   auto file = File::openFile(filename, File::O_WRITE | File::O_CREATE);
   auto file_os = FileOutputStream::fromFileDescriptor(file.fd());
 
   FileHeader header;
-  header.schema = mkRef(new RecordSchema(schema));
+  header.schema = mkRef(new TableSchema(schema));
   for (const auto& f : header.schema->columns()) {
     createColumns("", 0, 0, f, &header.columns);
   }
@@ -157,7 +157,7 @@ static RefPtr<ColumnWriter> openColumnV2(
 
 CSTableWriter::CSTableWriter(
     BinaryFormatVersion version,
-    RefPtr<RecordSchema> schema,
+    RefPtr<TableSchema> schema,
     RefPtr<PageManager> page_mgr,
     RefPtr<PageIndex> page_idx,
     Vector<ColumnConfig> columns) :
@@ -286,7 +286,7 @@ bool CSTableWriter::hasColumn(const String& column_name) const {
   return col != column_writers_by_name_.end();
 }
 
-const RecordSchema* CSTableWriter::schema() {
+const TableSchema* CSTableWriter::schema() {
   return schema_.get();
 }
 

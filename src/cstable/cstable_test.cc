@@ -36,7 +36,7 @@ TEST_CASE(CSTableTest, TestV1CSTableContainer, [] () {
   FileUtil::rm(filename);
 
   Vector<cstable::ColumnConfig> columns;
-  cstable::RecordSchema schema;
+  cstable::TableSchema schema;
 
   schema.addUnsignedInteger("key1");
   schema.addUnsignedInteger("key2");
@@ -63,7 +63,7 @@ TEST_CASE(CSTableTest, TestV1CSTableColumnWriterReader, [] () {
 
   FileUtil::rm(filename);
 
-  cstable::RecordSchema schema;
+  cstable::TableSchema schema;
 
   schema.addUnsignedIntegerArray(
       "bitpacked",
@@ -199,7 +199,7 @@ TEST_CASE(CSTableTest, TestV2CSTableContainer, [] () {
 
   auto num_records = 32;
 
-  cstable::RecordSchema schema;
+  cstable::TableSchema schema;
   schema.addUnsignedInteger("key1", true, ColumnEncoding::UINT64_PLAIN);
   schema.addUnsignedInteger("key2", true, ColumnEncoding::UINT64_PLAIN);
 
@@ -220,7 +220,7 @@ TEST_CASE(CSTableTest, TestV2CSTableContainer, [] () {
 //  String filename = "/tmp/__fnord__cstabletest3.cstable";
 //  FileUtil::rm(filename);
 //
-//  RecordSchema schema;
+//  TableSchema schema;
 //  schema.addUnsignedInteger(
 //      "mycol",
 //      false,
@@ -260,10 +260,10 @@ TEST_CASE(CSTableTest, TestV2CSTableContainer, [] () {
 TEST_CASE(CSTableTest, TestSimpleReMaterialization, [] () {
   String testfile = "/tmp/__fnord_testcstablematerialization.cst";
 
-  RecordSchema rs_level1;
+  TableSchema rs_level1;
   rs_level1.addStringArray("str");
 
-  RecordSchema rs_schema;
+  TableSchema rs_schema;
   rs_schema.addSubrecordArray("level1", rs_level1);
 
   msg::MessageSchemaField level1(
@@ -367,7 +367,7 @@ TEST_CASE(CSTableTest, TestSimpleReMaterializationWithNull, [] () {
   auto writer = cstable::CSTableWriter::createFile(
       testfile,
       cstable::BinaryFormatVersion::v0_1_0,
-      RecordSchema::fromProtobuf(schema));
+      TableSchema::fromProtobuf(schema));
 
   cstable::RecordShredder shredder(writer.get());
   shredder.addRecordFromProtobuf(sobj, schema);
@@ -447,7 +447,7 @@ TEST_CASE(CSTableTest, TestReMatWithNonRepeatedParent, [] () {
   auto writer = cstable::CSTableWriter::createFile(
       testfile,
       cstable::BinaryFormatVersion::v0_1_0,
-      RecordSchema::fromProtobuf(schema));
+      TableSchema::fromProtobuf(schema));
 
   cstable::RecordShredder shredder(writer.get());
   shredder.addRecordFromProtobuf(sobj, schema);

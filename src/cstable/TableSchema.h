@@ -37,7 +37,7 @@ enum class ColumnEncoding : uint8_t {
   STRING_PLAIN = 100
 };
 
-class RecordSchema : public RefCounted {
+class TableSchema : public RefCounted {
 public:
 
   struct Column {
@@ -47,11 +47,11 @@ public:
     uint64_t type_size;
     bool repeated;
     bool optional;
-    ScopedPtr<RecordSchema> subschema;
+    ScopedPtr<TableSchema> subschema;
   };
 
-  RecordSchema();
-  RecordSchema(const RecordSchema& other);
+  TableSchema();
+  TableSchema(const TableSchema& other);
 
   void addBool(
       const String& name,
@@ -111,12 +111,12 @@ public:
 
   void addSubrecord(
       const String& name,
-      RecordSchema subschema,
+      TableSchema subschema,
       bool optional = true);
 
   void addSubrecordArray(
       const String& name,
-      RecordSchema subschema,
+      TableSchema subschema,
       bool optional = true);
 
   void addColumn(
@@ -134,7 +134,7 @@ public:
   //    json::JSONObject::const_iterator begin,
   //    json::JSONObject::const_iterator end);
 
-  static RecordSchema fromProtobuf(const msg::MessageSchema& schema);
+  static TableSchema fromProtobuf(const msg::MessageSchema& schema);
 
 protected:
   HashMap<String, ScopedPtr<Column>> columns_by_name_;

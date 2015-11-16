@@ -13,7 +13,7 @@
 #include <stx/io/inputstream.h>
 #include <stx/io/outputstream.h>
 #include <stx/protobuf/MessageObject.h>
-#include <cstable/RecordSchema.h>
+#include <cstable/TableSchema.h>
 
 namespace stx {
 namespace cstable {
@@ -131,7 +131,7 @@ struct MetaBlock {
 };
 
 struct FileHeader {
-  RefPtr<RecordSchema> schema;
+  RefPtr<TableSchema> schema;
   Vector<ColumnConfig> columns;
   uint64_t num_rows; // deprecated after v0.1.x
 };

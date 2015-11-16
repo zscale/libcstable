@@ -15,7 +15,7 @@
 #include <cstable/LockManager.h>
 #include <cstable/PageManager.h>
 #include <cstable/PageIndex.h>
-#include <cstable/RecordSchema.h>
+#include <cstable/TableSchema.h>
 
 namespace stx {
 namespace cstable {
@@ -74,7 +74,7 @@ public:
    */
   static RefPtr<CSTableWriter> createFile(
       const String& filename,
-      const RecordSchema& schema,
+      const TableSchema& schema,
       Option<RefPtr<LockRef>> lockref = None<RefPtr<LockRef>>());
 
   /**
@@ -88,7 +88,7 @@ public:
   static RefPtr<CSTableWriter> createFile(
       const String& filename,
       BinaryFormatVersion version,
-      const RecordSchema& schema,
+      const TableSchema& schema,
       Option<RefPtr<LockRef>> lockref = None<RefPtr<LockRef>>());
 
   /**
@@ -131,14 +131,14 @@ public:
   void addRow();
   void addRows(size_t num_records);
 
-  const RecordSchema* schema();
+  const TableSchema* schema();
   const Vector<ColumnConfig>& columns() const;
 
 protected:
 
   CSTableWriter(
       BinaryFormatVersion version,
-      RefPtr<RecordSchema> schema,
+      RefPtr<TableSchema> schema,
       RefPtr<PageManager> page_mgr,
       RefPtr<PageIndex> page_idx,
       Vector<ColumnConfig> columns);
@@ -147,7 +147,7 @@ protected:
   void commitV2();
 
   BinaryFormatVersion version_;
-  RefPtr<RecordSchema> schema_;
+  RefPtr<TableSchema> schema_;
   RefPtr<PageManager> page_mgr_;
   RefPtr<PageIndex> page_idx_;
   Vector<ColumnConfig> columns_;
