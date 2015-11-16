@@ -7,45 +7,43 @@
  * copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-#include <cstable/v1/UInt64ColumnWriter.h>
+#include <cstable/columns/v1/StringColumnWriter.h>
 
 namespace stx {
 namespace cstable {
 namespace v1 {
 
-UInt64ColumnWriter::UInt64ColumnWriter(
+StringColumnWriter::StringColumnWriter(
     uint64_t r_max,
-    uint64_t d_max) :
+    uint64_t d_max,
+    size_t max_strlen) :
     ColumnWriter(r_max, d_max) {}
 
-void UInt64ColumnWriter::addDatum(
+void StringColumnWriter::addDatum(
     uint64_t rep_level,
     uint64_t def_level,
     const void* data,
     size_t size) {
-  if (size != sizeof(uint64_t)) {
-    RAISE(kIllegalArgumentError, "size != sizeof(uint64_t)");
-  }
-
-  addDatum(rep_level, def_level, *((const uint64_t*) data));
+  addDatum(rep_level, def_level, String((const char*) data, size));
 }
 
-void UInt64ColumnWriter::addDatum(
+void StringColumnWriter::addDatum(
     uint64_t rep_level,
     uint64_t def_level,
-    uint64_t value) {
+    const String& value) {
   rlvl_writer_.encode(rep_level);
   dlvl_writer_.encode(def_level);
-  data_writer_.appendUInt64(value);
+  data_writer_.appendUInt32(value.size()); // FIXPAUL use varuint...
+  data_writer_.append(value.data(), value.size());
   ++num_vals_;
 }
 
-void UInt64ColumnWriter::write(util::BinaryMessageWriter* writer) {
+void StringColumnWriter::write(util::BinaryMessageWriter* writer) {
   writer->append(data_writer_.data(), data_writer_.size());
 }
 
-size_t UInt64ColumnWriter::size() const {
-  return sizeof(uint64_t) + data_writer_.size();
+size_t StringColumnWriter::size() const {
+  return data_writer_.size();
 }
 
 } // namespace v1

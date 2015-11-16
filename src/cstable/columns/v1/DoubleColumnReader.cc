@@ -1,35 +1,32 @@
 /**
  * This file is part of the "libfnord" project
- *   Copyright (c) 2014 Paul Asmuth, Google Inc.
+ *   Copyright (c) 2015 Paul Asmuth
  *
  * FnordMetric is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License v3.0. You should have received a
  * copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-#include <cstable/v1/BooleanColumnReader.h>
+#include <cstable/columns/v1/DoubleColumnReader.h>
 
 namespace stx {
 namespace cstable {
 namespace v1 {
 
-BooleanColumnReader::BooleanColumnReader(
+DoubleColumnReader::DoubleColumnReader(
     uint64_t r_max,
     uint64_t d_max,
     void* data,
     size_t size) :
     ColumnReader(r_max, d_max, data, size),
-    data_reader_(data_, data_size_, 1) {}
+    data_reader_(data_, data_size_) {}
 
-bool BooleanColumnReader::next(
+bool DoubleColumnReader::next(
     uint64_t* rep_level,
     uint64_t* def_level,
     void** data,
     size_t* data_len) {
-  bool val;
-  if (next(rep_level, def_level, &val)) {
-    cur_val_ = val ? 1 : 0;
-
+  if (next(rep_level, def_level, &cur_val_)) {
     *data = &cur_val_;
     *data_len = sizeof(cur_val_);
     return true;
@@ -40,10 +37,10 @@ bool BooleanColumnReader::next(
   }
 }
 
-bool BooleanColumnReader::next(
+bool DoubleColumnReader::next(
     uint64_t* rep_level,
     uint64_t* def_level,
-    bool* data) {
+    double* data) {
   auto r = rlvl_reader_.next();
   auto d = dlvl_reader_.next();
 
@@ -52,10 +49,10 @@ bool BooleanColumnReader::next(
   ++vals_read_;
 
   if (d == d_max_) {
-    *data = data_reader_.next();
+    *data = data_reader_.readDouble();
     return true;
   } else {
-    *data = false;
+    *data = 0;
     return false;
   }
 }

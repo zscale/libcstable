@@ -9,13 +9,13 @@
  */
 #include <cstable/CSTableWriter.h>
 #include <cstable/columns/UnsignedIntColumnWriter.h>
-#include <cstable/v1/BooleanColumnWriter.h>
-#include <cstable/v1/BitPackedIntColumnWriter.h>
-#include <cstable/v1/UInt32ColumnWriter.h>
-#include <cstable/v1/UInt64ColumnWriter.h>
-#include <cstable/v1/LEB128ColumnWriter.h>
-#include <cstable/v1/DoubleColumnWriter.h>
-#include <cstable/v1/StringColumnWriter.h>
+#include <cstable/columns/v1/BooleanColumnWriter.h>
+#include <cstable/columns/v1/BitPackedIntColumnWriter.h>
+#include <cstable/columns/v1/UInt32ColumnWriter.h>
+#include <cstable/columns/v1/UInt64ColumnWriter.h>
+#include <cstable/columns/v1/LEB128ColumnWriter.h>
+#include <cstable/columns/v1/DoubleColumnWriter.h>
+#include <cstable/columns/v1/StringColumnWriter.h>
 #include <stx/SHA1.h>
 #include <stx/io/fileutil.h>
 

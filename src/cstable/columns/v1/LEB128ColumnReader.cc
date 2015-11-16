@@ -7,13 +7,13 @@
  * copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-#include <cstable/v1/UInt32ColumnReader.h>
+#include <cstable/columns/v1/LEB128ColumnReader.h>
 
 namespace stx {
 namespace cstable {
 namespace v1 {
 
-UInt32ColumnReader::UInt32ColumnReader(
+LEB128ColumnReader::LEB128ColumnReader(
     uint64_t r_max,
     uint64_t d_max,
     void* data,
@@ -21,7 +21,7 @@ UInt32ColumnReader::UInt32ColumnReader(
     ColumnReader(r_max, d_max, data, size),
     data_reader_(data_, data_size_) {}
 
-bool UInt32ColumnReader::next(
+bool LEB128ColumnReader::next(
     uint64_t* rep_level,
     uint64_t* def_level,
     void** data,
@@ -37,10 +37,10 @@ bool UInt32ColumnReader::next(
   }
 }
 
-bool UInt32ColumnReader::next(
+bool LEB128ColumnReader::next(
     uint64_t* rep_level,
     uint64_t* def_level,
-    uint32_t* data) {
+    uint64_t* data) {
   auto r = rlvl_reader_.next();
   auto d = dlvl_reader_.next();
 
@@ -49,7 +49,7 @@ bool UInt32ColumnReader::next(
   ++vals_read_;
 
   if (d == d_max_) {
-    *data = *data_reader_.readUInt32();
+    *data = data_reader_.readVarUInt();
     return true;
   } else {
     *data = 0;
@@ -60,3 +60,4 @@ bool UInt32ColumnReader::next(
 } // namespace v1
 } // namespace cstable
 } // namespace stx
+

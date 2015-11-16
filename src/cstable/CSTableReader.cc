@@ -8,13 +8,13 @@
  * <http://www.gnu.org/licenses/>.
  */
 #include <cstable/CSTableReader.h>
-#include <cstable/v1/BooleanColumnReader.h>
-#include <cstable/v1/BitPackedIntColumnReader.h>
-#include <cstable/v1/UInt32ColumnReader.h>
-#include <cstable/v1/UInt64ColumnReader.h>
-#include <cstable/v1/LEB128ColumnReader.h>
-#include <cstable/v1/DoubleColumnReader.h>
-#include <cstable/v1/StringColumnReader.h>
+#include <cstable/columns/v1/BooleanColumnReader.h>
+#include <cstable/columns/v1/BitPackedIntColumnReader.h>
+#include <cstable/columns/v1/UInt32ColumnReader.h>
+#include <cstable/columns/v1/UInt64ColumnReader.h>
+#include <cstable/columns/v1/LEB128ColumnReader.h>
+#include <cstable/columns/v1/DoubleColumnReader.h>
+#include <cstable/columns/v1/StringColumnReader.h>
 #include <stx/io/file.h>
 #include <stx/io/mmappedfile.h>
 

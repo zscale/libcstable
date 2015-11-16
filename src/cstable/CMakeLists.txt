@@ -12,6 +12,22 @@ add_library(cstable STATIC
     columns/BitPackedIntPageWriter.cc
     columns/UInt64PageWriter.cc
     columns/UnsignedIntColumnWriter.cc
+    columns/v1/BitPackedIntColumnReader.cc
+    columns/v1/BitPackedIntColumnWriter.cc
+    columns/v1/BooleanColumnReader.cc
+    columns/v1/BooleanColumnWriter.cc
+    columns/v1/ColumnWriter.cc
+    columns/v1/DoubleColumnReader.cc
+    columns/v1/DoubleColumnWriter.cc
+    columns/v1/LEB128ColumnReader.cc
+    columns/v1/LEB128ColumnWriter.cc
+    columns/v1/StringColumnReader.cc
+    columns/v1/StringColumnWriter.cc
+    columns/v1/UInt32ColumnReader.cc
+    columns/v1/UInt32ColumnWriter.cc
+    columns/v1/UInt64ColumnReader.cc
+    columns/v1/UInt64ColumnWriter.cc
+    v1/CSTableWriter.cc
     ColumnWriter.cc
     CSTableReader.cc
     CSTableWriter.cc
@@ -20,22 +36,7 @@ add_library(cstable STATIC
     PageManager.cc
     PageIndex.cc
     RecordSchema.cc
-    v1/BitPackedIntColumnReader.cc
-    v1/BitPackedIntColumnWriter.cc
-    v1/BooleanColumnReader.cc
-    v1/BooleanColumnWriter.cc
-    v1/CSTableWriter.cc
-    v1/ColumnWriter.cc
-    v1/DoubleColumnReader.cc
-    v1/DoubleColumnWriter.cc
-    v1/LEB128ColumnReader.cc
-    v1/LEB128ColumnWriter.cc
-    v1/StringColumnReader.cc
-    v1/StringColumnWriter.cc
-    v1/UInt32ColumnReader.cc
-    v1/UInt32ColumnWriter.cc
-    v1/UInt64ColumnReader.cc
-    v1/UInt64ColumnWriter.cc)
+    CSTableWriter.cc)
 
 add_executable(test-cstable cstable_test.cc)
 target_link_libraries(test-cstable cstable stx-protobuf stx-json stx-base)

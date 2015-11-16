@@ -15,10 +15,10 @@
 #include "stx/io/file.h"
 #include "stx/inspect.h"
 #include "stx/human.h"
-#include "cstable/v1/LEB128ColumnWriter.h"
-#include "cstable/v1/StringColumnWriter.h"
-#include "cstable/v1/DoubleColumnWriter.h"
-#include "cstable/v1/BooleanColumnWriter.h"
+#include "cstable/columns/v1/LEB128ColumnWriter.h"
+#include "cstable/columns/v1/StringColumnWriter.h"
+#include "cstable/columns/v1/DoubleColumnWriter.h"
+#include "cstable/columns/v1/BooleanColumnWriter.h"
 #include "cstable/v1/CSTableWriter.h"
 
 using namespace stx;

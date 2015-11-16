@@ -7,13 +7,13 @@
  * copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-#include <cstable/v1/StringColumnReader.h>
+#include <cstable/columns/v1/UInt64ColumnReader.h>
 
 namespace stx {
 namespace cstable {
 namespace v1 {
 
-StringColumnReader::StringColumnReader(
+UInt64ColumnReader::UInt64ColumnReader(
     uint64_t r_max,
     uint64_t d_max,
     void* data,
@@ -21,23 +21,26 @@ StringColumnReader::StringColumnReader(
     ColumnReader(r_max, d_max, data, size),
     data_reader_(data_, data_size_) {}
 
-bool StringColumnReader::next(
+bool UInt64ColumnReader::next(
     uint64_t* rep_level,
     uint64_t* def_level,
     void** data,
     size_t* data_len) {
-  return next(
-      rep_level,
-      def_level,
-      reinterpret_cast<const char**>(const_cast<const void**>(data)),
-      data_len);
+  if (next(rep_level, def_level, &cur_val_)) {
+    *data = &cur_val_;
+    *data_len = sizeof(cur_val_);
+    return true;
+  } else {
+    *data = nullptr;
+    *data_len = 0;
+    return false;
+  }
 }
 
-bool StringColumnReader::next(
+bool UInt64ColumnReader::next(
     uint64_t* rep_level,
     uint64_t* def_level,
-    const char** data,
-    size_t* data_len) {
+    uint64_t* data) {
   auto r = rlvl_reader_.next();
   auto d = dlvl_reader_.next();
 
@@ -46,11 +49,10 @@ bool StringColumnReader::next(
   ++vals_read_;
 
   if (d == d_max_) {
-    *data_len = *data_reader_.readUInt32();
-    *data = data_reader_.readString(*data_len);
+    *data = *data_reader_.readUInt64();
     return true;
   } else {
-    *data_len = 0;
+    *data = 0;
     return false;
   }
 }

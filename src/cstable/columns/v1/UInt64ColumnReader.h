@@ -1,27 +1,27 @@
 /**
  * This file is part of the "libfnord" project
- *   Copyright (c) 2014 Paul Asmuth, Google Inc.
+ *   Copyright (c) 2015 Paul Asmuth
  *
  * FnordMetric is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License v3.0. You should have received a
  * copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-#ifndef _FNORD_CSTABLE_LEB128COLUMNREADER_H
-#define _FNORD_CSTABLE_LEB128COLUMNREADER_H
+#ifndef _FNORD_CSTABLE_INT64COLUMNREADER_H
+#define _FNORD_CSTABLE_INT64COLUMNREADER_H
 #include <stx/stdtypes.h>
 #include <stx/util/binarymessagereader.h>
 #include <stx/util/BitPackDecoder.h>
-#include <cstable/v1/ColumnReader.h>
+#include <cstable/columns/v1/ColumnReader.h>
 
 namespace stx {
 namespace cstable {
 namespace v1 {
 
-class LEB128ColumnReader : public ColumnReader {
+class UInt64ColumnReader : public ColumnReader {
 public:
 
-  LEB128ColumnReader(
+  UInt64ColumnReader(
       uint64_t r_max,
       uint64_t d_max,
       void* data,
@@ -40,7 +40,7 @@ public:
   }
 
   ColumnEncoding storageType() const override {
-    return ColumnEncoding::UINT64_LEB128;
+    return ColumnEncoding::UINT64_PLAIN;
   }
 
 protected:

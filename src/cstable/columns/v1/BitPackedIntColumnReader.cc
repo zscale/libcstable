@@ -7,21 +7,25 @@
  * copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-#include <cstable/v1/LEB128ColumnReader.h>
+#include <cstable/columns/v1/BitPackedIntColumnReader.h>
 
 namespace stx {
 namespace cstable {
 namespace v1 {
 
-LEB128ColumnReader::LEB128ColumnReader(
+BitPackedIntColumnReader::BitPackedIntColumnReader(
     uint64_t r_max,
     uint64_t d_max,
     void* data,
     size_t size) :
     ColumnReader(r_max, d_max, data, size),
-    data_reader_(data_, data_size_) {}
+    max_value_(*((uint32_t*) data_)),
+    data_reader_(
+        (char *) data_ + sizeof(uint32_t),
+        data_size_ - sizeof(uint32_t),
+        max_value_) {}
 
-bool LEB128ColumnReader::next(
+bool BitPackedIntColumnReader::next(
     uint64_t* rep_level,
     uint64_t* def_level,
     void** data,
@@ -37,10 +41,10 @@ bool LEB128ColumnReader::next(
   }
 }
 
-bool LEB128ColumnReader::next(
+bool BitPackedIntColumnReader::next(
     uint64_t* rep_level,
     uint64_t* def_level,
-    uint64_t* data) {
+    uint32_t* data) {
   auto r = rlvl_reader_.next();
   auto d = dlvl_reader_.next();
 
@@ -49,7 +53,7 @@ bool LEB128ColumnReader::next(
   ++vals_read_;
 
   if (d == d_max_) {
-    *data = data_reader_.readVarUInt();
+    *data = data_reader_.next();
     return true;
   } else {
     *data = 0;
@@ -60,4 +64,3 @@ bool LEB128ColumnReader::next(
 } // namespace v1
 } // namespace cstable
 } // namespace stx
-

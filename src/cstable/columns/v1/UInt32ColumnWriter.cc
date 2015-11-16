@@ -7,50 +7,45 @@
  * copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-#include <cstable/v1/LEB128ColumnWriter.h>
+#include <cstable/columns/v1/UInt32ColumnWriter.h>
 
 namespace stx {
 namespace cstable {
 namespace v1 {
 
-LEB128ColumnWriter::LEB128ColumnWriter(
+UInt32ColumnWriter::UInt32ColumnWriter(
     uint64_t r_max,
     uint64_t d_max) :
     ColumnWriter(r_max, d_max) {}
 
-void LEB128ColumnWriter::addDatum(
+void UInt32ColumnWriter::addDatum(
     uint64_t rep_level,
     uint64_t def_level,
     const void* data,
     size_t size) {
-  if (size != sizeof(uint32_t) && size != sizeof(uint64_t)) {
+  if (size != sizeof(uint32_t)) {
     RAISE(kIllegalArgumentError, "size != sizeof(uint32_t)");
   }
 
-  uint64_t val =
-      size == sizeof(uint32_t) ?
-      *((const uint32_t*) data) :
-      *((const uint64_t*) data);
-
-  addDatum(rep_level, def_level, val);
+  addDatum(rep_level, def_level, *((const uint32_t*) data));
 }
 
-void LEB128ColumnWriter::addDatum(
+void UInt32ColumnWriter::addDatum(
     uint64_t rep_level,
     uint64_t def_level,
-    uint64_t value) {
+    uint32_t value) {
   rlvl_writer_.encode(rep_level);
   dlvl_writer_.encode(def_level);
-  data_writer_.appendVarUInt(value);
+  data_writer_.appendUInt32(value);
   ++num_vals_;
 }
 
-void LEB128ColumnWriter::write(util::BinaryMessageWriter* writer) {
+void UInt32ColumnWriter::write(util::BinaryMessageWriter* writer) {
   writer->append(data_writer_.data(), data_writer_.size());
 }
 
-size_t LEB128ColumnWriter::size() const {
-  return data_writer_.size();
+size_t UInt32ColumnWriter::size() const {
+  return sizeof(uint32_t) + data_writer_.size();
 }
 
 } // namespace v1

@@ -14,7 +14,7 @@
 #include <stx/duration.h>
 #include <stx/io/file.h>
 #include <stx/util/binarymessagewriter.h>
-#include <cstable/v1/ColumnWriter.h>
+#include <cstable/columns/v1/ColumnWriter.h>
 
 namespace stx {
 namespace cstable {

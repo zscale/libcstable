@@ -7,27 +7,27 @@
  * copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-#ifndef _FNORD_CSTABLE_UINT16COLUMNREADER_H
-#define _FNORD_CSTABLE_UINT16COLUMNREADER_H
+#ifndef _FNORD_CSTABLE_BOOLEANCOLUMNREADER_H
+#define _FNORD_CSTABLE_BOOLEANCOLUMNREADER_H
 #include <stx/stdtypes.h>
 #include <stx/util/binarymessagereader.h>
 #include <stx/util/BitPackDecoder.h>
-#include <cstable/v1/ColumnReader.h>
+#include <cstable/columns/v1/ColumnReader.h>
 
 namespace stx {
 namespace cstable {
 namespace v1 {
 
-class BitPackedIntColumnReader : public ColumnReader {
+class BooleanColumnReader : public ColumnReader {
 public:
 
-  BitPackedIntColumnReader(
+  BooleanColumnReader(
       uint64_t r_max,
       uint64_t d_max,
       void* data,
       size_t size);
 
-  bool next(uint64_t* rep_level, uint64_t* def_level, uint32_t* data);
+  bool next(uint64_t* rep_level, uint64_t* def_level, bool* data);
 
   bool next(
       uint64_t* rep_level,
@@ -36,17 +36,16 @@ public:
       size_t* data_len) override;
 
   msg::FieldType type() const override {
-    return msg::FieldType::UINT32;
+    return msg::FieldType::BOOLEAN;
   }
 
   ColumnEncoding storageType() const override {
-    return ColumnEncoding::UINT32_BITPACKED;
+    return ColumnEncoding::BOOLEAN_BITPACKED;
   }
 
 protected:
-  uint32_t max_value_;
   util::BitPackDecoder data_reader_;
-  uint32_t cur_val_;
+  uint8_t cur_val_;
 };
 
 } // namespace v1
