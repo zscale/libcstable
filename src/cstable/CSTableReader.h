@@ -22,18 +22,13 @@ public:
 
   static RefPtr<CSTableReader> openFile(const String& filename);
 
-  RefPtr<ColumnReader> getColumnByName(const String& column_name);
+  bool hasColumn(const String& column_name) const ;
 
-  RefPtr<ColumnReader> getColumnReader(const String& column_name) {
-    return getColumnByName(column_name);
-  }
-
+  RefPtr<ColumnReader> getColumnReader(const String& column_name);
   ColumnType getColumnType(const String& column_name);
   ColumnEncoding getColumnEncoding(const String& column_name);
 
-  Set<String> columns() const;
-
-  bool hasColumn(const String& column_name) const ;
+  const Vector<ColumnConfig>& columns() const;
 
   size_t numRecords() const;
 

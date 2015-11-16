@@ -162,7 +162,7 @@ CSTableReader::CSTableReader(
   }
 }
 
-RefPtr<ColumnReader> CSTableReader::getColumnByName(
+RefPtr<ColumnReader> CSTableReader::getColumnReader(
     const String& column_name) {
   auto col = column_readers_by_name_.find(column_name);
   if (col == column_readers_by_name_.end()) {
@@ -172,34 +172,18 @@ RefPtr<ColumnReader> CSTableReader::getColumnByName(
   return col->second;
 }
 
-//RefPtr<ColumnReader> CSTableReader::getColumnById(
-//    uint32_t column_id) const {
-//  auto col = column_readers_by_id_.find(column_id);
-//  if (col == column_readers_by_id_.end()) {
-//    RAISEF(kNotFoundError, "column not found: $0", column_id);
-//  }
-//
-//  return col->second;
-//}
-
 ColumnEncoding CSTableReader::getColumnEncoding(const String& column_name) {
-  auto col = getColumnByName(column_name);
+  auto col = getColumnReader(column_name);
   return col->encoding();
 }
 
 ColumnType CSTableReader::getColumnType(const String& column_name) {
-  auto col = getColumnByName(column_name);
+  auto col = getColumnReader(column_name);
   return col->type();
 }
 
-Set<String> CSTableReader::columns() const {
-  Set<String> cols;
-
-  for (const auto& c : columns_) {
-    cols.emplace(c.column_name);
-  }
-
-  return cols;
+const Vector<ColumnConfig>& CSTableReader::columns() const {
+  return columns_;
 }
 
 bool CSTableReader::hasColumn(const String& column_name) const {
