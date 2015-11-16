@@ -120,11 +120,11 @@ static RefPtr<ColumnWriter> openColumnV1(const ColumnConfig& c) {
     case ColumnEncoding::UINT32_BITPACKED:
       return new v1::BitPackedIntColumnWriter(rmax, dmax);
     case ColumnEncoding::UINT32_PLAIN:
-      return new v1::UInt32ColumnWriter(rmax, dmax);
+      return new v1::UInt32ColumnWriter(rmax, dmax, c.logical_type);
     case ColumnEncoding::UINT64_PLAIN:
-      return new v1::UInt64ColumnWriter(rmax, dmax);
+      return new v1::UInt64ColumnWriter(rmax, dmax, c.logical_type);
     case ColumnEncoding::UINT64_LEB128:
-      return new v1::LEB128ColumnWriter(rmax, dmax);
+      return new v1::LEB128ColumnWriter(rmax, dmax, c.logical_type);
     case ColumnEncoding::FLOAT_IEEE754:
       return new v1::DoubleColumnWriter(rmax, dmax);
     case ColumnEncoding::STRING_PLAIN:

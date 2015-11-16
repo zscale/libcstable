@@ -15,8 +15,10 @@ namespace v1 {
 
 UInt32ColumnWriter::UInt32ColumnWriter(
     uint64_t r_max,
-    uint64_t d_max) :
-    ColumnWriter(r_max, d_max) {}
+    uint64_t d_max,
+    ColumnType type) :
+    ColumnWriter(r_max, d_max),
+    type_(type) {}
 
 void UInt32ColumnWriter::addDatum(
     uint64_t rep_level,

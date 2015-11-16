@@ -24,7 +24,8 @@ public:
 
   UInt64ColumnWriter(
       uint64_t r_max,
-      uint64_t d_max);
+      uint64_t d_max,
+      ColumnType type);
 
   void addDatum(
       uint64_t rep_level,
@@ -39,14 +40,14 @@ public:
   }
 
   ColumnType type() const override {
-    return ColumnType::UNSIGNED_INT;
+    return type_;
   }
 
 protected:
   size_t size() const override;
   void write(stx::util::BinaryMessageWriter* writer) override;
 
-  uint64_t max_value_;
+  ColumnType type_;
   stx::util::BinaryMessageWriter data_writer_;
 };
 
