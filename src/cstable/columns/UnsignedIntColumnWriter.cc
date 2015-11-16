@@ -7,7 +7,7 @@
  * copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-#include <cstable/UnsignedIntColumnWriter.h>
+#include <cstable/columns/UnsignedIntColumnWriter.h>
 
 namespace stx {
 namespace cstable {

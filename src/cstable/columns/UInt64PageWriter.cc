@@ -7,7 +7,7 @@
  * copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-#include <cstable/UInt64PageWriter.h>
+#include <cstable/columns/UInt64PageWriter.h>
 #include <stx/inspect.h>
 
 namespace stx {

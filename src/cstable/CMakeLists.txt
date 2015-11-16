@@ -9,10 +9,10 @@
 # cstable
 add_library(cstable STATIC
     BinaryFormat.cc
-    BitPackedIntPageWriter.cc
-    UInt64PageWriter.cc
+    columns/BitPackedIntPageWriter.cc
+    columns/UInt64PageWriter.cc
+    columns/UnsignedIntColumnWriter.cc
     ColumnWriter.cc
-    UnsignedIntColumnWriter.cc
     CSTableReader.cc
     CSTableWriter.cc
     RecordMaterializer.cc
@@ -36,9 +36,6 @@ add_library(cstable STATIC
     v1/UInt32ColumnWriter.cc
     v1/UInt64ColumnReader.cc
     v1/UInt64ColumnWriter.cc)
-
-add_executable(test-cstable-recordmaterializer RecordMaterializer_test.cc)
-target_link_libraries(test-cstable-recordmaterializer cstable stx-protobuf stx-json stx-base)
 
 add_executable(test-cstable cstable_test.cc)
 target_link_libraries(test-cstable cstable stx-protobuf stx-json stx-base)

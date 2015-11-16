@@ -14,8 +14,8 @@
 #include <stx/protobuf/MessageObject.h>
 #include <cstable/BinaryFormat.h>
 #include <cstable/PageManager.h>
-#include <cstable/UInt64PageWriter.h>
 #include <cstable/PageIndex.h>
+#include <cstable/columns/UInt64PageWriter.h>
 
 namespace stx {
 namespace cstable {

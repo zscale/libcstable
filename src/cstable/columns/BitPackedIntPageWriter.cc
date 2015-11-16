@@ -7,7 +7,7 @@
  * copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-#include <cstable/BitPackedIntPageWriter.h>
+#include <cstable/columns/BitPackedIntPageWriter.h>
 
 namespace stx {
 namespace cstable {

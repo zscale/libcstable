@@ -8,7 +8,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 #include <cstable/CSTableWriter.h>
-#include <cstable/UnsignedIntColumnWriter.h>
+#include <cstable/columns/UnsignedIntColumnWriter.h>
 #include <cstable/v1/BooleanColumnWriter.h>
 #include <cstable/v1/BitPackedIntColumnWriter.h>
 #include <cstable/v1/UInt32ColumnWriter.h>
