@@ -7,8 +7,8 @@
  * copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-#include <cstable/PageIndex.h>
-#include <cstable/PageWriter.h>
+#include <cstable/io/PageIndex.h>
+#include <cstable/io/PageWriter.h>
 #include <stx/util/binarymessagewriter.h>
 
 namespace stx {

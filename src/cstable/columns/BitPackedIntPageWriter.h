@@ -12,8 +12,8 @@
 #include <stx/util/binarymessagewriter.h>
 #include <stx/util/BitPackEncoder.h>
 #include <cstable/cstable.h>
-#include <cstable/PageManager.h>
-#include <cstable/PageWriter.h>
+#include <cstable/io/PageManager.h>
+#include <cstable/io/PageWriter.h>
 
 namespace stx {
 namespace cstable {

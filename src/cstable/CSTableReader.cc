@@ -8,8 +8,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 #include <cstable/CSTableReader.h>
-#include <cstable/PageIndex.h>
-#include <cstable/PageReader.h>
+#include <cstable/io/PageIndex.h>
+#include <cstable/io/PageReader.h>
 #include <cstable/columns/v1/BooleanColumnReader.h>
 #include <cstable/columns/v1/BitPackedIntColumnReader.h>
 #include <cstable/columns/v1/UInt32ColumnReader.h>

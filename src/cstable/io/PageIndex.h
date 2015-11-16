@@ -14,7 +14,7 @@
 #include <stx/buffer.h>
 #include <stx/io/file.h>
 #include <cstable/cstable.h>
-#include <cstable/PageManager.h>
+#include <cstable/io/PageManager.h>
 
 namespace stx {
 namespace cstable {

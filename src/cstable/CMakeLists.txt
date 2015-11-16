@@ -29,14 +29,14 @@ add_library(cstable STATIC
     columns/v1/UInt32ColumnWriter.cc
     columns/v1/UInt64ColumnReader.cc
     columns/v1/UInt64ColumnWriter.cc
+    io/PageManager.cc
+    io/PageIndex.cc
     ColumnWriter.cc
     ColumnReader.cc
     CSTableReader.cc
     CSTableWriter.cc
     RecordMaterializer.cc
     RecordShredder.cc
-    PageManager.cc
-    PageIndex.cc
     TableSchema.cc
     CSTableWriter.cc)
 

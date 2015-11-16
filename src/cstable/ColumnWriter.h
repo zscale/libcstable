@@ -13,8 +13,8 @@
 #include <stx/autoref.h>
 #include <stx/protobuf/MessageObject.h>
 #include <cstable/cstable.h>
-#include <cstable/PageManager.h>
-#include <cstable/PageIndex.h>
+#include <cstable/io/PageManager.h>
+#include <cstable/io/PageIndex.h>
 #include <cstable/columns/UInt64PageWriter.h>
 
 namespace stx {

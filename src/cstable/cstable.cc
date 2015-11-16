@@ -8,7 +8,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 #include <cstable/cstable.h>
-#include <cstable/PageManager.h>
+#include <cstable/io/PageManager.h>
 #include <stx/util/binarymessagewriter.h>
 #include <stx/util/binarymessagereader.h>
 #include <stx/SHA1.h>

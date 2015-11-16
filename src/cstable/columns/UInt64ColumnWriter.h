@@ -12,7 +12,7 @@
 #include <stx/util/binarymessagewriter.h>
 #include <stx/util/BitPackEncoder.h>
 #include <cstable/cstable.h>
-#include <cstable/UInt64PageWriter.h>
+#include <cstable/UInt64internal/PageWriter.h>
 #include <cstable/columns/v1/ColumnWriter.h>
 
 namespace stx {

@@ -7,7 +7,7 @@
  * copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-#include <cstable/PageManager.h>
+#include <cstable/io/PageManager.h>
 #include <cstable/cstable.h>
 #include <stx/exception.h>
 #include <stx/freeondestroy.h>

@@ -13,8 +13,8 @@
 #include <stx/io/file.h>
 #include <cstable/ColumnWriter.h>
 #include <cstable/LockManager.h>
-#include <cstable/PageManager.h>
-#include <cstable/PageIndex.h>
+#include <cstable/io/PageManager.h>
+#include <cstable/io/PageIndex.h>
 #include <cstable/TableSchema.h>
 
 namespace stx {

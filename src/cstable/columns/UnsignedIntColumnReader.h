@@ -10,9 +10,9 @@
 #pragma once
 #include <stx/stdtypes.h>
 #include <cstable/ColumnReader.h>
-#include <cstable/PageReader.h>
-#include <cstable/PageManager.h>
-#include <cstable/PageIndex.h>
+#include <cstable/io/PageReader.h>
+#include <cstable/io/PageManager.h>
+#include <cstable/io/PageIndex.h>
 
 namespace stx {
 namespace cstable {
