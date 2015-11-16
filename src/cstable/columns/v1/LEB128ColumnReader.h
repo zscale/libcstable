@@ -27,6 +27,31 @@ public:
       void* data,
       size_t size);
 
+  bool readBoolean(
+      uint64_t* rlvl,
+      uint64_t* dlvl,
+      bool* value) override;
+
+  bool readUnsignedInt(
+      uint64_t* rlvl,
+      uint64_t* dlvl,
+      uint64_t* value) override;
+
+  bool readSignedInt(
+      uint64_t* rlvl,
+      uint64_t* dlvl,
+      int64_t* value) override;
+
+  bool readDouble(
+      uint64_t* rlvl,
+      uint64_t* dlvl,
+      double* value) override;
+
+  bool readString(
+      uint64_t* rlvl,
+      uint64_t* dlvl,
+      String* value) override;
+
   bool next(uint64_t* rep_level, uint64_t* def_level, uint64_t* data);
 
   bool next(

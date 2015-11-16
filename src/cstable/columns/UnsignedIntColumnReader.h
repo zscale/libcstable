@@ -27,17 +27,42 @@ public:
       RefPtr<PageManager> page_mgr,
       PageIndexReader* page_idx);
 
-  msg::FieldType type() const override;
-  ColumnEncoding storageType() const override;
+  bool readBoolean(
+      uint64_t* rlvl,
+      uint64_t* dlvl,
+      bool* value) override;
 
-  uint64_t maxRepetitionLevel() const override;
-  uint64_t maxDefinitionLevel() const override;
+  bool readUnsignedInt(
+      uint64_t* rlvl,
+      uint64_t* dlvl,
+      uint64_t* value) override;
+
+  bool readSignedInt(
+      uint64_t* rlvl,
+      uint64_t* dlvl,
+      int64_t* value) override;
+
+  bool readDouble(
+      uint64_t* rlvl,
+      uint64_t* dlvl,
+      double* value) override;
+
+  bool readString(
+      uint64_t* rlvl,
+      uint64_t* dlvl,
+      String* value) override;
 
   bool next(
       uint64_t* rep_level,
       uint64_t* def_level,
       void** data,
       size_t* data_len) override;
+
+  msg::FieldType type() const override;
+  ColumnEncoding storageType() const override;
+
+  uint64_t maxRepetitionLevel() const override;
+  uint64_t maxDefinitionLevel() const override;
 
   uint64_t nextRepetitionLevel() override;
 
