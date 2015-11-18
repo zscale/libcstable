@@ -14,8 +14,12 @@
 #include <stx/io/outputstream.h>
 #include <stx/protobuf/MessageObject.h>
 
-
 namespace cstable {
+
+static const uint32_t kVersionMajor = 0;
+static const uint32_t kVersionMinor = 2;
+static const uint32_t kVersionPatch = 0;
+static const std::string kVersionString = "v0.2.0-dev";
 
 /**
  * // http://tools.ietf.org/html/rfc5234
