@@ -25,7 +25,12 @@ namespace cstable {
 class RecordShredder {
 public:
 
-  RecordShredder(CSTableWriter* writer);
+  RecordShredder(
+      CSTableWriter* writer);
+
+  RecordShredder(
+      CSTableWriter* writer,
+      const TableSchema* schema);
 
   void addRecordFromJSON(const String& json);
   void addRecordFromJSON(
@@ -42,6 +47,7 @@ public:
 
 protected:
   CSTableWriter* writer_;
+  const TableSchema* schema_;
 };
 
 } // namespace cstable
