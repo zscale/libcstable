@@ -8,7 +8,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 #include <cstable/columns/v1/BooleanColumnReader.h>
-
+#include <cstable/ColumnWriter.h>
 
 namespace cstable {
 namespace v1 {
@@ -95,6 +95,21 @@ bool BooleanColumnReader::readString(
     *value = "";
     return false;
   }
+}
+
+void BooleanColumnReader::skipValue() {
+  uint64_t rlvl;
+  uint64_t dlvl;
+  bool val;
+  readBoolean(&rlvl, &dlvl, &val);
+}
+
+void BooleanColumnReader::copyValue(ColumnWriter* writer) {
+  uint64_t rlvl;
+  uint64_t dlvl;
+  bool val;
+  readBoolean(&rlvl, &dlvl, &val);
+  writer->writeBoolean(rlvl, dlvl, val);
 }
 
 } // namespace v1

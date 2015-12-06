@@ -8,7 +8,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 #include <cstable/columns/v1/StringColumnReader.h>
-
+#include <cstable/ColumnWriter.h>
 
 namespace cstable {
 namespace v1 {
@@ -97,6 +97,21 @@ bool StringColumnReader::readString(
     *value = "";
     return false;
   }
+}
+
+void StringColumnReader::skipValue() {
+  uint64_t rlvl;
+  uint64_t dlvl;
+  String val;
+  readString(&rlvl, &dlvl, &val);
+}
+
+void StringColumnReader::copyValue(ColumnWriter* writer) {
+  uint64_t rlvl;
+  uint64_t dlvl;
+  String val;
+  readString(&rlvl, &dlvl, &val);
+  writer->writeString(rlvl, dlvl, val);
 }
 
 } // namespace v1

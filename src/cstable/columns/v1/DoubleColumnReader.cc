@@ -8,6 +8,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 #include <cstable/columns/v1/DoubleColumnReader.h>
+#include <cstable/ColumnWriter.h>
 
 using namespace stx;
 
@@ -96,6 +97,21 @@ bool DoubleColumnReader::readString(
     *value = "";
     return false;
   }
+}
+
+void DoubleColumnReader::skipValue() {
+  uint64_t rlvl;
+  uint64_t dlvl;
+  double val;
+  readFloat(&rlvl, &dlvl, &val);
+}
+
+void DoubleColumnReader::copyValue(ColumnWriter* writer) {
+  uint64_t rlvl;
+  uint64_t dlvl;
+  double val;
+  readFloat(&rlvl, &dlvl, &val);
+  writer->writeFloat(rlvl, dlvl, val);
 }
 
 } // namespace v1

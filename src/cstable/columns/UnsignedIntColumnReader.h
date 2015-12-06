@@ -52,6 +52,9 @@ public:
       uint64_t* dlvl,
       String* value) override;
 
+  void skipValue() override;
+  void copyValue(ColumnWriter* writer) override;
+
   ColumnType type() const override;
   ColumnEncoding encoding() const override;
 

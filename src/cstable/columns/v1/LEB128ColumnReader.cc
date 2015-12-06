@@ -8,7 +8,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 #include <cstable/columns/v1/LEB128ColumnReader.h>
-
+#include <cstable/ColumnWriter.h>
 
 namespace cstable {
 namespace v1 {
@@ -96,6 +96,21 @@ bool LEB128ColumnReader::readString(
     *value = "";
     return false;
   }
+}
+
+void LEB128ColumnReader::skipValue() {
+  uint64_t rlvl;
+  uint64_t dlvl;
+  uint64_t val;
+  readUnsignedInt(&rlvl, &dlvl, &val);
+}
+
+void LEB128ColumnReader::copyValue(ColumnWriter* writer) {
+  uint64_t rlvl;
+  uint64_t dlvl;
+  uint64_t val;
+  readUnsignedInt(&rlvl, &dlvl, &val);
+  writer->writeUnsignedInt(rlvl, dlvl, val);
 }
 
 } // namespace v1

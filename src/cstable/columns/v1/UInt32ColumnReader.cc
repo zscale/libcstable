@@ -8,7 +8,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 #include <cstable/columns/v1/UInt32ColumnReader.h>
-
+#include <cstable/ColumnWriter.h>
 
 namespace cstable {
 namespace v1 {
@@ -95,6 +95,21 @@ bool UInt32ColumnReader::readString(
     *value = "";
     return false;
   }
+}
+
+void UInt32ColumnReader::skipValue() {
+  uint64_t rlvl;
+  uint64_t dlvl;
+  uint64_t val;
+  readUnsignedInt(&rlvl, &dlvl, &val);
+}
+
+void UInt32ColumnReader::copyValue(ColumnWriter* writer) {
+  uint64_t rlvl;
+  uint64_t dlvl;
+  uint64_t val;
+  readUnsignedInt(&rlvl, &dlvl, &val);
+  writer->writeUnsignedInt(rlvl, dlvl, val);
 }
 
 } // namespace v1

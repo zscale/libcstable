@@ -15,6 +15,7 @@
 
 
 namespace cstable {
+class ColumnWriter;
 
 class ColumnReader : public stx::RefCounted {
 public:
@@ -48,6 +49,9 @@ public:
       uint64_t* rlvl,
       uint64_t* dlvl,
       UnixTime* value);
+
+  virtual void skipValue() = 0;
+  virtual void copyValue(ColumnWriter* writer) = 0;
 
   virtual uint64_t nextRepetitionLevel() = 0;
   virtual bool eofReached() const = 0;

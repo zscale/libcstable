@@ -8,6 +8,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 #include <cstable/columns/v1/BitPackedIntColumnReader.h>
+#include <cstable/ColumnWriter.h>
 
 using namespace stx;
 
@@ -100,6 +101,21 @@ bool BitPackedIntColumnReader::readString(
     *value = "";
     return false;
   }
+}
+
+void BitPackedIntColumnReader::skipValue() {
+  uint64_t rlvl;
+  uint64_t dlvl;
+  uint64_t val;
+  readUnsignedInt(&rlvl, &dlvl, &val);
+}
+
+void BitPackedIntColumnReader::copyValue(ColumnWriter* writer) {
+  uint64_t rlvl;
+  uint64_t dlvl;
+  uint64_t val;
+  readUnsignedInt(&rlvl, &dlvl, &val);
+  writer->writeUnsignedInt(rlvl, dlvl, val);
 }
 
 } // namespace v1

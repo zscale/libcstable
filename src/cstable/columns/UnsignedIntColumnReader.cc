@@ -9,6 +9,7 @@
  */
 #include <cstable/columns/UnsignedIntColumnReader.h>
 #include <cstable/columns/UInt64PageReader.h>
+#include <cstable/ColumnWriter.h>
 
 using namespace stx;
 
@@ -132,6 +133,21 @@ uint64_t UnsignedIntColumnReader::nextRepetitionLevel() {
 
 bool UnsignedIntColumnReader::eofReached() const {
   return false;
+}
+
+void UnsignedIntColumnReader::skipValue() {
+  uint64_t rlvl;
+  uint64_t dlvl;
+  uint64_t val;
+  readUnsignedInt(&rlvl, &dlvl, &val);
+}
+
+void UnsignedIntColumnReader::copyValue(ColumnWriter* writer) {
+  uint64_t rlvl;
+  uint64_t dlvl;
+  uint64_t val;
+  readUnsignedInt(&rlvl, &dlvl, &val);
+  writer->writeUnsignedInt(rlvl, dlvl, val);
 }
 
 ColumnType UnsignedIntColumnReader::type() const {
