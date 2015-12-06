@@ -34,6 +34,38 @@ TableSchema::TableSchema(const TableSchema& other) {
   }
 }
 
+void TableSchema::addBool(
+    const String& name,
+    bool optional /* = true */,
+    ColumnEncoding encoding /* = ColumnEncoding::BOOLEAN_BITPACKED */) {
+  auto col = mkScoped(new Column());
+  col->name = name;
+  col->type = ColumnType::BOOLEAN;
+  col->encoding = encoding;
+  col->type_size = 0;
+  col->repeated = false;
+  col->optional = optional;
+
+  columns_.emplace_back(col.get());
+  columns_by_name_.emplace(name, std::move(col));
+}
+
+void TableSchema::addBoolArray(
+    const String& name,
+    bool optional /* = true */,
+    ColumnEncoding encoding /* = ColumnEncoding::BOOLEAN_BITPACKED */) {
+  auto col = mkScoped(new Column());
+  col->name = name;
+  col->type = ColumnType::BOOLEAN;
+  col->encoding = encoding;
+  col->type_size = 0;
+  col->repeated = true;
+  col->optional = optional;
+
+  columns_.emplace_back(col.get());
+  columns_by_name_.emplace(name, std::move(col));
+}
+
 void TableSchema::addUnsignedInteger(
     const String& name,
     bool optional /* = true */,
