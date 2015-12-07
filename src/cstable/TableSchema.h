@@ -115,6 +115,8 @@ public:
 
   static TableSchema fromProtobuf(const stx::msg::MessageSchema& schema);
 
+  Vector<ColumnConfig> flatColumns() const;
+
 protected:
   HashMap<String, ScopedPtr<Column>> columns_by_name_;
   Vector<Column*> columns_;

@@ -291,6 +291,47 @@ TableSchema TableSchema::fromProtobuf(const msg::MessageSchema& schema) {
   return rs;
 }
 
+static void listFlatColumns(
+    const String& prefix,
+    uint32_t r_max,
+    uint32_t d_max,
+    const TableSchema::Column* field,
+    Vector<ColumnConfig>* columns) {
+  auto colname = prefix + field->name;
+
+  if (field->repeated) {
+    ++r_max;
+  }
+
+  if (field->repeated || field->optional) {
+    ++d_max;
+  }
+
+  if (field->type == ColumnType::SUBRECORD) {
+    for (const auto& f : field->subschema->columns()) {
+      listFlatColumns(colname + ".", r_max, d_max, f, columns);
+    }
+  } else {
+    cstable::ColumnConfig cconf;
+    cconf.column_name = colname;
+    cconf.storage_type = field->encoding;
+    cconf.logical_type = field->type;
+    cconf.rlevel_max = r_max;
+    cconf.dlevel_max = d_max;
+    columns->emplace_back(cconf);
+  }
+}
+
+Vector<ColumnConfig> TableSchema::flatColumns() const {
+  Vector<ColumnConfig> columns;
+
+  for (const auto& f : columns_) {
+    listFlatColumns("", 0, 0, f, &columns);
+  }
+
+  return columns;
+}
+
 
 } // namespace msg
 

@@ -35,37 +35,6 @@ RefPtr<CSTableWriter> CSTableWriter::createFile(
       lockref);
 }
 
-static void createColumns(
-    const String& prefix,
-    uint32_t r_max,
-    uint32_t d_max,
-    const TableSchema::Column* field,
-    Vector<ColumnConfig>* columns) {
-  auto colname = prefix + field->name;
-
-  if (field->repeated) {
-    ++r_max;
-  }
-
-  if (field->repeated || field->optional) {
-    ++d_max;
-  }
-
-  if (field->type == ColumnType::SUBRECORD) {
-    for (const auto& f : field->subschema->columns()) {
-      createColumns(colname + ".", r_max, d_max, f, columns);
-    }
-  } else {
-    cstable::ColumnConfig cconf;
-    cconf.column_name = colname;
-    cconf.storage_type = field->encoding;
-    cconf.logical_type = field->type;
-    cconf.rlevel_max = r_max;
-    cconf.dlevel_max = d_max;
-    columns->emplace_back(cconf);
-  }
-}
-
 RefPtr<CSTableWriter> CSTableWriter::createFile(
     const String& filename,
     BinaryFormatVersion version,
@@ -76,9 +45,7 @@ RefPtr<CSTableWriter> CSTableWriter::createFile(
 
   FileHeader header;
   header.schema = mkRef(new TableSchema(schema));
-  for (const auto& f : header.schema->columns()) {
-    createColumns("", 0, 0, f, &header.columns);
-  }
+  header.columns = header.schema->flatColumns();
 
   // write header
   size_t header_size ;
