@@ -111,7 +111,11 @@ void StringColumnReader::copyValue(ColumnWriter* writer) {
   uint64_t dlvl;
   String val;
   readString(&rlvl, &dlvl, &val);
-  writer->writeString(rlvl, dlvl, val);
+  if (dlvl == d_max_) {
+    writer->writeString(rlvl, dlvl, val);
+  } else {
+    writer->writeNull(rlvl, dlvl);
+  }
 }
 
 } // namespace v1

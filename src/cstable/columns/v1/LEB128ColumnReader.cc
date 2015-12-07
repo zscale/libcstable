@@ -110,7 +110,11 @@ void LEB128ColumnReader::copyValue(ColumnWriter* writer) {
   uint64_t dlvl;
   uint64_t val;
   readUnsignedInt(&rlvl, &dlvl, &val);
-  writer->writeUnsignedInt(rlvl, dlvl, val);
+  if (dlvl == d_max_) {
+    writer->writeUnsignedInt(rlvl, dlvl, val);
+  } else {
+    writer->writeNull(rlvl, dlvl);
+  }
 }
 
 } // namespace v1

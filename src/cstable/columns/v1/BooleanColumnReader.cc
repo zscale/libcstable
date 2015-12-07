@@ -109,7 +109,11 @@ void BooleanColumnReader::copyValue(ColumnWriter* writer) {
   uint64_t dlvl;
   bool val;
   readBoolean(&rlvl, &dlvl, &val);
-  writer->writeBoolean(rlvl, dlvl, val);
+  if (dlvl == d_max_) {
+    writer->writeBoolean(rlvl, dlvl, val);
+  } else {
+    writer->writeNull(rlvl, dlvl);
+  }
 }
 
 } // namespace v1

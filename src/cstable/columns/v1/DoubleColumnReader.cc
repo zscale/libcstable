@@ -106,12 +106,17 @@ void DoubleColumnReader::skipValue() {
   readFloat(&rlvl, &dlvl, &val);
 }
 
+#include <stx/inspect.h>
 void DoubleColumnReader::copyValue(ColumnWriter* writer) {
   uint64_t rlvl;
   uint64_t dlvl;
   double val;
   readFloat(&rlvl, &dlvl, &val);
-  writer->writeFloat(rlvl, dlvl, val);
+  if (dlvl == d_max_) {
+    writer->writeFloat(rlvl, dlvl, val);
+  } else {
+    writer->writeNull(rlvl, dlvl);
+  }
 }
 
 } // namespace v1

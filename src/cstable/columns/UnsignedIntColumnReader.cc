@@ -147,7 +147,11 @@ void UnsignedIntColumnReader::copyValue(ColumnWriter* writer) {
   uint64_t dlvl;
   uint64_t val;
   readUnsignedInt(&rlvl, &dlvl, &val);
-  writer->writeUnsignedInt(rlvl, dlvl, val);
+  if (dlvl == config_.dlevel_max) {
+    writer->writeUnsignedInt(rlvl, dlvl, val);
+  } else {
+    writer->writeNull(rlvl, dlvl);
+  }
 }
 
 ColumnType UnsignedIntColumnReader::type() const {
