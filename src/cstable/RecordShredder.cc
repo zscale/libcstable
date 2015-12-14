@@ -261,7 +261,6 @@ void RecordShredder::addRecordsFromCSV(CSVInputStream* csv) {
             RAISEF(kTypeError, "can't convert '$0' to DATETIME", val);
           }
 
-          iputs("write datetime: $0", t.get());
           col->writeDateTime(0, col->maxDefinitionLevel(), t.get());
           break;
         }
