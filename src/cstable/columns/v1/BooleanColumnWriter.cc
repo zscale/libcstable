@@ -25,6 +25,9 @@ void BooleanColumnWriter::addDatum(
     const void* data,
     size_t size) {
   switch (size) {
+    case 0:
+      addDatum(rep_level, def_level, false);
+      return;
     case sizeof(uint8_t):
       addDatum(rep_level, def_level, *((const uint8_t*) data) > 0);
       return;
