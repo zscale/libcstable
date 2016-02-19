@@ -86,7 +86,6 @@ Sources / References
 [1] S. Melnik, A. Gubarev, J. Long, G. Romer, S. Shivakumar, M. Tolton, T. Vassilakis (2010). Dremel: Interactive Analysis of Web-Scale Datasets (Google, Inc.)
 
 
-
 License
 -------
 
